@@ -1,14 +1,11 @@
 "use strict";
-/* Hành trình 8 step — Material 3 Expressive.
-   Phong bì -> phòng tối/bật đèn -> reveal -> thắp & thổi nến (nhấn giữ)
-   -> chọn điều ước -> bùng nổ vườn hoa -> thiệp quà -> gửi ước lên trời. */
+/* Hành trình sinh nhật v4 — tranh watercolor ở vài chỗ tĩnh,
+   hiệu ứng chủ lực vẽ bằng CSS/JS: nhành hoa nở thành bó, lời chúc bay 3D,
+   lửa nến vẽ CSS trên tranh bánh, sao trời gửi điều ước. */
 const $ = id => document.getElementById(id);
 const stage = $("app");
 const layer = $("fxLayer");
-const PETAL_COLORS = ["#ffd9de", "#ffdad5", "#ffdbcc", "#f6a8b8", "#e58aa5"];
-const BLOOM_ICONS = ["local_florist", "filter_vintage", "spa", "favorite"];
-const BLOOM_BG = ["#ffd9de", "#ffdbcc", "#ffdad5", "#bc004b"];
-const BLOOM_FG = ["#bc004b", "#894f33", "#82524b", "#ffffff"];
+const PETAL_COLORS = ["#f7c3d0", "#f9d9b8", "#f2aec2", "#e58aa5", "#fdeeda"];
 const rand = (a, b) => a + Math.random() * (b - a);
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 let selectedWish = null;
@@ -18,6 +15,7 @@ function gotoStep(id) {
   document.querySelectorAll(".step").forEach(s => s.classList.toggle("active", s.id === id));
   window.scrollTo(0, 0);
   if (id === "step-sky") initSky();
+  if (id === "step-cake") $("cakeWrap").classList.add("lit");
 }
 
 /* ---------- cánh hoa rơi xuyên suốt ---------- */
@@ -33,28 +31,14 @@ function spawnPetal() {
 for (let i = 0; i < 6; i++) setTimeout(spawnPetal, i * 420);
 setInterval(spawnPetal, 750);
 
-/* ---------- hoa nở + cánh tung tại điểm (dùng ở step quà + phong bì) ---------- */
-function bloomAt(x, y, size, parent) {
-  const i = Math.floor(Math.random() * BLOOM_ICONS.length);
-  const f = document.createElement("div");
-  f.className = "tap-bloom";
-  f.style.cssText = `left:${x}px; top:${y}px; width:${size}px; height:${size}px; background:${BLOOM_BG[i]}; color:${BLOOM_FG[i]}`;
-  f.innerHTML = `<span class="msr">${BLOOM_ICONS[i]}</span>`;
-  (parent || layer).appendChild(f);
-  f.animate([
-    { transform: "translate(-50%,-50%) scale(0) rotate(-24deg)", opacity: 0 },
-    { transform: "translate(-50%,-50%) scale(1.14) rotate(5deg)", opacity: 1, offset: 0.55 },
-    { transform: "translate(-50%,-50%) scale(1) rotate(0deg)", opacity: 1, offset: 0.78 },
-    { transform: "translate(-50%,-50%) scale(0.9) rotate(0deg)", opacity: 0 }
-  ], { duration: 2500, easing: "ease-out" }).onfinish = () => f.remove();
-}
-function burst(x, y, parent) {
+/* ---------- cánh hoa tung ra tại một điểm ---------- */
+function burst(x, y) {
   for (let i = 0; i < 10; i++) {
     const p = document.createElement("div");
     p.className = "burst-petal";
     const s = rand(7, 13);
     p.style.cssText = `left:${x}px; top:${y}px; width:${s}px; height:${s}px; background:${pick(PETAL_COLORS)}`;
-    (parent || layer).appendChild(p);
+    layer.appendChild(p);
     const ang = rand(0, Math.PI * 2), dist = rand(42, 112);
     p.animate([
       { transform: "translate(-50%,-50%) rotate(0deg)", opacity: 1 },
@@ -63,97 +47,135 @@ function burst(x, y, parent) {
   }
 }
 
+/* ---------- hoa vẽ bằng CSS (dùng cho bó hoa + hoa nở khi chạm) ---------- */
+const FLOWER_KINDS = ["p1", "p2", "p3", "p4"];
+function makeFlower(kind) {
+  const f = document.createElement("div");
+  f.className = "flower " + kind;
+  let html = "";
+  for (let i = 0; i < 8; i++) html += `<i class="fpetal" style="--r:${i * 45}deg; --d:${i * 35}ms"></i>`;
+  for (let i = 0; i < 6; i++) html += `<i class="fpetal in" style="--r:${i * 60 + 30}deg; --d:${260 + i * 35}ms"></i>`;
+  html += `<i class="core"></i>`;
+  f.innerHTML = html;
+  return f;
+}
+function makeSprig(h, rot, kind) {
+  const s = document.createElement("div");
+  s.className = "sprig";
+  s.style.cssText = `--h:${h}px; --rot:${rot}deg`;
+  s.innerHTML = `<i class="stem"></i><i class="leaf"></i><i class="leaf l"></i>`;
+  s.appendChild(makeFlower(kind));
+  return s;
+}
+
 /* ---------- STEP 1: mở phong bì ---------- */
-$("btnOpen").addEventListener("click", () => {
-  const env = $("envelope");
-  if (env.classList.contains("open")) return;
-  env.classList.add("open");
-  const r = env.getBoundingClientRect(), sr = stage.getBoundingClientRect();
-  burst(r.left - sr.left + r.width / 2, r.top - sr.top + 30);
-  setTimeout(() => gotoStep("step-dark"), 1150);
+$("btnOpen").addEventListener("click", e => {
+  const r = stage.getBoundingClientRect();
+  burst(e.clientX - r.left, e.clientY - r.top);
+  setTimeout(() => gotoStep("step-dark"), 450);
 });
 
 /* ---------- STEP 2: bật đèn ---------- */
 $("btnSwitch").addEventListener("click", () => {
-  const fl = $("flash");
-  fl.animate([{ opacity: 0 }, { opacity: 1, offset: 0.25 }, { opacity: 0 }], { duration: 750, easing: "ease-out" });
+  $("flash").animate([{ opacity: 0 }, { opacity: 1, offset: 0.25 }, { opacity: 0 }], { duration: 750, easing: "ease-out" });
   setTimeout(() => { initReveal(); gotoStep("step-reveal"); }, 330);
 });
 
-/* ---------- STEP 3: reveal bữa tiệc ---------- */
+/* ---------- STEP 3: nhành hoa nở thành bó ---------- */
+let bouquetDone = false, mainSprig = null;
 function initReveal() {
-  const box = $("balloons");
-  box.innerHTML = "";
-  const colors = ["#bc004b", "#f6a8b8", "#ff7d9c", "#ffb59e", "#e58aa5", "#ffd9de", "#ff9d76"];
-  for (let i = 0; i < 8; i++) {
-    const b = document.createElement("div");
-    b.className = "balloon";
-    b.style.cssText = `left:${rand(2, 90)}%; background:${colors[i % colors.length]}; animation-delay:${rand(0, 1.4)}s; animation-duration:${rand(6, 8.5)}s`;
-    box.appendChild(b);
-    setTimeout(() => b.remove(), 11000);
-  }
-  const kinds = [["local_florist", "c1"], ["filter_vintage", "c2"], ["spa", "c3"], ["favorite", "c2"], ["local_florist", "c1"]];
-  $("revealFlowers").innerHTML = kinds.map(([ico, cls], i) =>
-    `<span class="cell ${cls}" style="animation-delay:${0.25 + 0.15 * i}s"><span class="msr">${ico}</span></span>`).join("");
+  if (mainSprig) return;
+  const st = $("bouquetStage");
+  mainSprig = makeSprig(238, 0, "p1");
+  st.appendChild(mainSprig);
+  requestAnimationFrame(() => setTimeout(() => mainSprig.classList.add("grown"), 120));
 }
+function bloomBouquet() {
+  if (bouquetDone) return;
+  bouquetDone = true;
+  mainSprig.querySelector(".flower").classList.add("bloomed");
+  const st = $("bouquetStage");
+  const extras = [
+    [-30, 172, "p2"], [-20, 196, "p3"], [-10, 214, "p4"], [10, 218, "p2"],
+    [20, 198, "p1"], [30, 174, "p4"], [-38, 148, "p3"], [38, 150, "p1"],
+  ];
+  extras.forEach(([rot, h, kind], i) => {
+    setTimeout(() => {
+      const s = makeSprig(h, rot, kind);
+      st.appendChild(s);
+      requestAnimationFrame(() => {
+        s.classList.add("grown");
+        setTimeout(() => s.querySelector(".flower").classList.add("bloomed"), 420);
+      });
+    }, 260 + i * 150);
+  });
+  setTimeout(() => st.classList.add("showwrap"), 260 + extras.length * 150 + 500);
+  setTimeout(() => {
+    $("revealTitle").classList.add("shown");
+    $("revealSub").classList.add("shown");
+    $("revealHint").classList.add("gone");
+    $("btnToCake").classList.add("show");
+  }, 1500);
+  const wrap = document.createElement("div");
+  wrap.className = "bq-wrap";
+  wrap.innerHTML = `<span class="bq-bow"><i class="l"></i><i class="r"></i><b></b></span>`;
+  st.appendChild(wrap);
+}
+$("bouquetStage").addEventListener("pointerdown", bloomBouquet);
 $("btnToCake").addEventListener("click", () => gotoStep("step-cake"));
 
-/* ---------- STEP 4: thắp nến + nhấn giữ thổi nến ---------- */
-const cakeEl = $("cake"), cakeWrap = $("cakeWrap");
-let lit = false, blown = false, holding = false, holdP = 0, holdRaf = null;
-function flames() { return cakeEl.querySelectorAll(".flame"); }
+/* ---------- STEP 4: nhấn giữ thổi nến (lửa CSS trên tranh) ---------- */
+const cakePhoto = $("cakePhoto"), cakeWrap = $("cakeWrap");
+let blown = false, holding = false, holdP = 0, holdRaf = null;
+function aflames() { return cakePhoto.querySelectorAll(".aflame"); }
 function applyFlames() {
-  flames().forEach(f => {
-    f.style.transform = `scale(${1 - 0.8 * holdP}) skewX(${-16 * holdP}deg)`;
+  aflames().forEach(f => {
+    f.style.transform = `translate(-50%,-100%) scale(${1 - 0.8 * holdP}) skewX(${-16 * holdP}deg)`;
     f.style.opacity = String(1 - 0.3 * holdP);
   });
 }
-function clearFlames() { flames().forEach(f => { f.style.transform = ""; f.style.opacity = ""; }); }
+function clearFlames() { aflames().forEach(f => { f.style.transform = ""; f.style.opacity = ""; }); }
 function holdLoop() {
-  if (holding && lit && !blown) holdP = Math.min(1, holdP + 1 / 70);
-  else if (!holding && lit && !blown) holdP = Math.max(0, holdP - 1 / 38);
-  if (lit && !blown) { applyFlames(); holdRaf = requestAnimationFrame(holdLoop); }
+  if (holding && !blown) holdP = Math.min(1, holdP + 1 / 70);
+  else if (!holding && !blown) holdP = Math.max(0, holdP - 1 / 38);
+  if (!blown) { applyFlames(); holdRaf = requestAnimationFrame(holdLoop); }
   if (holdP >= 1 && !blown) blowOut();
-}
-function lightCandles() {
-  lit = true;
-  cakeWrap.classList.add("lit");
-  $("cakeTitle").textContent = "Nhắm mắt lại, ước một điều thật lòng nhé";
-  $("cakeHint").innerHTML = "Xong rồi thì <b>nhấn giữ vào bánh</b> để thổi nến —<br>giữ đến khi lửa tắt hẳn nha";
-  holdLoop();
 }
 function blowOut() {
   blown = true; holding = false;
   cancelAnimationFrame(holdRaf);
-  flames().forEach(f => { f.classList.add("out"); f.style.transform = ""; f.style.opacity = ""; });
-  cakeWrap.classList.remove("lit", "blowing");
-  cakeWrap.classList.add("dim");
-  cakeEl.querySelectorAll(".candle").forEach((c, i) => {
+  aflames().forEach((f, i) => {
+    f.classList.add("out"); f.style.transform = ""; f.style.opacity = "";
+    const pr = cakePhoto.getBoundingClientRect();
+    const fr = f.getBoundingClientRect();
     const sm = document.createElement("i");
     sm.className = "smoke";
-    c.appendChild(sm);
+    sm.style.cssText = `left:${fr.left - pr.left + fr.width / 2}px; top:${fr.top - pr.top}px; bottom:auto`;
+    cakePhoto.appendChild(sm);
     sm.animate([
-      { transform: "translateY(0) scale(1)", opacity: 0.8 },
-      { transform: `translateY(-${rand(46, 70)}px) translateX(${rand(-9, 9)}px) scale(2.6)`, opacity: 0 }
+      { transform: "translateY(0) scale(1)", opacity: 0.75 },
+      { transform: `translateY(-${rand(44, 64)}px) translateX(${rand(-9, 9)}px) scale(2.6)`, opacity: 0 }
     ], { duration: rand(1300, 1800), delay: i * 130, easing: "ease-out" }).onfinish = () => sm.remove();
   });
+  cakeWrap.classList.remove("lit", "blowing");
+  cakeWrap.classList.add("dim");
   $("cakeTitle").textContent = "Ngọn nến đã tắt rồi!";
   $("cakeHint").textContent = "Điều ước thầm kín của chị, em đã nghe thấy rồi đó…";
-  setTimeout(() => gotoStep("step-wish"), 2100);
+  setTimeout(() => gotoStep("step-wish"), 2200);
 }
-cakeEl.addEventListener("pointerdown", e => {
+cakePhoto.addEventListener("pointerdown", e => {
   e.preventDefault();
   if (blown) return;
-  if (!lit) { lightCandles(); return; }
   holding = true;
   cakeWrap.classList.add("blowing");
+  if (!holdRaf) holdLoop();
 });
 ["pointerup", "pointercancel", "pointerleave"].forEach(ev =>
   window.addEventListener(ev, () => {
     if (!holding) return;
     holding = false;
     cakeWrap.classList.remove("blowing");
-    if (lit && !blown) clearFlames();
+    if (!blown) clearFlames();
   }));
 
 /* ---------- STEP 5: chọn điều ước ---------- */
@@ -168,93 +190,55 @@ document.querySelectorAll(".wish-tag").forEach(tag => {
     $("btnToBoom").classList.add("show");
   });
 });
-$("btnToBoom").addEventListener("click", () => { gotoStep("step-boom"); startBoom(); });
+$("btnToBoom").addEventListener("click", () => { gotoStep("step-boom"); startWishes(); });
 
-/* ---------- STEP 6: bùng nổ vườn hoa + pháo hoa ---------- */
-let boomStarted = false;
-function startBoom() {
-  if (boomStarted) return;
-  boomStarted = true;
-  const title = $("boomTitle");
-  title.innerHTML = "";
-  "SINH NHẬT".split("").forEach((ch, i) => {
-    const s = document.createElement("span");
-    s.className = "ch";
-    s.textContent = ch === " " ? "\u00A0" : ch;
-    s.style.animationDelay = `${0.55 + i * 0.075}s`;
-    title.appendChild(s);
+/* ---------- STEP 6: lời chúc bay 3D phát sáng ---------- */
+let wishesStarted = false;
+const WISH_TEXTS = ["Sức khỏe dồi dào", "Luôn mỉm cười", "Bình an mỗi ngày", "Hạnh phúc ngập tràn",
+  "May mắn mỉm cười", "Xinh đẹp mãi nhé", "Mọi điều như ý", "Tuổi mới rực rỡ",
+  "Yêu thương đong đầy", "An yên nhé chị", "Vui vẻ mỗi ngày", "Thành công rực rỡ",
+  "Cười thật nhiều", "Mãi là bông hoa đẹp nhất"];
+const WISH_COLORS = ["#ffd9de", "#ffe9a8", "#ffffff", "#ffb3c6", "#ffd9b8"];
+function startWishes() {
+  if (wishesStarted) return;
+  wishesStarted = true;
+  const box = $("wish3d");
+  const items = [];
+  for (let r = 0; r < 2; r++) WISH_TEXTS.forEach(t => items.push(t));
+  items.forEach((text, i) => {
+    const el = document.createElement("span");
+    el.className = "flywish";
+    el.textContent = text;
+    let x = rand(2, 88), y = rand(3, 92);
+    if (x > 18 && x < 74 && y > 33 && y < 60) y = pick([rand(4, 26), rand(66, 90)]);
+    const z = pick([-430, -320, -210, -110, -30, 50, 110]);
+    const t01 = (z + 430) / 540;
+    const size = 13 + t01 * 15;
+    const blur = z < -260 ? 2.4 : z < -60 ? 1.1 : 0;
+    const op = 0.4 + t01 * 0.6;
+    const glow = z > -60 ? "text-shadow:0 0 14px rgba(255,170,200,.95),0 0 36px rgba(255,120,160,.55);" : "";
+    el.style.cssText = `left:${x}%; top:${y}%; font-size:${size}px; color:${pick(WISH_COLORS)}; opacity:${op}; --blur:${blur}px; transform:translateZ(${z}px); --dur:${rand(5.5, 9.5)}s; --gdur:${rand(2.6, 4.6)}s; animation-delay:${rand(-6, 0)}s, ${rand(-3, 0)}s; ${glow}`;
+    box.appendChild(el);
   });
-  bloomWave();
-  setTimeout(bloomWave, 1000);
-  startFireworks();
-  setTimeout(() => $("boomSub").classList.add("show"), 1900);
-  setTimeout(() => $("btnGift").classList.add("show"), 2500);
-}
-function bloomWave() {
-  const wl = $("waveLayer");
-  const W = wl.clientWidth, H = wl.clientHeight;
-  const cx = W / 2, cy = H * 0.44;
-  const cols = 6, rows = 9;
-  for (let gx = 0; gx < cols; gx++) for (let gy = 0; gy < rows; gy++) {
-    const x = (gx + 0.5) * (W / cols) + rand(-14, 14);
-    const y = (gy + 0.5) * (H / rows) + rand(-14, 14);
-    const dist = Math.hypot(x - cx, y - cy);
-    const i = Math.floor(Math.random() * BLOOM_ICONS.length);
-    const o = document.createElement("div");
-    o.className = "wave-orb";
-    const sz = rand(38, 56);
-    o.style.cssText = `left:${x}px; top:${y}px; width:${sz}px; height:${sz}px; background:${BLOOM_BG[i]}; color:${BLOOM_FG[i]}`;
-    o.innerHTML = `<span class="msr">${BLOOM_ICONS[i]}</span>`;
-    wl.appendChild(o);
-    o.animate([
-      { transform: "translate(-50%,-50%) scale(0) rotate(-24deg)", opacity: 0 },
-      { transform: "translate(-50%,-50%) scale(1.16) rotate(5deg)", opacity: 1, offset: 0.4 },
-      { transform: "translate(-50%,-50%) scale(1) rotate(0deg)", opacity: 1, offset: 0.7 },
-      { transform: "translate(-50%,-50%) scale(0.85)", opacity: 0 }
-    ], { duration: 2100, delay: dist * 2.1, easing: "ease-out" }).onfinish = () => o.remove();
-  }
-}
-let fw = null;
-function startFireworks() {
-  const cv = $("fwCanvas");
   const sec = $("step-boom");
-  cv.width = sec.clientWidth; cv.height = sec.clientHeight;
-  const ctx = cv.getContext("2d");
-  if (fw && fw.raf) cancelAnimationFrame(fw.raf);
-  fw = { parts: [], raf: 0, last: 0 };
-  const colors = ["#ffd9de", "#ffdbcc", "#f6a8b8", "#ffffff", "#ffca3a", "#ff7d9c"];
-  const loop = t => {
-    if (!sec.classList.contains("active")) return;
-    ctx.clearRect(0, 0, cv.width, cv.height);
-    if (t - fw.last > 800) {
-      fw.last = t;
-      const cx = rand(40, cv.width - 40), cy = rand(30, cv.height * 0.36);
-      const c = pick(colors);
-      for (let i = 0; i < 42; i++) {
-        const a = Math.PI * 2 * i / 42, sp = rand(1.4, 4);
-        fw.parts.push({ x: cx, y: cy, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, c });
-      }
-    }
-    fw.parts = fw.parts.filter(p => p.life > 0);
-    fw.parts.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.vx *= 0.985; p.life -= 0.013;
-      ctx.globalAlpha = Math.max(0, p.life);
-      ctx.fillStyle = p.c;
-      ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, 6.29); ctx.fill();
-    });
-    ctx.globalAlpha = 1;
-    fw.raf = requestAnimationFrame(loop);
-  };
-  fw.raf = requestAnimationFrame(loop);
+  sec.addEventListener("pointermove", e => {
+    const r = sec.getBoundingClientRect();
+    const dx = (e.clientX - r.left) / r.width - 0.5;
+    const dy = (e.clientY - r.top) / r.height - 0.5;
+    box.style.transform = `rotateY(${dx * 9}deg) rotateX(${-dy * 9}deg)`;
+  });
+  setTimeout(() => $("boomSub").classList.add("show"), 1500);
+  setTimeout(() => $("btnGift").classList.add("show"), 2400);
 }
 $("btnGift").addEventListener("click", () => gotoStep("step-gift"));
 
 /* ---------- STEP 7: món quà ---------- */
 (function () {
   let half = "";
-  for (let r = 0; r < 3; r++) {
-    half += `<span class="shot"><img src="assets/photos/hero.jpg" alt=""></span>`;
-    half += `<span class="shot"><img src="assets/photos/bouquet.jpg" alt=""></span>`;
+  for (let r = 0; r < 2; r++) {
+    half += `<span class="shot"><img src="assets/art/bouquet.webp" alt=""></span>`;
+    half += `<span class="shot"><img src="assets/art/cake.webp" alt=""></span>`;
+    half += `<span class="shot"><img src="assets/art/envelope.webp" alt=""></span>`;
   }
   $("trackPhoto").innerHTML = half + half;
   const items = [
@@ -267,24 +251,39 @@ $("btnGift").addEventListener("click", () => gotoStep("step-gift"));
     w += `<span class="witem${alt ? " alt" : ""}"><span class="msr">${ico}</span>${text}</span>`;
   });
   $("trackWord").innerHTML = w + w;
-  const kinds = [["local_florist", "c1"], ["filter_vintage", "c2"], ["spa", "c3"], ["favorite", "c2"], ["local_florist", "c1"]];
-  $("bloomRow").innerHTML = kinds.map(([ico, cls], i) =>
-    `<span class="cell ${cls}" style="animation-delay:${0.15 * i}s"><span class="msr">${ico}</span></span>`).join("");
+  const kinds = ["p1", "p2", "p3", "p4", "p1"];
+  $("bloomRow").innerHTML = kinds.map(k => `<span class="mini-slot"></span>`).join("");
+  document.querySelectorAll(".mini-slot").forEach((slot, i) => {
+    const f = makeFlower(kinds[i]);
+    slot.appendChild(f);
+    setTimeout(() => f.classList.add("bloomed"), 350 + i * 160);
+  });
 })();
-/* hoa tự nở thỉnh thoảng ở step quà */
+/* hoa CSS nở tại điểm chạm ở step quà */
+function tapBloom(x, y) {
+  const t = document.createElement("div");
+  t.className = "tap-flower";
+  t.style.cssText = `left:${x}px; top:${y}px`;
+  const f = makeFlower(pick(FLOWER_KINDS));
+  t.appendChild(f);
+  layer.appendChild(t);
+  requestAnimationFrame(() => f.classList.add("bloomed"));
+  burst(x, y);
+  setTimeout(() => {
+    f.classList.remove("bloomed");
+    setTimeout(() => t.remove(), 500);
+  }, 2100);
+}
 setInterval(() => {
   if (!$("step-gift").classList.contains("active")) return;
   const r = stage.getBoundingClientRect();
-  bloomAt(rand(36, r.width - 36), rand(30, r.height * 0.5), rand(40, 54));
-}, 3800);
-/* chạm ở step quà: hoa nở tại điểm chạm */
+  tapBloom(rand(36, r.width - 36), rand(30, r.height * 0.5));
+}, 4200);
 stage.addEventListener("pointerdown", e => {
   if (!$("step-gift").classList.contains("active")) return;
   if (e.target.closest("button")) return;
   const r = stage.getBoundingClientRect();
-  const x = e.clientX - r.left, y = e.clientY - r.top + window.scrollY;
-  bloomAt(x, e.clientY - r.top, rand(52, 70));
-  burst(x, e.clientY - r.top);
+  tapBloom(e.clientX - r.left, e.clientY - r.top);
 });
 $("btnSky").addEventListener("click", () => gotoStep("step-sky"));
 $("btnReplay").addEventListener("click", () => { resetAll(); gotoStep("step-sealed"); });
@@ -307,8 +306,7 @@ function initSky() {
 $("wishStar").addEventListener("click", () => {
   if (wishSent) return;
   wishSent = true;
-  const star = $("wishStar");
-  star.animate([
+  $("wishStar").animate([
     { transform: "translateY(0) scale(1)", opacity: 1 },
     { transform: "translateY(-36vh) scale(0.22) rotate(24deg)", opacity: 0.15 }
   ], { duration: 1500, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" });
@@ -322,19 +320,23 @@ $("btnRestart").addEventListener("click", () => { resetAll(); gotoStep("step-sea
 
 /* ---------- reset toàn bộ hành trình ---------- */
 function resetAll() {
-  $("envelope").classList.remove("open");
-  lit = false; blown = false; holding = false; holdP = 0;
-  cancelAnimationFrame(holdRaf);
-  cakeWrap.classList.remove("lit", "dim", "blowing");
-  flames().forEach(f => f.classList.remove("out"));
+  bouquetDone = false;
+  $("bouquetStage").innerHTML = "";
+  mainSprig = null;
+  $("revealTitle").classList.remove("shown");
+  $("revealSub").classList.remove("shown");
+  $("revealHint").classList.remove("gone");
+  $("btnToCake").classList.remove("show");
+  blown = false; holding = false; holdP = 0; holdRaf = null;
+  cakeWrap.classList.remove("dim", "blowing");
+  aflames().forEach(f => f.classList.remove("out"));
   clearFlames();
-  $("cakeTitle").textContent = "Thắp nến cho chị nè";
-  $("cakeHint").textContent = "Chạm vào bánh để thắp nến";
+  $("cakeTitle").textContent = "Nến đã thắp sẵn cho chị rồi";
+  $("cakeHint").innerHTML = "Nhắm mắt lại, ước một điều thật lòng…<br>rồi <b>nhấn giữ vào bánh</b> để thổi nến nhé";
   selectedWish = null;
   document.querySelectorAll(".wish-tag").forEach(t => t.classList.remove("selected"));
   $("wishNote").classList.remove("show");
   $("btnToBoom").classList.remove("show");
-  boomStarted = false;
   $("boomSub").classList.remove("show");
   $("btnGift").classList.remove("show");
   wishSent = false;

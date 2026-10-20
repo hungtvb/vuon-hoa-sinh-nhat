@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Chúc Mừng Sinh Nhật Chị</title>
-<link rel="stylesheet" href="css/fonts.css?v=3">
-<link rel="stylesheet" href="css/app.css?v=3">
+<link rel="stylesheet" href="css/fonts.css?v=4">
+<link rel="stylesheet" href="css/app.css?v=4">
 </head>
 <body>
 <div class="page" id="app">
@@ -14,12 +14,7 @@
   <!-- STEP 1: phong bì bí mật -->
   <section class="step active" id="step-sealed">
     <div class="sealed-wrap">
-      <div class="envelope" id="envelope">
-        <div class="env-letter"><span class="msr">local_florist</span></div>
-        <div class="env-body"></div>
-        <div class="env-flap" id="envFlap"></div>
-        <span class="env-seal"><span class="msr">favorite</span></span>
-      </div>
+      <img class="art-img env-art" src="assets/art/envelope.webp" alt="Phong bì hồng niêm phong trái tim">
       <h2 class="sealed-title">Có một điều bất ngờ<br>đang chờ chị…</h2>
       <p class="sealed-sub">Ai đó đã chuẩn bị một khu vườn nhỏ,<br>chỉ dành riêng cho ngày hôm nay.</p>
       <button class="btn-filled" id="btnOpen"><span class="msr">lock_open</span>Mở điều bất ngờ</button>
@@ -36,33 +31,27 @@
     <div class="flash" id="flash"></div>
   </section>
 
-  <!-- STEP 3: bật đèn — tiệc bất ngờ hiện ra -->
+  <!-- STEP 3: nhành hoa nở thành bó -->
   <section class="step" id="step-reveal">
-    <div class="reveal-wrap">
-      <div class="balloons" id="balloons"></div>
-      <h2 class="reveal-title">BẤT NGỜ CHƯA!</h2>
-      <p class="reveal-sub">Hôm nay là ngày của chị đó.<br>Một bữa tiệc nhỏ đã được chuẩn bị rồi nè.</p>
-      <div class="reveal-flowers" id="revealFlowers"></div>
-      <button class="btn-filled" id="btnToCake"><span class="msr">cake</span>Tiếp nào</button>
+    <div class="reveal-wrap v4">
+      <h2 class="reveal-title hidden-title" id="revealTitle">Bất ngờ chưa!</h2>
+      <p class="reveal-sub hidden-title" id="revealSub">Cả một bó hoa nở rộ dành cho chị nè</p>
+      <div class="bouquet-stage" id="bouquetStage"></div>
+      <p class="reveal-hint" id="revealHint">Chạm vào nhành hoa xem điều kỳ diệu</p>
+      <button class="btn-filled wish-go" id="btnToCake"><span class="msr">cake</span>Tiếp nào</button>
     </div>
   </section>
 
-  <!-- STEP 4: thắp nến và thổi nến -->
+  <!-- STEP 4: bánh và thổi nến -->
   <section class="step" id="step-cake">
-    <div class="cake-wrap" id="cakeWrap">
-      <div class="cake-glow" id="cakeGlow"></div>
-      <h2 class="cake-title" id="cakeTitle">Thắp nến cho chị nè</h2>
-      <div class="cake" id="cake">
-        <div class="candles">
-          <div class="candle"><i class="flame"></i></div>
-          <div class="candle tall"><i class="flame"></i></div>
-          <div class="candle"><i class="flame"></i></div>
-        </div>
-        <div class="tier tier-top"></div>
-        <div class="tier tier-bottom"></div>
-        <div class="plate"></div>
+    <div class="cake-wrap v4" id="cakeWrap">
+      <h2 class="cake-title" id="cakeTitle">Nến đã thắp sẵn cho chị rồi</h2>
+      <div class="cake-photo" id="cakePhoto">
+        <img src="assets/art/cake.webp" alt="Bánh sinh nhật hai tầng thắp nến">
+        <i class="aflame f1"></i><i class="aflame f2"></i><i class="aflame f3"></i>
+        <div class="cake-dim" id="cakeDim"></div>
       </div>
-      <p class="cake-hint" id="cakeHint">Chạm vào bánh để thắp nến</p>
+      <p class="cake-hint" id="cakeHint">Nhắm mắt lại, ước một điều thật lòng…<br>rồi <b>nhấn giữ vào bánh</b> để thổi nến nhé</p>
     </div>
   </section>
 
@@ -82,53 +71,48 @@
     </div>
   </section>
 
-  <!-- STEP 6: bùng nổ vườn hoa -->
-  <section class="step step-darkbg" id="step-boom">
-    <canvas id="fwCanvas"></canvas>
-    <div id="waveLayer"></div>
-    <div class="boom-core">
-      <p class="boom-kicker">Chúc mừng</p>
-      <h2 class="boom-title" id="boomTitle"></h2>
-      <p class="boom-sub" id="boomSub">Chúc chị một tuổi mới thật rực rỡ!</p>
+  <!-- STEP 6: lời chúc bay 3D trên nền tối -->
+  <section class="step step-nightsky" id="step-boom">
+    <div class="wish3d-wrap">
+      <div class="wish3d" id="wish3d"></div>
+    </div>
+    <div class="boom-core v4">
+      <p class="boom-hand">Chúc mừng</p>
+      <h2 class="boom-title glow-title">SINH NHẬT</h2>
+      <p class="boom-sub" id="boomSub">Bao nhiêu lời chúc đều dành cho chị hết đó</p>
       <button class="btn-filled boom-btn" id="btnGift"><span class="msr">featured_seasonal_and_gifts</span>Xem món quà</button>
     </div>
   </section>
 
-  <!-- STEP 7: món quà (ảnh + thiệp) -->
+  <!-- STEP 7: món quà (bình hoa + thiệp) -->
   <section class="step" id="step-gift">
     <div class="gift-pad">
       <header class="hero-head">
         <span class="chip"><span class="msr">card_giftcard</span>Một món quà nhỏ, tặng chị</span>
         <h1 class="display">
-          <span class="line-1">Chúc mừng</span>
-          <span class="line-2 breathe">Sinh Nhật</span>
+          <span class="line-1 hand">Chúc mừng</span>
+          <span class="line-2 serif">Sinh Nhật</span>
         </h1>
         <p class="sub">Gửi chị iu — chúc chị bước sang tuổi mới thật rực rỡ, như những đóa hoa đang nở trong khu vườn này.</p>
       </header>
 
-      <section class="hero-photo">
-        <img src="assets/photos/hero.jpg" alt="Bình hoa mẫu đơn hồng">
-        <span class="orb orb-1"><span class="msr">local_florist</span></span>
-        <span class="orb orb-2"><span class="msr">filter_vintage</span></span>
-        <span class="orb orb-3"><span class="msr">spa</span></span>
-        <span class="orb orb-4"><span class="msr">favorite</span></span>
+      <section class="hero-photo art-frame">
+        <img src="assets/art/bouquet.webp" alt="Bình hoa mẫu đơn hồng">
       </section>
 
       <div class="runway" aria-hidden="true"><div class="track track-photo" id="trackPhoto"></div></div>
 
       <section class="letter-card">
-        <span class="msr letter-ico">celebration</span>
-        <h2 class="letter-title">Chúc mừng sinh nhật chị</h2>
-        <p class="letter-to">Gửi chị iu,</p>
+        <p class="letter-to hand">Gửi chị iu,</p>
         <p>Cảm ơn chị vì đã luôn ở đó — dịu dàng, mạnh mẽ và là điểm tựa ấm áp nhất của cả nhà. Có một người chị như chị là may mắn lớn nhất của em.</p>
         <p>Tuổi mới, em chúc chị thật nhiều sức khỏe, lúc nào cũng tươi cười, công việc thuận lợi và mỗi ngày đều có một niềm vui nhỏ. Mong những điều tốt đẹp nhất sẽ lần lượt nở rộ trong cuộc sống của chị.</p>
-        <p class="letter-sign">Thương chị nhiều</p>
+        <p class="letter-sign hand">Thương chị nhiều</p>
       </section>
 
       <div class="runway" aria-hidden="true"><div class="track track-word reverse" id="trackWord"></div></div>
 
       <footer class="foot">
-        <div class="bloom-row" id="bloomRow"></div>
+        <div class="bloom-mini-row" id="bloomRow"></div>
         <p class="hint">Chạm vào màn hình để hoa nở nhé</p>
         <button class="btn-filled" id="btnSky"><span class="msr">star</span>Gửi điều ước lên trời</button>
         <br>
@@ -152,6 +136,6 @@
     </div>
   </section>
 </div>
-<script src="js/app.js?v=3"></script>
+<script src="js/app.js?v=4"></script>
 </body>
 </html>
