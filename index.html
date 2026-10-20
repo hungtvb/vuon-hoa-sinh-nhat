@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vườn Hoa Sinh Nhật</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=1">
+</head>
+<body>
+<div class="phone" id="app">
+    <audio id="bgm" loop preload="auto"><source src="assets/audio/bgm.mp3?v=1" type="audio/mpeg"></audio>
+    <button id="btnMusic" class="music-btn" aria-label="Bật/tắt nhạc">
+      <svg id="icoMusicOn" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#D94F7A"/><path d="M16 9c1.2 1 1.2 5 0 6M18.5 7c2 1.6 2 8.4 0 10" stroke="#D94F7A" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+      <svg id="icoMusicOff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#B0A8B9"/><path d="M16 9l6 6M22 9l-6 6" stroke="#B0A8B9" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+
+  <!-- COVER -->
+  <section class="screen" id="screen-cover">
+    <div class="cover-flowers" id="coverFlowers"></div>
+    <h1 class="cover-title">Vườn Hoa<br><span class="hl shimmer-text">Sinh Nhật</span></h1>
+    <p class="cover-sub">Vượt qua 4 thử thách, hái đủ 4 bông hoa<br>để mở món quà sinh nhật đặc biệt cuối vườn nhé</p>
+    <p class="cover-tagline">Mỗi thử thách vượt qua, là một bông hoa dành tặng chị</p>
+    <div style="padding:0 40px; margin-top:26px"><button class="btn" id="btnStart">Bắt đầu vào vườn</button></div>
+    <div class="marquee" aria-hidden="true"><div class="marquee-track" id="marqueeCover"></div></div>
+  </section>
+
+  <!-- MENU -->
+  <section class="screen" id="screen-menu">
+    <div class="topbar"><div class="title">Chọn thử thách</div></div>
+    <div class="flower-progress" id="menuProgress"></div>
+    <div class="menu-grid" id="menuGrid"></div>
+    <div class="hint" style="margin-top:14px">Hoàn thành cả 4 thử thách để mở màn quà cuối. Có thể chơi theo thứ tự tùy thích.</div>
+  </section>
+
+  <!-- GAME 1: GHÉP HOA -->
+  <section class="screen" id="screen-g1">
+    <div class="topbar">
+      <button class="icon-btn" data-nav="menu" aria-label="Về menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9C1C4C" stroke-width="3" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="title">Ghép Hoa</div><div style="width:44px"></div>
+    </div>
+    <div class="hud">
+      <div class="chip">Lượt sai: <b id="g1Moves">3</b></div>
+      <div class="chip">Thời gian: <b id="g1Time">60</b>s</div>
+    </div>
+    <div class="hint">Chạm 2 bông <b>giống hệt nhau</b> để ghép 5 cấp thành <b>Hoa Sinh Nhật</b>. Chỉ <b>60 giây</b>, sai tối đa <b>3 lần</b>!</div>
+    <div class="board" id="g1Board" style="grid-template-columns:repeat(4,1fr); max-width:380px"></div>
+  </section>
+
+  <!-- GAME 2: NỐI CẶP -->
+  <section class="screen" id="screen-g2">
+    <div class="topbar">
+      <button class="icon-btn" data-nav="menu" aria-label="Về menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9C1C4C" stroke-width="3" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="title">Nối Cặp</div><div style="width:44px"></div>
+    </div>
+    <div class="hud">
+      <div class="chip">Thời gian: <b id="g2Time">80</b>s</div>
+      <div class="chip">Còn lại: <b id="g2Left">30</b></div>
+    </div>
+    <div class="hint">Nối 2 biểu tượng <b>giống nhau</b> bằng đường đi gấp khúc <b>tối đa 2 lần</b>. 15 cặp trong 80 giây!</div>
+    <div style="position:relative; max-width:380px; margin:0 auto">
+      <div class="board" id="g2Board" style="grid-template-columns:repeat(6,1fr)"></div>
+      <svg id="linkPath"></svg>
+    </div>
+  </section>
+
+  <!-- GAME 3: TRÍ NHỚ -->
+  <section class="screen" id="screen-g3">
+    <div class="topbar">
+      <button class="icon-btn" data-nav="menu" aria-label="Về menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9C1C4C" stroke-width="3" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="title">Trí Nhớ Hoa Nở</div><div style="width:44px"></div>
+    </div>
+    <div class="hud">
+      <div class="chip">Lượt lật còn: <b id="g3Moves">18</b></div>
+      <div class="chip">Đã ghép: <b id="g3Pairs">0/8</b></div>
+    </div>
+    <div class="hint">Lật 2 thẻ mỗi lượt để tìm 8 cặp hoa giống nhau. Chỉ có 18 lượt thôi đó!</div>
+    <div class="board" id="g3Board" style="grid-template-columns:repeat(4,1fr); max-width:380px"></div>
+  </section>
+
+  <!-- GAME 4: HỨNG HOA -->
+  <section class="screen" id="screen-g4">
+    <div class="topbar">
+      <button class="icon-btn" data-nav="menu" aria-label="Về menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9C1C4C" stroke-width="3" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="title">Hứng Cánh Hoa</div><div style="width:44px"></div>
+    </div>
+    <div class="hud">
+      <div class="chip">Điểm: <b id="g4Score">0</b>/300</div>
+      <div class="chip">Thời gian: <b id="g4Time">45</b>s</div>
+    </div>
+    <div class="hint"><b>Kéo giỏ</b> để hứng cánh hoa hồng (+10) và hoa vàng (+20). Tránh lá úa (−15)!</div>
+    <canvas id="catchCanvas" width="360" height="440"></canvas>
+    <div style="margin-top:12px"><button class="btn secondary" id="g4Restart" style="display:none">Chơi lại</button></div>
+  </section>
+
+  <!-- FINALE -->
+  <section class="screen" id="screen-finale">
+    <canvas id="fireworks"></canvas>
+    <h1 class="cover-title" style="font-size:32px; position:relative; z-index:2">Món quà<br><span class="hl shimmer-text">đã nở rộ!</span></h1>
+    <div class="bloom-garden" id="bloomGarden" style="position:relative; z-index:2"></div>
+    <div class="finale-vase" id="finaleVase" style="position:relative; z-index:2"></div>
+    <div class="card-letter">
+      <h2>Chúc mừng sinh nhật chị</h2>
+      <div class="to">Gửi chị iu,</div>
+      <p>Cảm ơn chị đã luôn là chỗ dựa ấm áp của cả nhà — người chị tuyệt vời nhất mà em may mắn có được.</p>
+      <p>Tuổi mới chúc chị lúc nào cũng cười tươi như hoa, thật nhiều sức khỏe, bình an và hạnh phúc. Mong mọi điều tốt đẹp nhất sẽ nở rộ trong cuộc sống của chị, như vườn hoa này vậy.</p>
+      <p>Quà thì nhỏ, nhưng tình cảm thì to đùng. Thương chị!</p>
+      <div class="sign">Thương chị nhiều</div>
+    </div>
+    <div class="marquee" aria-hidden="true" style="position:relative; z-index:2"><div class="marquee-track" id="marqueeFinale"></div></div>
+    <div style="margin-top:16px; position:relative; z-index:2"><button class="btn secondary" id="btnReplay">Chơi lại từ đầu</button></div>
+  </section>
+
+  <!-- LOSE MODAL -->
+  <div class="modal" id="loseModal">
+    <div class="modal-card">
+      <div id="loseIcon"></div>
+      <h2>Chưa qua màn!</h2>
+      <p id="loseText"></p>
+      <button class="btn" id="btnLoseRetry">Chơi lại</button>
+      <button class="btn secondary" id="btnLoseMenu" style="margin-top:10px">Về menu</button>
+    </div>
+  </div>
+
+  <!-- WIN MODAL -->
+  <div class="modal" id="winModal">
+    <div class="modal-card">
+      <div id="winFlower"></div>
+      <h2>Thử thách hoàn thành!</h2>
+      <p id="winText">Bạn đã hái được một bông hoa.</p>
+      <button class="btn" id="btnWinNext">Nhận hoa</button>
+    </div>
+  </div>
+
+</div>
+  <script src="js/sprites.js?v=1"></script>
+  <script src="js/core.js?v=1"></script>
+  <script src="js/game-merge.js?v=1"></script>
+  <script src="js/game-link.js?v=1"></script>
+  <script src="js/game-memory.js?v=1"></script>
+  <script src="js/game-catch.js?v=1"></script>
+  <script src="js/finale.js?v=1"></script>
+  <script src="js/main.js?v=1"></script>
+</body>
+</html>
