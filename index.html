@@ -4,138 +4,125 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Chúc Mừng Sinh Nhật Chị</title>
-<link rel="stylesheet" href="css/fonts.css?v=4">
-<link rel="stylesheet" href="css/app.css?v=4">
+<link rel="stylesheet" href="css/fonts.css?v=5">
+<link rel="stylesheet" href="css/app.css?v=5">
 </head>
 <body>
 <div class="page" id="app">
   <div id="fxLayer"></div>
 
-  <!-- STEP 1: phong bì bí mật -->
-  <section class="step active" id="step-sealed">
-    <div class="sealed-wrap">
-      <img class="art-img env-art" src="assets/art/envelope.webp" alt="Phong bì hồng niêm phong trái tim">
-      <h2 class="sealed-title">Có một điều bất ngờ<br>đang chờ chị…</h2>
-      <p class="sealed-sub">Ai đó đã chuẩn bị một khu vườn nhỏ,<br>chỉ dành riêng cho ngày hôm nay.</p>
-      <button class="btn-filled" id="btnOpen"><span class="msr">lock_open</span>Mở điều bất ngờ</button>
+  <!-- MÀN 1: mở đầu -->
+  <section class="step step-night active" id="step-intro">
+    <div class="intro-wrap">
+      <div class="stars" id="introStars"></div>
+      <p class="intro-kicker hand">Một món quà nhỏ</p>
+      <h1 class="intro-title">Happy<br>Birthday</h1>
+      <p class="intro-sub">Hôm nay là một ngày thật đặc biệt —<br>ngày của người chị tuyệt vời nhất nhà mình.</p>
+      <button class="btn-glow" id="btnStart">Bắt đầu</button>
+      <p class="intro-hint">Đeo tai nghe và bật tiếng lên nhé</p>
     </div>
   </section>
 
-  <!-- STEP 2: phòng tối, bật đèn -->
-  <section class="step step-darkbg" id="step-dark">
-    <div class="dark-wrap">
-      <p class="dark-text">Ơ… sao tối thế này?</p>
-      <button class="switch" id="btnSwitch" aria-label="Bật đèn"><span class="msr">lightbulb</span></button>
-      <p class="dark-hint">Chị thử bật đèn lên xem</p>
-    </div>
-    <div class="flash" id="flash"></div>
-  </section>
-
-  <!-- STEP 3: nhành hoa nở thành bó -->
-  <section class="step" id="step-reveal">
-    <div class="reveal-wrap v4">
-      <h2 class="reveal-title hidden-title" id="revealTitle">Bất ngờ chưa!</h2>
-      <p class="reveal-sub hidden-title" id="revealSub">Cả một bó hoa nở rộ dành cho chị nè</p>
-      <div class="bouquet-stage" id="bouquetStage"></div>
-      <p class="reveal-hint" id="revealHint">Chạm vào nhành hoa xem điều kỳ diệu</p>
-      <button class="btn-filled wish-go" id="btnToCake"><span class="msr">cake</span>Tiếp nào</button>
-    </div>
-  </section>
-
-  <!-- STEP 4: bánh và thổi nến -->
-  <section class="step" id="step-cake">
-    <div class="cake-wrap v4" id="cakeWrap">
-      <h2 class="cake-title" id="cakeTitle">Nến đã thắp sẵn cho chị rồi</h2>
+  <!-- MÀN 2: thắp nến bằng diêm + thổi nến -->
+  <section class="step step-night" id="step-cake">
+    <div class="cake-wrap v5" id="cakeWrap">
+      <p class="cake-pre hand" id="cakePre">Đang thắp nến cho chị…</p>
       <div class="cake-photo" id="cakePhoto">
-        <img src="assets/art/cake.webp" alt="Bánh sinh nhật hai tầng thắp nến">
+        <img src="assets/art/cake.webp" alt="Bánh sinh nhật hai tầng">
         <i class="aflame f1"></i><i class="aflame f2"></i><i class="aflame f3"></i>
         <div class="cake-dim" id="cakeDim"></div>
       </div>
-      <p class="cake-hint" id="cakeHint">Nhắm mắt lại, ước một điều thật lòng…<br>rồi <b>nhấn giữ vào bánh</b> để thổi nến nhé</p>
+      <div class="match-box" id="matchBox">
+        <div class="match" id="match"><i class="match-head"></i><i class="match-flame"></i></div>
+        <p class="match-hint">Chạm vào que diêm để thắp nến</p>
+      </div>
+      <h2 class="cake-title" id="cakeTitle">Có một món quà nhỏ dành cho chị…</h2>
+      <p class="cake-hint" id="cakeHint">Nhưng trước khi mở, mình thổi nến trước nhé.<br><b>Nhấn và giữ</b> vào ngọn nến cho đến khi lửa tắt.</p>
     </div>
   </section>
 
-  <!-- STEP 5: chọn một điều ước -->
-  <section class="step step-darkbg" id="step-wish">
+  <!-- MÀN 3: màn đen chuyển cảnh -->
+  <section class="step step-black" id="step-black">
+    <div class="black-wrap">
+      <p class="black-text hand" id="blackText">Ngọn nến đã tắt…</p>
+    </div>
+  </section>
+
+  <!-- MÀN 4: chọn một điều ước -->
+  <section class="step step-night" id="step-wish">
     <div class="wish-wrap">
-      <h2 class="wish-title">Một điều ước cho tuổi mới</h2>
-      <p class="wish-sub">Ngọn nến đã tắt, điều ước đã được thầm nói ra.<br>Chị chọn một điều ước ở đây nữa nhé —<br>em sẽ gửi nó lên trời giúp chị.</p>
+      <p class="wish-kicker hand">Một điều ước</p>
+      <h2 class="wish-title">Giờ thì… chọn một điều ước<br>cho ngày sinh nhật của chị</h2>
       <div class="wish-tags" id="wishTags">
-        <button class="wish-tag" data-wish="Sức khỏe dồi dào"><span class="msr">favorite</span>Sức khỏe dồi dào</button>
-        <button class="wish-tag" data-wish="Hạnh phúc ngập tràn"><span class="msr">sentiment_very_satisfied</span>Hạnh phúc ngập tràn</button>
-        <button class="wish-tag" data-wish="Bình an mỗi ngày"><span class="msr">spa</span>Bình an mỗi ngày</button>
-        <button class="wish-tag" data-wish="May mắn mỉm cười"><span class="msr">auto_awesome</span>May mắn mỉm cười</button>
+        <button class="wish-tag" data-wish="Hạnh phúc hơn">Hạnh phúc hơn</button>
+        <button class="wish-tag" data-wish="Khỏe mạnh hơn">Khỏe mạnh hơn</button>
+        <button class="wish-tag" data-wish="Bình yên hơn">Bình yên hơn</button>
+        <button class="wish-tag" data-wish="Thật nhiều may mắn">Thật nhiều may mắn</button>
       </div>
       <p class="wish-note" id="wishNote"></p>
-      <button class="btn-filled wish-go" id="btnToBoom"><span class="msr">send</span>Gửi điều ước đi</button>
+      <button class="btn-glow wish-go" id="btnToHeart">Tiếp tục</button>
     </div>
   </section>
 
-  <!-- STEP 6: lời chúc bay 3D trên nền tối -->
-  <section class="step step-nightsky" id="step-boom">
-    <div class="wish3d-wrap">
-      <div class="wish3d" id="wish3d"></div>
-    </div>
-    <div class="boom-core v4">
-      <p class="boom-hand">Chúc mừng</p>
-      <h2 class="boom-title glow-title">SINH NHẬT</h2>
-      <p class="boom-sub" id="boomSub">Bao nhiêu lời chúc đều dành cho chị hết đó</p>
-      <button class="btn-filled boom-btn" id="btnGift"><span class="msr">featured_seasonal_and_gifts</span>Xem món quà</button>
+  <!-- MÀN 5: trái tim kỷ niệm (cao trào) -->
+  <section class="step step-night" id="step-heart">
+    <div class="heart-wrap">
+      <div class="heart-grid" id="heartGrid"></div>
+      <p class="heart-text" id="heartText">Tất cả những khoảnh khắc đẹp nhất này<br>là dành cho chị. <b>Chúc mừng sinh nhật, chị iu.</b><br>Hôm nay, chị nhất định phải thật hạnh phúc.</p>
+      <p class="heart-hint" id="heartHint">Chạm vào trái tim</p>
+      <button class="btn-glow wish-go" id="btnToLetter">Có một lá thư dành cho chị</button>
     </div>
   </section>
 
-  <!-- STEP 7: món quà (bình hoa + thiệp) -->
-  <section class="step" id="step-gift">
-    <div class="gift-pad">
-      <header class="hero-head">
-        <span class="chip"><span class="msr">card_giftcard</span>Một món quà nhỏ, tặng chị</span>
-        <h1 class="display">
-          <span class="line-1 hand">Chúc mừng</span>
-          <span class="line-2 serif">Sinh Nhật</span>
-        </h1>
-        <p class="sub">Gửi chị iu — chúc chị bước sang tuổi mới thật rực rỡ, như những đóa hoa đang nở trong khu vườn này.</p>
-      </header>
-
-      <section class="hero-photo art-frame">
-        <img src="assets/art/bouquet.webp" alt="Bình hoa mẫu đơn hồng">
-      </section>
-
-      <div class="runway" aria-hidden="true"><div class="track track-photo" id="trackPhoto"></div></div>
-
-      <section class="letter-card">
-        <p class="letter-to hand">Gửi chị iu,</p>
-        <p>Cảm ơn chị vì đã luôn ở đó — dịu dàng, mạnh mẽ và là điểm tựa ấm áp nhất của cả nhà. Có một người chị như chị là may mắn lớn nhất của em.</p>
-        <p>Tuổi mới, em chúc chị thật nhiều sức khỏe, lúc nào cũng tươi cười, công việc thuận lợi và mỗi ngày đều có một niềm vui nhỏ. Mong những điều tốt đẹp nhất sẽ lần lượt nở rộ trong cuộc sống của chị.</p>
-        <p class="letter-sign hand">Thương chị nhiều</p>
-      </section>
-
-      <div class="runway" aria-hidden="true"><div class="track track-word reverse" id="trackWord"></div></div>
-
-      <footer class="foot">
-        <div class="bloom-mini-row" id="bloomRow"></div>
-        <p class="hint">Chạm vào màn hình để hoa nở nhé</p>
-        <button class="btn-filled" id="btnSky"><span class="msr">star</span>Gửi điều ước lên trời</button>
-        <br>
-        <button class="btn-tonal" id="btnReplay"><span class="msr">replay</span>Xem lại điều bất ngờ</button>
-      </footer>
+  <!-- MÀN 6: lá thư tay -->
+  <section class="step step-night" id="step-letter">
+    <div class="letter-wrap">
+      <p class="letter-kicker hand">Lá thư nhỏ</p>
+      <div class="paper">
+        <div class="polaroid">
+          <img src="assets/art/bouquet.webp" alt="Bó hoa tặng chị">
+          <span class="tape"></span>
+        </div>
+        <div class="paper-text hand">
+          <p>Em không giỏi nói mấy lời hoa mỹ, nên viết đơn giản thôi: chúc mừng sinh nhật chị nhé.</p>
+          <p>Năm vừa rồi chắc chẳng dễ dàng gì, vậy mà chị vẫn luôn là chỗ dựa cho cả nhà. Giỏi hơn chị nghĩ nhiều đấy.</p>
+          <p>Em chỉ mong chị ăn ngon, ngủ đủ, bớt lo một chút — và nhớ là lúc nào cũng có em ở đây, khi chị cần.</p>
+          <p class="paper-sign">— Em của chị</p>
+        </div>
+      </div>
+      <button class="btn-glow" id="btnToCard">Vẫn còn nữa</button>
     </div>
   </section>
 
-  <!-- STEP 8: gửi điều ước lên trời sao -->
-  <section class="step step-darkbg" id="step-sky">
+  <!-- MÀN 7: thiệp cuối -->
+  <section class="step step-night" id="step-card">
+    <div class="card-wrap">
+      <p class="card-kicker">Dành cho chị</p>
+      <h2 class="card-title">Chúc Mừng<br>Sinh Nhật, Chị</h2>
+      <img class="card-art" src="assets/art/envelope.webp" alt="Phong bì hoa">
+      <p class="card-text" id="cardText">Mong điều ước chị chọn lúc nãy<br>thật sự tìm được đường đến với chị trong năm nay.</p>
+      <button class="btn-glow" id="btnSky">Gửi điều ước lên trời</button>
+      <br>
+      <button class="btn-ghost" id="btnReplay">Bắt đầu lại từ đầu</button>
+    </div>
+  </section>
+
+  <!-- MÀN 8: gửi điều ước lên trời sao -->
+  <section class="step step-night" id="step-sky">
     <div class="sky-wrap">
       <div class="stars" id="stars"></div>
       <div class="shooting" id="shooting"></div>
-      <h2 class="sky-title">Gửi điều ước lên trời</h2>
+      <p class="sky-kicker hand">Gửi lên trời</p>
+      <h2 class="sky-title">Biến điều ước<br>thành sao băng</h2>
       <div class="wish-star" id="wishStar">
         <span class="msr">star</span>
         <span class="wish-star-label" id="wishStarLabel"></span>
       </div>
       <p class="sky-text" id="skyText">Chạm vào ngôi sao để gửi điều ước của chị đi nhé</p>
-      <button class="btn-tonal light sky-restart" id="btnRestart"><span class="msr">replay</span>Xem lại từ đầu</button>
+      <button class="btn-ghost sky-restart" id="btnRestart">Xem lại từ đầu</button>
     </div>
   </section>
 </div>
-<script src="js/app.js?v=4"></script>
+<script src="js/app.js?v=5"></script>
 </body>
 </html>
