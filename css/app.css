@@ -1,0 +1,265 @@
+/* =====================================================================
+   Design system: Material 3 Expressive (Google) — m3.material.io
+   - Color: scheme "Vibrant" sinh bằng @material/material-color-utilities
+     (thư viện chính thức của Google) từ seed #E91E63, light, contrast 0.
+   - Typography: Roboto Flex (variable font), type scale của M3.
+   - Shape: thang corner radius của M3 (4/8/12/16/20/28/32/48/full).
+   - Motion: easing "emphasized" của M3 + spring xấp xỉ cho hiệu ứng nở.
+   - Icons: Material Symbols Rounded (bộ icon chính thức của Google).
+   ===================================================================== */
+:root{
+  --primary:#bc004b; --on-primary:#ffffff;
+  --primary-container:#ffd9de; --on-primary-container:#400014;
+  --secondary:#82524b; --secondary-container:#ffdad5; --on-secondary-container:#33110d;
+  --tertiary:#894f33; --tertiary-container:#ffdbcc; --on-tertiary-container:#351000;
+  --inverse-surface:#3d2c2e; --inverse-on-surface:#ffecee;
+  --surface:#fff8f7; --on-surface:#26181a;
+  --surface-variant:#fbdbde; --on-surface-variant:#574144;
+  --surface-low:#fff0f1; --surface-lowest:#ffffff;
+  --shape-xs:4px; --shape-sm:8px; --shape-md:12px; --shape-lg:16px;
+  --shape-lg-inc:20px; --shape-xl:28px; --shape-xl-inc:32px; --shape-xxl:48px; --shape-full:999px;
+  --ease-emph:cubic-bezier(.2,0,0,1);
+  --ease-emph-dec:cubic-bezier(.05,.7,.1,1);
+  --ease-spring:cubic-bezier(.34,1.45,.64,1);
+}
+*{margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Roboto Flex',system-ui,sans-serif; background:var(--surface); color:var(--on-surface);
+  display:flex; justify-content:center; min-height:100dvh; overflow-x:hidden;
+  user-select:none; -webkit-user-select:none;
+}
+.msr{font-family:'Material Symbols Rounded'; font-weight:normal; font-style:normal; line-height:1;
+  letter-spacing:normal; text-transform:none; display:inline-block; white-space:nowrap; direction:ltr;
+  -webkit-font-smoothing:antialiased; font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 40}
+.page{width:100%; max-width:480px; min-height:100dvh; position:relative; overflow:hidden; cursor:pointer}
+.gift-pad{padding:28px 20px 40px}
+#fxLayer{position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:5}
+
+/* --- Header theo type scale M3: displayMedium 45/52, headlineSmall 24/32, bodyLarge 16/24 --- */
+.hero-head{text-align:left; position:relative; z-index:2}
+.chip{display:inline-flex; align-items:center; gap:8px; background:var(--primary-container);
+  color:var(--on-primary-container); border-radius:var(--shape-sm); padding:6px 12px 6px 8px;
+  font-size:14px; font-weight:500; line-height:20px; letter-spacing:.1px}
+.chip .msr{font-size:18px}
+.display{margin:18px 0 10px; font-weight:400}
+.display .line-1{display:block; font-size:24px; line-height:32px; font-weight:500; color:var(--on-surface-variant); letter-spacing:.2px}
+.display .line-2{display:block; font-size:clamp(52px,15vw,64px); line-height:1.05; font-weight:800; color:var(--primary); letter-spacing:-.5px}
+@keyframes breathe{0%,100%{font-variation-settings:'wght' 620}50%{font-variation-settings:'wght' 920}}
+.breathe{animation:breathe 3.2s var(--ease-emph) infinite}
+.sub{font-size:16px; line-height:24px; color:var(--on-surface-variant); max-width:34ch}
+
+/* --- Ảnh hero: shape extraExtraLarge (48) + các "orb" hoa nở quanh ảnh --- */
+.hero-photo{position:relative; margin:26px 0 6px; z-index:2}
+.hero-photo>img{width:100%; aspect-ratio:4/4.6; object-fit:cover; display:block; border-radius:var(--shape-xxl)}
+.orb{position:absolute; display:flex; align-items:center; justify-content:center; border-radius:var(--shape-full);
+  box-shadow:0 4px 14px rgba(188,0,75,.18); animation:orbBloom .7s var(--ease-spring) both, orbSway 4s ease-in-out 1.2s infinite}
+.orb .msr{font-size:26px}
+.orb-1{width:58px; height:58px; background:var(--primary-container); color:var(--primary); top:-18px; left:-8px; animation-delay:.15s,1.35s}
+.orb-2{width:48px; height:48px; background:var(--tertiary-container); color:var(--tertiary); top:8%; right:-10px; animation-delay:.35s,1.55s}
+.orb-3{width:52px; height:52px; background:var(--secondary-container); color:var(--secondary); bottom:14%; left:-12px; animation-delay:.55s,1.75s}
+.orb-4{width:44px; height:44px; background:var(--primary); color:var(--on-primary); bottom:-14px; right:12%; animation-delay:.75s,1.95s}
+@keyframes orbBloom{0%{transform:scale(0) rotate(-20deg); opacity:0}100%{transform:scale(1) rotate(0); opacity:1}}
+@keyframes orbSway{0%,100%{margin-top:0}50%{margin-top:-8px}}
+
+/* --- Dải chạy (hình + chữ) --- */
+.runway{overflow:hidden; margin:22px -20px 0; padding:4px 0;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.track{display:inline-flex; white-space:nowrap; will-change:transform; animation:run 26s linear infinite}
+.track.reverse{animation:run 30s linear infinite reverse}
+@keyframes run{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.track-photo .shot{margin:0 6px}
+.track-photo img{width:118px; height:148px; object-fit:cover; border-radius:var(--shape-lg); display:block}
+.track-word .witem{display:inline-flex; align-items:center; gap:8px; margin:0 14px;
+  font-size:16px; font-weight:600; line-height:24px; color:var(--primary)}
+.track-word .witem.alt{color:var(--tertiary)}
+.track-word .witem .msr{font-size:22px}
+
+/* --- Thiệp: filled card M3 (surfaceContainerLow, corner extraLarge 28) --- */
+.letter-card{position:relative; z-index:2; background:var(--surface-low); border-radius:var(--shape-xl);
+  padding:28px 24px 26px; margin-top:26px; text-align:left}
+.letter-ico{font-size:30px; color:var(--primary); display:block; margin-bottom:10px}
+.letter-title{font-size:28px; line-height:36px; font-weight:700; color:var(--on-surface); margin-bottom:8px}
+.letter-to{font-size:16px; line-height:24px; font-weight:600; color:var(--primary); margin-bottom:10px}
+.letter-card p{font-size:16px; line-height:26px; color:var(--on-surface); margin-bottom:12px}
+.letter-sign{font-weight:700; color:var(--primary); margin-bottom:0 !important}
+
+/* --- Chân trang: hàng hoa nở + gợi ý --- */
+.foot{text-align:center; margin-top:26px; position:relative; z-index:2}
+.bloom-row{display:flex; justify-content:center; align-items:center; gap:10px; min-height:52px}
+.bloom-row .cell{display:flex; align-items:center; justify-content:center; border-radius:var(--shape-full);
+  animation:orbBloom .7s var(--ease-spring) both}
+.bloom-row .cell .msr{font-size:24px}
+.bloom-row .c1{width:50px; height:50px; background:var(--primary-container); color:var(--primary)}
+.bloom-row .c2{width:42px; height:42px; background:var(--tertiary-container); color:var(--tertiary)}
+.bloom-row .c3{width:50px; height:50px; background:var(--secondary-container); color:var(--secondary)}
+.hint{margin-top:12px; font-size:14px; line-height:20px; font-weight:500; color:var(--on-surface-variant)}
+
+/* --- Lớp hiệu ứng --- */
+.petal{position:absolute; top:-26px; border-radius:2px 60% 2px 60%; pointer-events:none; z-index:1;
+  animation:petalFall linear forwards}
+@keyframes petalFall{0%{transform:translateY(0) rotate(0); opacity:0}
+  8%{opacity:.95}100%{transform:translateY(108vh) rotate(330deg); opacity:0}}
+.tap-bloom{position:absolute; pointer-events:none; z-index:6; transform:translate(-50%,-50%);
+  display:flex; align-items:center; justify-content:center; border-radius:var(--shape-full)}
+.tap-bloom .msr{font-size:30px}
+.burst-petal{position:absolute; border-radius:2px 60% 2px 60%; pointer-events:none; z-index:6}
+
+/* ================= HÀNH TRÌNH 8 STEP ================= */
+.step{display:none; min-height:100dvh; position:relative}
+.step.active{display:block; animation:stepIn .5s var(--ease-emph)}
+@keyframes stepIn{from{opacity:0; transform:scale(.985)}to{opacity:1; transform:none}}
+.step-darkbg{background:var(--inverse-surface); color:var(--inverse-on-surface)}
+.btn-filled{display:inline-flex; align-items:center; gap:8px; background:var(--primary); color:var(--on-primary);
+  border:none; height:52px; padding:0 26px; border-radius:var(--shape-full); font-family:inherit;
+  font-size:16px; font-weight:600; cursor:pointer; box-shadow:0 6px 18px rgba(188,0,75,.30); transition:transform .15s var(--ease-emph)}
+.btn-filled:active{transform:scale(.96)}
+.btn-filled .msr{font-size:20px}
+.btn-tonal{display:inline-flex; align-items:center; gap:8px; background:var(--secondary-container); color:var(--on-secondary-container);
+  border:none; height:46px; padding:0 22px; border-radius:var(--shape-full); font-family:inherit;
+  font-size:15px; font-weight:600; cursor:pointer; transition:transform .15s var(--ease-emph)}
+.btn-tonal:active{transform:scale(.96)}
+.btn-tonal .msr{font-size:19px}
+.btn-tonal.light{background:rgba(255,238,238,.14); color:var(--inverse-on-surface)}
+
+/* --- Step 1: phong bì --- */
+.sealed-wrap{min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 24px; text-align:center}
+.envelope{position:relative; width:250px; height:168px; margin-bottom:40px; animation:envFloat 3.4s ease-in-out infinite}
+@keyframes envFloat{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-10px) rotate(1.5deg)}}
+.env-body{position:absolute; inset:0; background:var(--primary-container); border-radius:var(--shape-lg); box-shadow:0 12px 30px rgba(188,0,75,.22); z-index:2; overflow:hidden}
+.env-body::before,.env-body::after{content:""; position:absolute; bottom:0; width:60%; height:70%; background:rgba(255,255,255,.35)}
+.env-body::before{left:0; clip-path:polygon(0 0,0 100%,100% 100%)}
+.env-body::after{right:0; clip-path:polygon(100% 0,0 100%,100% 100%)}
+.env-letter{position:absolute; left:6%; right:6%; top:9%; height:76%; background:var(--surface-lowest); border-radius:var(--shape-md);
+  z-index:1; display:flex; align-items:flex-start; justify-content:center; padding-top:12px; color:var(--primary);
+  transition:transform .8s var(--ease-emph-dec)}
+.env-letter .msr{font-size:30px}
+.envelope.open .env-letter{transform:translateY(-52%)}
+.env-flap{position:absolute; top:0; left:0; right:0; height:56%; background:var(--primary); z-index:3;
+  clip-path:polygon(0 0,100% 0,50% 100%); border-radius:var(--shape-lg) var(--shape-lg) 0 0;
+  transform-origin:top center; transition:transform .7s var(--ease-emph)}
+.envelope.open .env-flap{transform:rotateX(180deg); z-index:0}
+.env-seal{position:absolute; top:47%; left:50%; transform:translate(-50%,-50%); width:52px; height:52px; border-radius:var(--shape-full);
+  background:var(--primary); color:var(--on-primary); display:flex; align-items:center; justify-content:center; z-index:4;
+  box-shadow:0 4px 12px rgba(188,0,75,.4); transition:opacity .3s, transform .35s var(--ease-emph)}
+.env-seal .msr{font-size:25px}
+.envelope.open .env-seal{opacity:0; transform:translate(-50%,-50%) scale(1.7)}
+.sealed-title{font-size:28px; line-height:36px; font-weight:700; margin-bottom:10px}
+.sealed-sub{color:var(--on-surface-variant); line-height:24px; margin-bottom:32px}
+
+/* --- Step 2: phòng tối + công tắc --- */
+.dark-wrap{min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 24px; text-align:center; position:relative; z-index:2}
+.dark-text{font-size:22px; line-height:30px; font-weight:600; margin-bottom:44px; opacity:.92}
+.switch{width:96px; height:96px; border-radius:var(--shape-full); border:2px solid rgba(255,238,238,.35);
+  background:rgba(255,238,238,.08); color:#ffd9de; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  animation:switchPulse 1.8s ease-in-out infinite}
+.switch .msr{font-size:46px}
+@keyframes switchPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,217,222,.35)}50%{box-shadow:0 0 0 26px rgba(255,217,222,0)}}
+.dark-hint{margin-top:40px; font-size:15px; opacity:.65}
+.flash{position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:50}
+
+/* --- Step 3: reveal bữa tiệc --- */
+.reveal-wrap{min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px 24px; text-align:center; position:relative; overflow:hidden}
+.balloons{position:absolute; inset:0; pointer-events:none; z-index:0}
+.balloon{position:absolute; bottom:-140px; width:52px; height:64px; border-radius:50%/54% 54% 46% 46%; opacity:.92;
+  animation:balloonUp 7s var(--ease-emph-dec) forwards}
+.balloon::after{content:""; position:absolute; top:100%; left:50%; width:1.5px; height:56px; background:rgba(38,24,26,.25)}
+@keyframes balloonUp{0%{transform:translateY(0) translateX(0) rotate(-2deg)}100%{transform:translateY(-118vh) translateX(14px) rotate(3deg)}}
+.reveal-title{position:relative; z-index:2; font-size:clamp(40px,11.5vw,52px); line-height:1.1; font-weight:900; color:var(--primary);
+  letter-spacing:.5px; animation:orbBloom .8s var(--ease-spring) both .1s}
+.reveal-sub{position:relative; z-index:2; margin-top:12px; font-size:16px; line-height:24px; color:var(--on-surface-variant)}
+.reveal-flowers{position:relative; z-index:2; display:flex; justify-content:center; align-items:center; gap:10px; margin:30px 0 34px; min-height:54px}
+.reveal-flowers .cell{display:flex; align-items:center; justify-content:center; border-radius:var(--shape-full); animation:orbBloom .7s var(--ease-spring) both}
+.reveal-flowers .cell .msr{font-size:25px}
+.reveal-flowers .c1{width:52px; height:52px; background:var(--primary-container); color:var(--primary)}
+.reveal-flowers .c2{width:44px; height:44px; background:var(--tertiary-container); color:var(--tertiary)}
+.reveal-flowers .c3{width:52px; height:52px; background:var(--secondary-container); color:var(--secondary)}
+#btnToCake{position:relative; z-index:2}
+
+/* --- Step 4: bánh + nến --- */
+.cake-wrap{min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 24px; text-align:center; position:relative; transition:background .8s}
+.cake-wrap.dim{background:#241b1d; color:var(--inverse-on-surface)}
+.cake-wrap.dim .cake-hint{color:rgba(255,238,238,.7)}
+.cake-glow{position:absolute; top:44%; left:50%; transform:translate(-50%,-50%); width:340px; height:340px; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,176,66,.4) 0%, rgba(255,140,66,.14) 45%, transparent 70%);
+  opacity:0; transition:opacity 1s; pointer-events:none}
+.cake-wrap.lit .cake-glow{opacity:1}
+.cake-title{font-size:28px; line-height:36px; font-weight:700; margin-bottom:52px; position:relative; z-index:2}
+.cake{position:relative; z-index:2; width:230px; cursor:pointer; touch-action:none}
+.candles{display:flex; justify-content:center; gap:30px; margin-bottom:-4px; position:relative; z-index:3}
+.candle{width:11px; height:38px; border-radius:3px; background:repeating-linear-gradient(45deg,#fff 0 5px,#ffd9de 5px 10px); position:relative; box-shadow:inset -2px 0 3px rgba(0,0,0,.12)}
+.candle.tall{height:48px}
+.flame{position:absolute; left:50%; bottom:100%; width:15px; height:24px; margin-left:-7.5px; margin-bottom:3px;
+  background:radial-gradient(circle at 50% 82%, #fff6c9 0 22%, #ffca3a 45%, #ff7b00 78%, rgba(255,123,0,0) 100%);
+  border-radius:50% 50% 50% 50%/62% 62% 38% 38%; transform-origin:50% 92%;
+  opacity:0; transform:scale(.2); transition:opacity .35s, transform .35s var(--ease-spring);
+  filter:drop-shadow(0 0 9px rgba(255,160,40,.85))}
+.cake-wrap.lit .flame{opacity:1; transform:scale(1); animation:flick .32s ease-in-out infinite alternate}
+@keyframes flick{from{transform:scale(1) rotate(-2.4deg)}to{transform:scale(1.07,1.13) rotate(2.4deg)}}
+.flame.out{opacity:0 !important; transform:scale(.15) !important; animation:none !important; transition:opacity .25s, transform .25s}
+.cake-wrap.blowing .flame{animation:none}
+.smoke{position:absolute; left:50%; bottom:100%; width:9px; height:9px; margin-left:-4px; border-radius:50%;
+  background:rgba(190,190,190,.55); filter:blur(2.5px); pointer-events:none}
+.tier{margin:0 auto; position:relative; box-shadow:inset 0 -8px 0 rgba(0,0,0,.05)}
+.tier-top{width:150px; height:52px; background:var(--primary-container); border-radius:var(--shape-md) var(--shape-md) var(--shape-sm) var(--shape-sm); z-index:2}
+.tier-top::before{content:""; position:absolute; top:0; left:0; right:0; height:15px; background:var(--surface-lowest);
+  border-radius:var(--shape-md) var(--shape-md) 60% 60%/0 0 100% 100%}
+.tier-bottom{width:210px; height:62px; background:var(--tertiary-container); border-radius:var(--shape-sm) var(--shape-sm) var(--shape-md) var(--shape-md); margin-top:5px; z-index:1}
+.tier-bottom::before{content:""; position:absolute; top:0; left:0; right:0; height:15px; background:var(--primary-container);
+  border-radius:var(--shape-sm) var(--shape-sm) 60% 60%/0 0 100% 100%}
+.plate{width:250px; height:14px; background:var(--surface-variant); border-radius:var(--shape-full); margin:7px auto 0}
+.cake-hint{margin-top:44px; font-size:16px; line-height:24px; color:var(--on-surface-variant); position:relative; z-index:2; min-height:48px}
+
+/* --- Step 5: chọn điều ước --- */
+.wish-wrap{min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px 24px; text-align:center}
+.wish-title{font-size:28px; line-height:36px; font-weight:700; margin-bottom:12px}
+.wish-sub{line-height:25px; opacity:.82; margin-bottom:36px}
+.wish-tags{display:flex; flex-direction:column; gap:20px; width:100%; max-width:300px}
+.wish-tag{position:relative; display:flex; align-items:center; justify-content:center; gap:10px; height:56px;
+  border-radius:var(--shape-lg); border:1.5px solid rgba(255,238,238,.35); background:rgba(255,238,238,.06);
+  color:var(--inverse-on-surface); font-family:inherit; font-size:16px; font-weight:600; cursor:pointer;
+  animation:tagSway 3.6s ease-in-out infinite; transition:background .3s, border-color .3s, box-shadow .3s}
+.wish-tag::before{content:""; position:absolute; bottom:100%; left:50%; width:1.5px; height:20px; background:rgba(255,238,238,.3)}
+.wish-tag .msr{font-size:22px; color:#ffd9de}
+.wish-tag:nth-child(2){animation-delay:.5s}.wish-tag:nth-child(3){animation-delay:1s}.wish-tag:nth-child(4){animation-delay:1.5s}
+@keyframes tagSway{0%,100%{transform:rotate(-1.3deg)}50%{transform:rotate(1.3deg)}}
+.wish-tag.selected{background:var(--primary); border-color:var(--primary); box-shadow:0 0 34px rgba(255,120,160,.55)}
+.wish-note{margin-top:28px; min-height:24px; font-size:15px; line-height:23px; opacity:0; transition:opacity .5s}
+.wish-note.show{opacity:.92}
+.wish-go{margin-top:16px; opacity:0; transform:translateY(12px); pointer-events:none; transition:all .5s var(--ease-emph)}
+.wish-go.show{opacity:1; transform:none; pointer-events:auto}
+
+/* --- Step 6: bùng nổ --- */
+#fwCanvas{position:absolute; inset:0; width:100%; height:100%; z-index:1}
+#waveLayer{position:absolute; inset:0; overflow:hidden; z-index:2; pointer-events:none}
+.wave-orb{position:absolute; border-radius:var(--shape-full); display:flex; align-items:center; justify-content:center; transform:translate(-50%,-50%)}
+.wave-orb .msr{font-size:26px}
+.boom-core{position:relative; z-index:3; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:32px 24px}
+.boom-kicker{color:var(--inverse-on-surface); opacity:.85; font-size:19px; font-weight:600; letter-spacing:4px; text-transform:uppercase}
+.boom-title{color:#fff; font-size:clamp(52px,15.5vw,68px); font-weight:900; line-height:1.06; margin:10px 0 14px; display:flex; justify-content:center; flex-wrap:wrap}
+.boom-title .ch{display:inline-block; animation:chIn .8s var(--ease-spring) both}
+@keyframes chIn{0%{transform:translateY(72px) rotate(14deg) scale(.4); opacity:0}60%{opacity:1}100%{transform:none; opacity:1}}
+.boom-sub{color:var(--inverse-on-surface); font-size:17px; opacity:0; transition:opacity .6s ease}
+.boom-sub.show{opacity:.94}
+.boom-btn{margin-top:30px; opacity:0; transform:translateY(14px); pointer-events:none; transition:all .55s var(--ease-emph)}
+.boom-btn.show{opacity:1; transform:none; pointer-events:auto}
+
+/* --- Step 8: trời sao --- */
+.sky-wrap{min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px 24px; text-align:center; position:relative; overflow:hidden}
+.stars{position:absolute; inset:0; pointer-events:none}
+.star-dot{position:absolute; border-radius:50%; background:#fff; animation:twinkleStar 2.8s ease-in-out infinite}
+@keyframes twinkleStar{0%,100%{opacity:.25; transform:scale(.75)}50%{opacity:1; transform:scale(1.15)}}
+.shooting{position:absolute; top:14%; left:-30%; width:170px; height:2.5px; border-radius:2px; opacity:0;
+  background:linear-gradient(90deg,transparent,#fff); transform:rotate(-18deg); pointer-events:none}
+.shooting.go{animation:shoot 1.15s ease-out forwards}
+@keyframes shoot{0%{opacity:0; left:-30%}12%{opacity:1}100%{opacity:0; left:105%}}
+.sky-title{font-size:28px; line-height:36px; font-weight:700; margin-bottom:38px; position:relative; z-index:2}
+.wish-star{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; color:#ffddba;
+  animation:starGlow 2.2s ease-in-out infinite}
+.wish-star .msr{font-size:84px; filter:drop-shadow(0 0 22px rgba(255,200,90,.75))}
+@keyframes starGlow{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.wish-star-label{font-size:16px; font-weight:700; color:var(--inverse-on-surface)}
+.sky-text{margin-top:34px; font-size:16px; line-height:25px; opacity:.85; max-width:32ch; position:relative; z-index:2}
+.sky-restart{margin-top:30px; opacity:0; pointer-events:none; transition:opacity .6s}
+.sky-restart.show{opacity:1; pointer-events:auto}
