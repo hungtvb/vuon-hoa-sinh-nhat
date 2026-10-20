@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bản 2 — Hộp Thư Bí Mật</title>
+<link rel="stylesheet" href="../css/fonts.css?v=7">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+:root{--ease:cubic-bezier(.2,0,0,1);--spring:cubic-bezier(.34,1.45,.64,1);--ink:#6B4453;--deep:#7A344F;--soft:#9A6478;--rose:#E0528A}
+html,body{height:100%}
+body{font-family:'Roboto Flex',sans-serif;background:linear-gradient(180deg,#FFE9F1,#FFF3E4 55%,#FFF8EE);color:var(--ink);overflow-x:hidden;user-select:none;-webkit-user-select:none}
+img{pointer-events:none}
+.hand{font-family:'Dancing Script',cursive}
+.step{display:none;min-height:100dvh;flex-direction:column;align-items:center;padding:40px 22px 34px;text-align:center}
+.step.active{display:flex}
+.btn{display:inline-flex;align-items:center;height:52px;padding:0 32px;border-radius:999px;border:none;cursor:pointer;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;background:linear-gradient(180deg,#F27BA7,#E0528A);box-shadow:0 10px 24px rgba(224,82,138,.35);transition:all .3s var(--ease);opacity:0;pointer-events:none;transform:translateY(10px)}
+.btn.show{opacity:1;pointer-events:auto;transform:none}
+.btn.always{opacity:1;pointer-events:auto;transform:none}
+.btn:active{transform:scale(.96)}
+.kicker{font-family:'Dancing Script',cursive;font-size:32px;color:#D96C97}
+.title{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(38px,11vw,50px);line-height:1.12;color:var(--deep);margin:10px 0 8px}
+.sub{font-size:16px;line-height:25px;color:var(--soft);max-width:34ch}
+.hint{font-size:14.5px;color:var(--soft);animation:hp 1.8s ease-in-out infinite}
+@keyframes hp{0%,100%{opacity:.55}50%{opacity:1}}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.petal{position:absolute;top:-24px;border-radius:62% 38% 60% 40%/55% 45% 55% 45%;opacity:.75;animation:pfall linear forwards}
+@keyframes pfall{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(14px,28dvh) rotate(120deg)}50%{transform:translate(-10px,56dvh) rotate(220deg)}75%{transform:translate(12px,84dvh) rotate(310deg)}100%{transform:translate(-6px,112dvh) rotate(400deg)}}
+/* hộp quà CSS */
+.giftbox{position:relative;width:190px;height:150px;margin:44px 0 10px;cursor:pointer}
+.gbox-body{position:absolute;left:0;bottom:0;width:190px;height:112px;border-radius:14px;background:linear-gradient(160deg,#F78FB3,#E0528A);box-shadow:0 18px 34px rgba(224,82,138,.35)}
+.gbox-body::before{content:"";position:absolute;left:50%;top:0;transform:translateX(-50%);width:34px;height:100%;background:#FFD66B}
+.gbox-lid{position:absolute;left:-8px;top:0;width:206px;height:42px;border-radius:12px;background:linear-gradient(160deg,#F9A8C4,#E8739F);box-shadow:0 8px 18px rgba(224,82,138,.3);transform-origin:8% 100%;transition:transform .8s var(--spring);z-index:2}
+.gbox-lid::before{content:"";position:absolute;left:50%;top:0;transform:translateX(-50%);width:34px;height:100%;background:#FFD66B}
+.gbow{position:absolute;left:50%;top:-30px;transform:translateX(-50%);z-index:3;transition:all .7s var(--spring)}
+.gbow i{position:absolute;width:40px;height:26px;border:7px solid #F2A93B;border-radius:50%;top:0}
+.gbow i:first-child{right:2px;transform:rotate(24deg)}
+.gbow i:last-child{left:2px;transform:rotate(-24deg)}
+.giftbox.open .gbox-lid{transform:rotate(-24deg) translate(-12px,-13px)}
+.giftbox.open .gbow{transform:translateX(-50%) translateY(-24px) rotate(-14deg)}
+.glowburst{position:absolute;left:50%;top:34px;transform:translateX(-50%) scale(0);width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#FFE9A8 0%,rgba(255,217,107,0) 70%);transition:transform .8s var(--ease);z-index:1}
+.giftbox.open .glowburst{transform:translateX(-50%) scale(1.6)}
+.flyheart{position:absolute;left:50%;top:20px;font-size:22px;color:#E0528A;opacity:0;z-index:4}
+.giftbox.open .flyheart{animation:flyUp 1.6s var(--ease) forwards}
+.flyheart.h2{animation-delay:.15s !important;margin-left:-34px;color:#F2A93B}
+.flyheart.h3{animation-delay:.3s !important;margin-left:30px;color:#F78FB3}
+@keyframes flyUp{0%{opacity:0;transform:translateY(10px) scale(.5)}25%{opacity:1}100%{opacity:0;transform:translateY(-120px) scale(1.2) rotate(14deg)}}
+/* thư mở từng đoạn */
+.paper{background:linear-gradient(#FFFDF7,#FBF1DE);border-radius:10px;padding:26px 24px 28px;width:100%;max-width:400px;box-shadow:0 22px 44px rgba(150,80,60,.2);transform:rotate(-.5deg);text-align:left;cursor:pointer;margin-top:22px}
+.paper-text{font-family:'Dancing Script',cursive;font-size:22px;line-height:1.55;color:#5A3A28}
+.paper-text p{margin-bottom:13px;opacity:0;transform:translateY(8px);transition:all .6s var(--ease)}
+.paper-text p.on{opacity:1;transform:none}
+.paper-sign{text-align:right;font-size:24px}
+/* bánh + lửa */
+.cake-photo{position:relative;width:min(340px,88vw);border-radius:26px;overflow:hidden;box-shadow:0 18px 40px rgba(190,90,130,.26);margin:20px 0 6px;cursor:pointer;background:#FFF3E4}
+.cake-photo img{width:100%;display:block}
+.aflame{position:absolute;width:12px;height:20px;transform:translate(-50%,-100%) scale(0);transform-origin:50% 92%;background:radial-gradient(circle at 50% 82%,#FFF6C9 0 22%,#FFCA3A 45%,#FF7B00 78%,rgba(255,123,0,0) 100%);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;filter:drop-shadow(0 0 9px rgba(255,160,40,.95));transition:transform .35s var(--spring);z-index:3}
+.aflame.f1{left:45.4%;top:24.6%}.aflame.f2{left:50.2%;top:23.9%}.aflame.f3{left:54.7%;top:24.6%}
+.lit .aflame{transform:translate(-50%,-100%) scale(1);animation:flickA .3s ease-in-out infinite alternate}
+@keyframes flickA{from{transform:translate(-50%,-100%) scale(1) rotate(-3deg)}to{transform:translate(-50%,-100%) scale(1.09,1.17) rotate(3deg)}}
+.blowing .aflame{animation:none}
+.aflame.out{transform:translate(-50%,-100%) scale(0) !important;animation:none;transition:transform .18s}
+.cake-dim{position:absolute;inset:0;background:rgba(30,10,20,.45);opacity:0;transition:opacity 1s;z-index:2}
+.dim .cake-dim{opacity:1}
+.smoke{position:absolute;width:9px;height:9px;border-radius:50%;background:rgba(120,110,115,.55);filter:blur(2.5px);z-index:4}
+/* polaroid + chips */
+.polaroid{position:relative;background:#fff;padding:9px 9px 26px;box-shadow:0 10px 24px rgba(120,60,60,.2);transform:rotate(1.6deg);width:min(320px,84vw);margin-top:20px}
+.polaroid img{width:100%;display:block}
+.tape{position:absolute;top:-12px;left:50%;transform:translateX(-50%) rotate(-4deg);width:92px;height:24px;background:rgba(246,222,160,.78)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:22px 0 6px;max-width:400px}
+.chip{padding:11px 18px;border-radius:999px;border:1.5px solid #F0A8C6;background:#fff;cursor:pointer;font-family:'Playfair Display',serif;font-size:15.5px;font-weight:700;color:#A03A63}
+.chip.sel{background:var(--rose);border-color:var(--rose);color:#fff;box-shadow:0 8px 20px rgba(224,82,138,.4)}
+</style>
+</head>
+<body>
+<div id="fx"></div>
+
+<section class="step active" id="s1">
+  <p class="kicker">Có một hộp thư nhỏ</p>
+  <h1 class="title">Dành Riêng<br>Cho Chị</h1>
+  <p class="sub">Bên trong hộp này là một bí mật nhỏ xíu. Chị chạm vào nắp hộp để mở ra nhé.</p>
+  <div class="giftbox" id="giftbox">
+    <div class="glowburst"></div>
+    <span class="flyheart">♥</span><span class="flyheart h2">♥</span><span class="flyheart h3">♥</span>
+    <div class="gbow"><i></i><i></i></div>
+    <div class="gbox-lid"></div>
+    <div class="gbox-body"></div>
+  </div>
+  <p class="hint" id="boxHint">Chạm vào hộp để mở</p>
+  <button class="btn" id="btnLetter" style="margin-top:18px">Đọc lá thư bên trong</button>
+</section>
+
+<section class="step" id="s2">
+  <p class="kicker">Lá thư nhỏ</p>
+  <h2 class="title" style="font-size:34px">Viết tay, bằng cả tấm lòng</h2>
+  <div class="paper" id="paper">
+    <div class="paper-text">
+      <p>Chị nè, hôm nay là sinh nhật chị. Em ngồi viết mấy dòng này mà cứ cười một mình.</p>
+      <p>Cảm ơn chị vì những năm qua luôn là người đứng phía sau cả nhà — lặng lẽ mà vững chãi. Nhiều điều em chưa từng nói thành lời, nhưng em biết hết đấy.</p>
+      <p>Tuổi mới, em chỉ chúc chị thật khỏe, thật vui, và mỗi ngày đều có một lý do nhỏ để mỉm cười. Còn lại, cứ để em lo một phần cùng chị.</p>
+      <p class="paper-sign">— Em của chị</p>
+    </div>
+  </div>
+  <p class="hint" id="paperHint" style="margin-top:16px">Chạm vào thư để đọc tiếp</p>
+  <button class="btn" id="btnCake" style="margin-top:14px">Giờ thì thổi nến thôi</button>
+</section>
+
+<section class="step" id="s3">
+  <p class="kicker">Ước một điều nhé</p>
+  <h2 class="title" style="font-size:34px">Thổi Nến<br>Sinh Nhật</h2>
+  <div class="cake-photo" id="cakePhoto">
+    <img src="../assets/art/cake.webp" alt="Bánh sinh nhật">
+    <i class="aflame f1"></i><i class="aflame f2"></i><i class="aflame f3"></i>
+    <div class="cake-dim"></div>
+  </div>
+  <p class="hint"><b>Nhấn và giữ</b> vào chiếc bánh cho đến khi nến tắt</p>
+</section>
+
+<section class="step" id="s4">
+  <p class="kicker">Tấm ảnh này là của chị</p>
+  <h2 class="title" style="font-size:34px">Chúc Mừng Sinh Nhật</h2>
+  <div class="polaroid">
+    <img src="../assets/art/bouquet.webp" alt="Bó hoa tặng chị">
+    <span class="tape"></span>
+  </div>
+  <p class="sub" style="margin-top:18px">Chọn một điều ước cho tuổi mới nhé, em giữ giúp chị:</p>
+  <div class="chips" id="chips">
+    <button class="chip">Sức khỏe dồi dào</button>
+    <button class="chip">Hạnh phúc ngập tràn</button>
+    <button class="chip">Bình an mỗi ngày</button>
+    <button class="chip">May mắn mỉm cười</button>
+  </div>
+  <p class="sub" id="wishLine" style="min-height:26px"></p>
+  <button class="btn always" onclick="location.reload()">Xem lại từ đầu</button>
+</section>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const rand=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+document.addEventListener("contextmenu",e=>e.preventDefault());
+function go(id){document.querySelectorAll(".step").forEach(s=>s.classList.toggle("active",s.id===id));window.scrollTo(0,0);if(id==="s3")$("s3").classList.add("lit")}
+/* hoa rơi */
+const fx=$("fx"),PC=["#F7A8C4","#FFD9A8","#F49AC1","#FBC2D5"];
+function petal(){if(fx.children.length>16)return;const p=document.createElement("div");p.className="petal";const s=rand(9,16);p.style.cssText=`left:${rand(0,97)}%;width:${s}px;height:${s}px;background:${pick(PC)};animation-duration:${rand(7,11)}s`;fx.appendChild(p);setTimeout(()=>p.remove(),11500)}
+setInterval(petal,850);petal();
+/* hộp quà */
+let opened=false;
+$("giftbox").addEventListener("click",()=>{if(opened)return;opened=true;$("giftbox").classList.add("open");$("boxHint").style.display="none";setTimeout(()=>$("btnLetter").classList.add("show"),700)});
+$("btnLetter").addEventListener("click",()=>go("s2"));
+/* thư từng đoạn */
+const paras=[...document.querySelectorAll("#paper .paper-text p")];let pi=0;
+function nextPara(){if(pi<paras.length){paras[pi].classList.add("on");pi++;if(pi===paras.length){$("paperHint").style.display="none";$("btnCake").classList.add("show")}}}
+$("paper").addEventListener("click",nextPara);nextPara();
+$("btnCake").addEventListener("click",()=>go("s3"));
+/* thổi nến */
+const photo=$("cakePhoto");let blown=false,holding=false,holdP=0,raf=null;
+const flames=()=>photo.querySelectorAll(".aflame");
+function applyF(){flames().forEach(f=>{f.style.transform=`translate(-50%,-100%) scale(${1-.8*holdP}) skewX(${-16*holdP}deg)`;f.style.opacity=String(1-.3*holdP)})}
+function clearF(){flames().forEach(f=>{f.style.transform="";f.style.opacity=""})}
+function loop(){if(holding&&!blown)holdP=Math.min(1,holdP+1/70);else if(!holding&&!blown)holdP=Math.max(0,holdP-1/38);if(!blown){applyF();raf=requestAnimationFrame(loop)}if(holdP>=1&&!blown)blowOut()}
+function blowOut(){blown=true;holding=false;cancelAnimationFrame(raf);raf=null;flames().forEach((f,i)=>{f.classList.add("out");f.style.transform="";f.style.opacity="";const pr=photo.getBoundingClientRect(),fr=f.getBoundingClientRect();const sm=document.createElement("i");sm.className="smoke";sm.style.cssText=`left:${fr.left-pr.left+fr.width/2}px;top:${fr.top-pr.top}px`;photo.appendChild(sm);sm.animate([{transform:"translateY(0) scale(1)",opacity:.75},{transform:`translateY(-${rand(44,64)}px) translateX(${rand(-9,9)}px) scale(2.6)`,opacity:0}],{duration:rand(1300,1800),delay:i*130,easing:"ease-out"}).onfinish=()=>sm.remove()});photo.classList.add("dim");$("s3").classList.remove("lit");setTimeout(()=>go("s4"),1700)}
+photo.addEventListener("pointerdown",e=>{e.preventDefault();if(blown)return;holding=true;photo.classList.add("blowing");if(!raf)loop()});
+["pointerup","pointercancel","pointerleave"].forEach(ev=>window.addEventListener(ev,()=>{if(!holding)return;holding=false;photo.classList.remove("blowing");if(!blown)clearF()}));
+/* chips điều ước */
+document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{document.querySelectorAll(".chip").forEach(x=>x.classList.remove("sel"));c.classList.add("sel");$("wishLine").textContent="Đã cất kỹ điều ước “"+c.textContent+"” cho chị rồi."}));
+</script>
+</body>
+</html>

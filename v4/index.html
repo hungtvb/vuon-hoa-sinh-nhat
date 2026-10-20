@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bản 4 — Vườn Bướm</title>
+<link rel="stylesheet" href="../css/fonts.css?v=7">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+:root{--ease:cubic-bezier(.2,0,0,1);--spring:cubic-bezier(.34,1.45,.64,1);--ink:#6B4453;--deep:#7A344F;--soft:#9A6478;--rose:#E0528A}
+body{font-family:'Roboto Flex',sans-serif;background:linear-gradient(180deg,#E9F7EE 0%,#FFF3E4 45%,#FFE9F1 100%);color:var(--ink);overflow-x:hidden;user-select:none;-webkit-user-select:none}
+img{pointer-events:none}
+.step{display:none;min-height:100dvh;flex-direction:column;align-items:center;padding:40px 22px 34px;text-align:center}
+.step.active{display:flex}
+.btn{display:inline-flex;align-items:center;height:52px;padding:0 32px;border-radius:999px;border:none;cursor:pointer;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;background:linear-gradient(180deg,#F27BA7,#E0528A);box-shadow:0 10px 24px rgba(224,82,138,.35);transition:all .3s var(--ease);opacity:0;pointer-events:none;transform:translateY(10px)}
+.btn.show{opacity:1;pointer-events:auto;transform:none}
+.btn:active{transform:scale(.96)}
+.kicker{font-family:'Dancing Script',cursive;font-size:32px;color:#D96C97}
+.title{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(36px,10.5vw,48px);line-height:1.12;color:var(--deep);margin:10px 0 8px}
+.sub{font-size:16px;line-height:25px;color:var(--soft);max-width:35ch}
+.hint{font-size:14.5px;color:var(--soft);animation:hp 1.8s ease-in-out infinite}
+@keyframes hp{0%,100%{opacity:.55}50%{opacity:1}}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.petal{position:absolute;top:-24px;border-radius:62% 38% 60% 40%/55% 45% 55% 45%;opacity:.7;animation:pfall linear forwards}
+@keyframes pfall{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(14px,28dvh) rotate(120deg)}50%{transform:translate(-10px,56dvh) rotate(220deg)}75%{transform:translate(12px,84dvh) rotate(310deg)}100%{transform:translate(-6px,112dvh) rotate(400deg)}}
+/* vườn hoa */
+.garden{position:relative;width:100%;max-width:400px;height:380px;margin-top:10px}
+.bush{position:absolute;width:110px;height:96px;cursor:pointer}
+.bush .leafbase{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:96px;height:44px;border-radius:50%;background:radial-gradient(ellipse at 50% 60%,#9CCB86,#6FA85C);box-shadow:inset 0 -8px 14px rgba(0,60,0,.15)}
+.bf{position:absolute;width:46px;height:46px;transition:transform .3s}
+.bp{position:absolute;left:50%;top:50%;width:15px;height:22px;margin:-22px 0 0 -7.5px;border-radius:50%;transform-origin:50% 100%;transform:rotate(var(--r)) scale(.52);transition:transform .55s var(--spring);transition-delay:var(--d)}
+.bf.open .bp{transform:rotate(var(--r)) scale(1)}
+.bc{position:absolute;left:50%;top:50%;width:13px;height:13px;margin:-6.5px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#FFE9A8,#F2A93B);transform:scale(.55);transition:transform .5s var(--spring);transition-delay:.15s;z-index:2}
+.bf.open .bc{transform:scale(1)}
+.found-heart{position:absolute;left:50%;top:6px;transform:translateX(-50%) scale(0);font-size:24px;color:#E0528A;transition:transform .5s var(--spring);z-index:5}
+.bush.found .found-heart{transform:translateX(-50%) scale(1)}
+.counter{font-family:'Playfair Display',serif;font-weight:800;font-size:19px;color:var(--deep);margin-top:6px}
+.butterfly{position:absolute;width:36px;height:28px;z-index:8;pointer-events:none}
+.butterfly .bw{position:absolute;top:1px;width:17px;height:25px;border-radius:62% 38% 60% 40%;background:linear-gradient(150deg,#C3A6E8,#8E6FD8);opacity:.92}
+.butterfly .bw.l{left:0;transform-origin:100% 50%;animation:flapL .3s ease-in-out infinite alternate}
+.butterfly .bw.r{right:0;transform-origin:0 50%;animation:flapR .3s ease-in-out infinite alternate}
+.butterfly .bb{position:absolute;left:50%;top:3px;transform:translateX(-50%);width:4px;height:22px;border-radius:3px;background:#5A4632}
+@keyframes flapL{from{transform:rotateY(12deg)}to{transform:rotateY(64deg)}}
+@keyframes flapR{from{transform:rotateY(-12deg)}to{transform:rotateY(-64deg)}}
+/* bánh + thiệp dùng pattern chung */
+.cake-photo{position:relative;width:min(340px,88vw);border-radius:26px;overflow:hidden;box-shadow:0 18px 40px rgba(190,90,130,.26);margin:20px 0 6px;cursor:pointer}
+.cake-photo img{width:100%;display:block}
+.aflame{position:absolute;width:12px;height:20px;transform:translate(-50%,-100%) scale(0);transform-origin:50% 92%;background:radial-gradient(circle at 50% 82%,#FFF6C9 0 22%,#FFCA3A 45%,#FF7B00 78%,rgba(255,123,0,0) 100%);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;filter:drop-shadow(0 0 9px rgba(255,160,40,.95));transition:transform .35s var(--spring);z-index:3}
+.aflame.f1{left:45.4%;top:24.6%}.aflame.f2{left:50.2%;top:23.9%}.aflame.f3{left:54.7%;top:24.6%}
+.lit .aflame{transform:translate(-50%,-100%) scale(1);animation:flickA .3s ease-in-out infinite alternate}
+@keyframes flickA{from{transform:translate(-50%,-100%) scale(1) rotate(-3deg)}to{transform:translate(-50%,-100%) scale(1.09,1.17) rotate(3deg)}}
+.blowing .aflame{animation:none}
+.aflame.out{transform:translate(-50%,-100%) scale(0) !important;animation:none;transition:transform .18s}
+.cake-dim{position:absolute;inset:0;background:rgba(30,10,20,.45);opacity:0;transition:opacity 1s;z-index:2}
+.dim .cake-dim{opacity:1}
+.smoke{position:absolute;width:9px;height:9px;border-radius:50%;background:rgba(120,110,115,.55);filter:blur(2.5px);z-index:4}
+.paper{background:linear-gradient(#FFFDF7,#FBF1DE);border-radius:10px;padding:24px;width:100%;max-width:400px;box-shadow:0 22px 44px rgba(150,80,60,.2);transform:rotate(-.5deg);text-align:left;margin-top:20px}
+.polaroid{position:relative;background:#fff;padding:8px 8px 24px;box-shadow:0 6px 18px rgba(90,50,20,.22);transform:rotate(1.6deg);margin-bottom:16px}
+.polaroid img{width:100%;display:block}
+.tape{position:absolute;top:-12px;left:50%;transform:translateX(-50%) rotate(-4deg);width:92px;height:24px;background:rgba(246,222,160,.78)}
+.paper-text{font-family:'Dancing Script',cursive;font-size:21.5px;line-height:1.55;color:#5A3A28}
+.paper-text p{margin-bottom:12px}
+.paper-sign{text-align:right;font-size:24px}
+</style>
+</head>
+<body>
+<div id="fx"></div>
+
+<section class="step active" id="s1">
+  <p class="kicker">Một khu vườn nhỏ</p>
+  <h1 class="title">Vườn Bướm<br>Sinh Nhật</h1>
+  <p class="sub">Trong vườn có <b>5 trái tim</b> đang trốn sau những bụi hoa. Chạm vào từng bụi cho hoa nở và tìm đủ 5 trái tim nhé.</p>
+  <div class="garden" id="garden"></div>
+  <p class="counter" id="counter">Đã tìm thấy 0 / 5 trái tim</p>
+  <button class="btn" id="btnCake" style="margin-top:14px">Đủ tim rồi, đi thổi nến</button>
+</section>
+
+<section class="step" id="s2">
+  <p class="kicker">Tim đã đầy, ước thôi</p>
+  <h2 class="title" style="font-size:34px">Thổi Nến<br>Mừng Tuổi Mới</h2>
+  <div class="cake-photo" id="cakePhoto">
+    <img src="../assets/art/cake.webp" alt="Bánh sinh nhật">
+    <i class="aflame f1"></i><i class="aflame f2"></i><i class="aflame f3"></i>
+    <div class="cake-dim"></div>
+  </div>
+  <p class="hint"><b>Nhấn và giữ</b> vào chiếc bánh cho đến khi nến tắt</p>
+</section>
+
+<section class="step" id="s3">
+  <p class="kicker">Từ khu vườn nhỏ này</p>
+  <h2 class="title" style="font-size:34px">Chúc Mừng Sinh Nhật, Chị</h2>
+  <div class="paper">
+    <div class="polaroid">
+      <img src="../assets/art/bouquet.webp" alt="Bó hoa tặng chị">
+      <span class="tape"></span>
+    </div>
+    <div class="paper-text">
+      <p>5 trái tim trong vườn là 5 điều em chúc chị: khỏe, vui, an, may và được thương. Tuổi mới, mong vườn đời của chị nở hoa quanh năm.</p>
+      <p class="paper-sign">— Thương chị nhiều</p>
+    </div>
+  </div>
+  <button class="btn show" style="margin-top:22px" onclick="location.reload()">Vào vườn lại</button>
+</section>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const rand=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+document.addEventListener("contextmenu",e=>e.preventDefault());
+function go(id){document.querySelectorAll(".step").forEach(s=>s.classList.toggle("active",s.id===id));window.scrollTo(0,0);if(id==="s2")$("s2").classList.add("lit")}
+const fx=$("fx"),PC=["#F7A8C4","#FFD9A8","#BEE3C0","#FBC2D5"];
+function petal(){if(fx.querySelectorAll(".petal").length>14)return;const p=document.createElement("div");p.className="petal";const s=rand(8,14);p.style.cssText=`left:${rand(0,97)}%;width:${s}px;height:${s}px;background:${pick(PC)};animation-duration:${rand(7,11)}s`;fx.appendChild(p);setTimeout(()=>p.remove(),11500)}
+setInterval(petal,950);petal();
+/* vườn */
+const PETAL_TONES=[["#F78FB3","#F5A8C9"],["#FFB59E","#FFC7AE"],["#C3A6E8","#D3BDF0"],["#FFD66B","#FFE08F"],["#F49AC1","#F8B4D4"]];
+const POS=[{l:"2%",t:"6%"},{l:"36%",t:"0%"},{l:"68%",t:"8%"},{l:"10%",t:"42%"},{l:"42%",t:"38%"},{l:"72%",t:"44%"},{l:"28%",t:"72%"},{l:"60%",t:"74%"}];
+const withHeart=new Set();while(withHeart.size<5)withHeart.add(Math.floor(rand(0,8)));
+let found=0;
+const garden=$("garden");
+function makeFlower(tone,delay){
+  const f=document.createElement("div");f.className="bf";
+  for(let i=0;i<5;i++){const p=document.createElement("i");p.className="bp";p.style.cssText=`--r:${i*72}deg;--d:${delay+i*40}ms;background:linear-gradient(180deg,${tone[0]},${tone[1]})`;f.appendChild(p)}
+  const c=document.createElement("i");c.className="bc";f.appendChild(c);return f;
+}
+POS.forEach((pos,idx)=>{
+  const bush=document.createElement("div");bush.className="bush";
+  bush.style.cssText=`left:${pos.l};top:${pos.t}`;
+  bush.innerHTML='<div class="leafbase"></div><span class="found-heart">♥</span>';
+  const spots=[{l:6,t:14},{l:38,t:2},{l:62,t:18}];
+  spots.forEach((sp,j)=>{const f=makeFlower(PETAL_TONES[(idx+j)%5],j*70);f.style.cssText=`position:absolute;left:${sp.l}px;top:${sp.t}px;transform:scale(${rand(.82,1.05)})`;bush.appendChild(f)});
+  bush.addEventListener("pointerdown",()=>{
+    bush.querySelectorAll(".bf").forEach(f=>f.classList.add("open"));
+    releaseButterfly(bush);
+    if(withHeart.has(idx)&&!bush.classList.contains("found")){
+      bush.classList.add("found");found++;
+      $("counter").textContent=`Đã tìm thấy ${found} / 5 trái tim`;
+      if(found>=5)$("btnCake").classList.add("show");
+    }
+  });
+  garden.appendChild(bush);
+});
+function releaseButterfly(fromEl){
+  const gr=garden.getBoundingClientRect(),br=fromEl.getBoundingClientRect();
+  const b=document.createElement("div");b.className="butterfly";
+  b.innerHTML='<i class="bw l"></i><i class="bb"></i><i class="bw r"></i>';
+  const x0=br.left-gr.left+40,y0=br.top-gr.top;
+  b.style.cssText=`left:${x0}px;top:${y0}px`;
+  garden.appendChild(b);
+  const dx=rand(-70,110),dy=rand(-64,-26);
+  b.animate([
+    {transform:"translate(0,0) rotate(0deg)"},
+    {transform:`translate(${dx*.5}px,${dy-30}px) rotate(${rand(-16,16)}deg)`,offset:.45},
+    {transform:`translate(${dx}px,${dy}px) rotate(${rand(-10,10)}deg)`}
+  ],{duration:2600,easing:"ease-out",fill:"forwards"});
+  setTimeout(()=>{b.style.left=(x0+dx)+"px";b.style.top=(y0+dy)+"px";b.getAnimations().forEach(a=>a.cancel())},2650);
+  setTimeout(()=>b.remove(),14000);
+}
+$("btnCake").addEventListener("click",()=>go("s2"));
+/* thổi nến */
+const photo=$("cakePhoto");let blown=false,holding=false,holdP=0,raf=null;
+const flames=()=>photo.querySelectorAll(".aflame");
+function applyF(){flames().forEach(f=>{f.style.transform=`translate(-50%,-100%) scale(${1-.8*holdP}) skewX(${-16*holdP}deg)`;f.style.opacity=String(1-.3*holdP)})}
+function clearF(){flames().forEach(f=>{f.style.transform="";f.style.opacity=""})}
+function loop(){if(holding&&!blown)holdP=Math.min(1,holdP+1/70);else if(!holding&&!blown)holdP=Math.max(0,holdP-1/38);if(!blown){applyF();raf=requestAnimationFrame(loop)}if(holdP>=1&&!blown)blowOut()}
+function blowOut(){blown=true;holding=false;cancelAnimationFrame(raf);raf=null;flames().forEach((f,i)=>{f.classList.add("out");f.style.transform="";f.style.opacity="";const pr=photo.getBoundingClientRect(),fr=f.getBoundingClientRect();const sm=document.createElement("i");sm.className="smoke";sm.style.cssText=`left:${fr.left-pr.left+fr.width/2}px;top:${fr.top-pr.top}px`;photo.appendChild(sm);sm.animate([{transform:"translateY(0) scale(1)",opacity:.75},{transform:`translateY(-${rand(44,64)}px) translateX(${rand(-9,9)}px) scale(2.6)`,opacity:0}],{duration:rand(1300,1800),delay:i*130,easing:"ease-out"}).onfinish=()=>sm.remove()});photo.classList.add("dim");$("s2").classList.remove("lit");setTimeout(()=>go("s3"),1700)}
+photo.addEventListener("pointerdown",e=>{e.preventDefault();if(blown)return;holding=true;photo.classList.add("blowing");if(!raf)loop()});
+["pointerup","pointercancel","pointerleave"].forEach(ev=>window.addEventListener(ev,()=>{if(!holding)return;holding=false;photo.classList.remove("blowing");if(!blown)clearF()}));
+</script>
+</body>
+</html>

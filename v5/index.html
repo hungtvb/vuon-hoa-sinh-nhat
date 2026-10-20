@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bản 5 — Bóng Bay Mang Thư</title>
+<link rel="stylesheet" href="../css/fonts.css?v=7">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+:root{--ease:cubic-bezier(.2,0,0,1);--spring:cubic-bezier(.34,1.45,.64,1);--ink:#6B4453;--deep:#7A344F;--soft:#9A6478;--rose:#E0528A}
+body{font-family:'Roboto Flex',sans-serif;background:linear-gradient(180deg,#DFF2FB 0%,#FFE9F1 55%,#FFF8EE 100%);color:var(--ink);overflow-x:hidden;user-select:none;-webkit-user-select:none}
+img{pointer-events:none}
+.step{display:none;min-height:100dvh;flex-direction:column;align-items:center;padding:40px 22px 34px;text-align:center}
+.step.active{display:flex}
+.btn{display:inline-flex;align-items:center;height:52px;padding:0 32px;border-radius:999px;border:none;cursor:pointer;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;background:linear-gradient(180deg,#F27BA7,#E0528A);box-shadow:0 10px 24px rgba(224,82,138,.35);transition:all .3s var(--ease);opacity:0;pointer-events:none;transform:translateY(10px)}
+.btn.show{opacity:1;pointer-events:auto;transform:none}
+.btn:active{transform:scale(.96)}
+.kicker{font-family:'Dancing Script',cursive;font-size:32px;color:#D96C97}
+.title{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(36px,10.5vw,48px);line-height:1.12;color:var(--deep);margin:10px 0 8px}
+.sub{font-size:16px;line-height:25px;color:var(--soft);max-width:35ch}
+.hint{font-size:14.5px;color:var(--soft);animation:hp 1.8s ease-in-out infinite}
+@keyframes hp{0%,100%{opacity:.55}50%{opacity:1}}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.cloud{position:absolute;background:#fff;border-radius:999px;opacity:.85;filter:blur(.4px)}
+.cloud::before,.cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.cloud::before{width:55%;height:170%;left:16%;top:-70%}
+.cloud::after{width:38%;height:120%;right:14%;top:-45%}
+/* bóng bay treo */
+.sky{position:relative;width:100%;max-width:400px;height:410px;margin-top:6px}
+#s1{position:relative;overflow:hidden}
+#s1>*{position:relative;z-index:1}
+#s1>.cloud{position:absolute;z-index:0}
+.bbal{position:absolute;width:62px;height:76px;border-radius:50%/55% 55% 45% 45%;cursor:pointer;box-shadow:inset -8px -10px 16px rgba(0,0,0,.08);animation:sway 3.4s ease-in-out infinite;z-index:2}
+.bbal::after{content:"";position:absolute;left:50%;top:calc(100% + 4px);width:2px;height:52px;background:rgba(107,68,83,.3)}
+.bbal .tag{position:absolute;left:50%;bottom:-64px;transform:translateX(-50%) rotate(-3deg);background:#FFFDF7;padding:3px 8px;border-radius:4px;box-shadow:0 3px 8px rgba(120,70,60,.25);font-family:'Dancing Script',cursive;font-size:15px;color:#8A5A3B;white-space:nowrap}
+@keyframes sway{0%,100%{transform:rotate(-2.4deg) translateY(0)}50%{transform:rotate(2.4deg) translateY(-9px)}}
+.bbal.popped{animation:popB .25s ease-out forwards}
+@keyframes popB{to{transform:scale(1.6);opacity:0}}
+/* khung thư ghép */
+.letter{background:linear-gradient(#FFFDF7,#FBF1DE);border-radius:10px;padding:22px 22px 24px;width:100%;max-width:400px;box-shadow:0 20px 40px rgba(150,80,60,.2);transform:rotate(-.5deg);text-align:left;margin-top:16px;min-height:210px}
+.letter-text{font-family:'Dancing Script',cursive;font-size:21.5px;line-height:1.55;color:#5A3A28}
+.letter-text p{margin-bottom:9px;opacity:0;transform:translateY(8px);transition:all .6s var(--ease)}
+.letter-text p.on{opacity:1;transform:none}
+.progress{font-family:'Playfair Display',serif;font-weight:800;color:var(--deep);margin-top:12px}
+/* bánh + thiệp */
+.cake-photo{position:relative;width:min(340px,88vw);border-radius:26px;overflow:hidden;box-shadow:0 18px 40px rgba(190,90,130,.26);margin:20px 0 6px;cursor:pointer}
+.cake-photo img{width:100%;display:block}
+.aflame{position:absolute;width:12px;height:20px;transform:translate(-50%,-100%) scale(0);transform-origin:50% 92%;background:radial-gradient(circle at 50% 82%,#FFF6C9 0 22%,#FFCA3A 45%,#FF7B00 78%,rgba(255,123,0,0) 100%);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;filter:drop-shadow(0 0 9px rgba(255,160,40,.95));transition:transform .35s var(--spring);z-index:3}
+.aflame.f1{left:45.4%;top:24.6%}.aflame.f2{left:50.2%;top:23.9%}.aflame.f3{left:54.7%;top:24.6%}
+.lit .aflame{transform:translate(-50%,-100%) scale(1);animation:flickA .3s ease-in-out infinite alternate}
+@keyframes flickA{from{transform:translate(-50%,-100%) scale(1) rotate(-3deg)}to{transform:translate(-50%,-100%) scale(1.09,1.17) rotate(3deg)}}
+.blowing .aflame{animation:none}
+.aflame.out{transform:translate(-50%,-100%) scale(0) !important;animation:none;transition:transform .18s}
+.cake-dim{position:absolute;inset:0;background:rgba(30,10,20,.45);opacity:0;transition:opacity 1s;z-index:2}
+.dim .cake-dim{opacity:1}
+.smoke{position:absolute;width:9px;height:9px;border-radius:50%;background:rgba(120,110,115,.55);filter:blur(2.5px);z-index:4}
+.paper{background:linear-gradient(#FFFDF7,#FBF1DE);border-radius:10px;padding:24px;width:100%;max-width:400px;box-shadow:0 22px 44px rgba(150,80,60,.2);transform:rotate(-.5deg);text-align:left;margin-top:20px}
+.polaroid{position:relative;background:#fff;padding:8px 8px 24px;box-shadow:0 6px 18px rgba(90,50,20,.22);transform:rotate(1.6deg);margin-bottom:16px}
+.polaroid img{width:100%;display:block}
+.tape{position:absolute;top:-12px;left:50%;transform:translateX(-50%) rotate(-4deg);width:92px;height:24px;background:rgba(246,222,160,.78)}
+.paper-text{font-family:'Dancing Script',cursive;font-size:21.5px;line-height:1.55;color:#5A3A28}
+.paper-text p{margin-bottom:12px}
+.paper-sign{text-align:right;font-size:24px}
+</style>
+</head>
+<body>
+<div id="fx"></div>
+
+<section class="step active" id="s1">
+  <p class="kicker">Thư gửi bằng bóng bay</p>
+  <h1 class="title">Sáu Quả Bóng,<br>Sáu Mẩu Thư</h1>
+  <p class="sub">Mỗi quả bóng mang một mẩu thư của em. Chạm vỡ hết 6 quả để đọc trọn lời chúc sinh nhật nhé.</p>
+  <div class="sky" id="sky"></div>
+  <div class="letter">
+    <p id="letterEmpty" style="font-family:'Dancing Script',cursive;font-size:20px;color:#B98A9A">Bức thư đang chờ được ghép từ những quả bóng…</p>
+    <div class="letter-text" id="letterText">
+      <p data-i="0">Chị ơi, chúc mừng sinh nhật chị.</p>
+      <p data-i="1">Năm nay em không gói quà to, chỉ gói mấy lời này vào bóng bay thả lên trời cho chị bắt.</p>
+      <p data-i="2">Chúc chị khỏe như cây xanh sau mưa,</p>
+      <p data-i="3">vui như nắng sớm đầu ngày,</p>
+      <p data-i="4">và bình an đi qua hết bốn mùa.</p>
+      <p data-i="5">Tuổi mới — cứ rực rỡ theo cách của chị nhé.</p>
+    </div>
+  </div>
+  <p class="progress" id="progress">Đã mở 0 / 6 mẩu thư</p>
+  <button class="btn" id="btnCake" style="margin-top:12px">Đọc xong rồi, thổi nến thôi</button>
+</section>
+
+<section class="step" id="s2">
+  <p class="kicker">Ước điều vừa đọc nhé</p>
+  <h2 class="title" style="font-size:34px">Thổi Nến<br>Sinh Nhật</h2>
+  <div class="cake-photo" id="cakePhoto">
+    <img src="../assets/art/cake.webp" alt="Bánh sinh nhật">
+    <i class="aflame f1"></i><i class="aflame f2"></i><i class="aflame f3"></i>
+    <div class="cake-dim"></div>
+  </div>
+  <p class="hint"><b>Nhấn và giữ</b> vào chiếc bánh cho đến khi nến tắt</p>
+</section>
+
+<section class="step" id="s3">
+  <p class="kicker">Niêm phong bằng một phong bì</p>
+  <h2 class="title" style="font-size:34px">Chúc Mừng Sinh Nhật, Chị</h2>
+  <div class="paper">
+    <div class="polaroid">
+      <img src="../assets/art/envelope.webp" alt="Phong bì hoa">
+      <span class="tape"></span>
+    </div>
+    <div class="paper-text">
+      <p>Sáu mẩu thư khi nãy ghép lại thành một điều duy nhất: mong chị luôn được thương như cách chị thương cả nhà.</p>
+      <p class="paper-sign">— Thương chị nhiều</p>
+    </div>
+  </div>
+  <button class="btn show" style="margin-top:22px;opacity:1;pointer-events:auto;transform:none" onclick="location.reload()">Thả bóng lại từ đầu</button>
+</section>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const rand=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+document.addEventListener("contextmenu",e=>e.preventDefault());
+function go(id){document.querySelectorAll(".step").forEach(s=>s.classList.toggle("active",s.id===id));window.scrollTo(0,0);if(id==="s2")$("s2").classList.add("lit")}
+/* mây trang trí (nằm dưới nội dung) */
+[["4%","2%",92],["66%","1%",120]].forEach(c=>{
+  const cl=document.createElement("div");cl.className="cloud";
+  cl.style.cssText=`left:${c[0]};top:${c[1]};width:${c[2]}px;height:${Math.round(c[2]*.32)}px`;
+  $("s1").prepend(cl);
+});
+/* bóng bay mang thư */
+const COLORS=["#F78FB3","#FFB59E","#FFD66B","#C3A6E8","#9AD6C2","#9CC3E5"];
+const POS=[{l:"2%",t:"4%"},{l:"34%",t:"0%"},{l:"66%",t:"6%"},{l:"8%",t:"48%"},{l:"40%",t:"44%"},{l:"70%",t:"50%"}];
+const sky=$("sky");let opened=0;
+const order=[2,0,4,1,5,3]; /* thứ tự mẩu thư gắn với từng quả bóng (xáo nhẹ) */
+POS.forEach((pos,i)=>{
+  const b=document.createElement("div");b.className="bbal";
+  b.style.cssText=`left:${pos.l};top:${pos.t};background:${COLORS[i]};animation-delay:${i*.35}s`;
+  b.innerHTML='<span class="tag">mẩu thư '+(order[i]+1)+'</span>';
+  b.addEventListener("pointerdown",()=>{
+    if(b.classList.contains("popped"))return;
+    b.classList.add("popped");
+    const line=document.querySelector(`#letterText p[data-i="${order[i]}"]`);
+    if(line)line.classList.add("on"); $("letterEmpty").style.display="none";
+    opened++;
+    $("progress").textContent=`Đã mở ${opened} / 6 mẩu thư`;
+    if(opened>=6)$("btnCake").classList.add("show");
+  });
+  sky.appendChild(b);
+});
+$("btnCake").addEventListener("click",()=>go("s2"));
+/* thổi nến */
+const photo=$("cakePhoto");let blown=false,holding=false,holdP=0,raf=null;
+const flames=()=>photo.querySelectorAll(".aflame");
+function applyF(){flames().forEach(f=>{f.style.transform=`translate(-50%,-100%) scale(${1-.8*holdP}) skewX(${-16*holdP}deg)`;f.style.opacity=String(1-.3*holdP)})}
+function clearF(){flames().forEach(f=>{f.style.transform="";f.style.opacity=""})}
+function loop(){if(holding&&!blown)holdP=Math.min(1,holdP+1/70);else if(!holding&&!blown)holdP=Math.max(0,holdP-1/38);if(!blown){applyF();raf=requestAnimationFrame(loop)}if(holdP>=1&&!blown)blowOut()}
+function blowOut(){blown=true;holding=false;cancelAnimationFrame(raf);raf=null;flames().forEach((f,i)=>{f.classList.add("out");f.style.transform="";f.style.opacity="";const pr=photo.getBoundingClientRect(),fr=f.getBoundingClientRect();const sm=document.createElement("i");sm.className="smoke";sm.style.cssText=`left:${fr.left-pr.left+fr.width/2}px;top:${fr.top-pr.top}px`;photo.appendChild(sm);sm.animate([{transform:"translateY(0) scale(1)",opacity:.75},{transform:`translateY(-${rand(44,64)}px) translateX(${rand(-9,9)}px) scale(2.6)`,opacity:0}],{duration:rand(1300,1800),delay:i*130,easing:"ease-out"}).onfinish=()=>sm.remove()});photo.classList.add("dim");$("s2").classList.remove("lit");setTimeout(()=>go("s3"),1700)}
+photo.addEventListener("pointerdown",e=>{e.preventDefault();if(blown)return;holding=true;photo.classList.add("blowing");if(!raf)loop()});
+["pointerup","pointercancel","pointerleave"].forEach(ev=>window.addEventListener(ev,()=>{if(!holding)return;holding=false;photo.classList.remove("blowing");if(!blown)clearF()}));
+</script>
+</body>
+</html>

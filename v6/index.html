@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bản 6 — Tự Làm Bánh</title>
+<link rel="stylesheet" href="../css/fonts.css?v=7">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+:root{--ease:cubic-bezier(.2,0,0,1);--spring:cubic-bezier(.34,1.45,.64,1);--ink:#6B4453;--deep:#7A344F;--soft:#9A6478;--rose:#E0528A}
+body{font-family:'Roboto Flex',sans-serif;background:linear-gradient(180deg,#FFE9F1,#FFF3E4 55%,#FFF8EE);color:var(--ink);overflow-x:hidden;user-select:none;-webkit-user-select:none}
+img{pointer-events:none}
+.step{display:none;min-height:100dvh;flex-direction:column;align-items:center;padding:40px 22px 34px;text-align:center}
+.step.active{display:flex}
+.btn{display:inline-flex;align-items:center;height:52px;padding:0 32px;border-radius:999px;border:none;cursor:pointer;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;background:linear-gradient(180deg,#F27BA7,#E0528A);box-shadow:0 10px 24px rgba(224,82,138,.35);transition:all .3s var(--ease);opacity:0;pointer-events:none;transform:translateY(10px)}
+.btn.show{opacity:1;pointer-events:auto;transform:none}
+.btn:active{transform:scale(.96)}
+.kicker{font-family:'Dancing Script',cursive;font-size:32px;color:#D96C97}
+.title{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(36px,10.5vw,48px);line-height:1.12;color:var(--deep);margin:10px 0 8px}
+.sub{font-size:16px;line-height:25px;color:var(--soft);max-width:35ch}
+.hint{font-size:14.5px;color:var(--soft);animation:hp 1.8s ease-in-out infinite}
+@keyframes hp{0%,100%{opacity:.55}50%{opacity:1}}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.petal{position:absolute;top:-24px;border-radius:62% 38% 60% 40%/55% 45% 55% 45%;opacity:.75;animation:pfall linear forwards}
+@keyframes pfall{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(14px,28dvh) rotate(120deg)}50%{transform:translate(-10px,56dvh) rotate(220deg)}75%{transform:translate(12px,84dvh) rotate(310deg)}100%{transform:translate(-6px,112dvh) rotate(400deg)}}
+/* bánh tự dựng */
+.plate{width:280px;height:20px;margin:0 auto;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#FFF,#F3D9C8);box-shadow:0 10px 20px rgba(150,90,60,.18)}
+.cakebuild{position:relative;width:280px;margin:6px auto 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:230px}
+.tier{position:relative;border-radius:12px 12px 8px 8px;box-shadow:inset 0 -10px 16px rgba(120,50,70,.13);transition:all .5s var(--ease)}
+.tier .icing{position:absolute;left:0;right:0;top:0;height:17px;border-radius:12px 12px 10px 10px;background:rgba(255,255,255,.75)}
+.tier .icing::after{content:"";position:absolute;left:6%;right:6%;bottom:-7px;height:9px;background:radial-gradient(circle at 8px -2px,rgba(255,255,255,.75) 7px,transparent 8px) repeat-x;background-size:26px 9px}
+.t1{width:236px;height:66px}.t2{width:184px;height:58px}.t3{width:132px;height:50px}
+.f-pink .tier{background:linear-gradient(180deg,#FBC2D5,#F78FB3)}
+.f-cream .tier{background:linear-gradient(180deg,#FFF0D6,#F5D9AE)}
+.f-choco .tier{background:linear-gradient(180deg,#D9A066,#B97A45)}
+.topper{position:relative;height:38px;display:flex;align-items:flex-end;justify-content:center;gap:10px}
+.berry{width:22px;height:22px;border-radius:48% 52% 55% 45%;background:radial-gradient(circle at 35% 30%,#FF8FA5,#D93650);position:relative}
+.berry::before{content:"";position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:12px;height:8px;border-radius:50%;background:#6FA85C}
+.mini-star{font-size:34px;color:#F2A93B;text-shadow:0 3px 10px rgba(242,169,59,.5);line-height:1}
+.mini-fl{position:relative;width:30px;height:30px}
+.mini-fl i{position:absolute;left:50%;top:50%;width:9px;height:14px;margin:-14px 0 0 -4.5px;border-radius:50%;background:#F78FB3;transform-origin:50% 100%}
+.mini-fl b{position:absolute;left:50%;top:50%;width:9px;height:9px;margin:-4.5px;border-radius:50%;background:#F2A93B;z-index:2}
+/* bước chọn */
+.stepbox{width:100%;max-width:400px;margin-top:20px}
+.stepbox h3{font-family:'Playfair Display',serif;font-size:19px;color:var(--deep);margin-bottom:10px}
+.choices{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.choice{padding:11px 18px;border-radius:999px;border:1.5px solid #F0A8C6;background:#fff;cursor:pointer;font-family:'Playfair Display',serif;font-size:15.5px;font-weight:700;color:#A03A63;transition:all .2s}
+.choice.sel{background:var(--rose);border-color:var(--rose);color:#fff;box-shadow:0 8px 20px rgba(224,82,138,.4)}
+.dots{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.dots i{width:9px;height:9px;border-radius:50%;background:#F0C4D6}
+.dots i.on{background:var(--rose)}
+/* nến trên bánh CSS */
+.candles{display:flex;gap:26px;justify-content:center;position:relative;z-index:3;margin-bottom:-4px}
+.candle{position:relative;width:11px;height:44px;border-radius:4px;background:repeating-linear-gradient(45deg,#fff 0 6px,#F8B4D4 6px 12px)}
+.flame{position:absolute;left:50%;top:-21px;width:13px;height:21px;transform:translateX(-50%) scale(1);transform-origin:50% 92%;background:radial-gradient(circle at 50% 82%,#FFF6C9 0 22%,#FFCA3A 45%,#FF7B00 78%,rgba(255,123,0,0) 100%);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;filter:drop-shadow(0 0 9px rgba(255,160,40,.95));animation:flickB .3s ease-in-out infinite alternate;transition:transform .2s}
+@keyframes flickB{from{transform:translateX(-50%) scale(1) rotate(-3deg)}to{transform:translateX(-50%) scale(1.09,1.17) rotate(3deg)}}
+.blowing .flame{animation:none}
+.flame.out{transform:translateX(-50%) scale(0) !important;animation:none}
+.smoke{position:absolute;left:50%;top:-24px;width:9px;height:9px;border-radius:50%;background:rgba(120,110,115,.55);filter:blur(2.5px)}
+.cakezone{cursor:pointer;padding-top:8px}
+/* thiệp */
+.paper{background:linear-gradient(#FFFDF7,#FBF1DE);border-radius:10px;padding:24px;width:100%;max-width:400px;box-shadow:0 22px 44px rgba(150,80,60,.2);transform:rotate(-.5deg);text-align:left;margin-top:20px}
+.polaroid{position:relative;background:#fff;padding:8px 8px 24px;box-shadow:0 6px 18px rgba(90,50,20,.22);transform:rotate(1.6deg);margin-bottom:16px}
+.polaroid img{width:100%;display:block}
+.tape{position:absolute;top:-12px;left:50%;transform:translateX(-50%) rotate(-4deg);width:92px;height:24px;background:rgba(246,222,160,.78)}
+.paper-text{font-family:'Dancing Script',cursive;font-size:21.5px;line-height:1.55;color:#5A3A28}
+.paper-text p{margin-bottom:12px}
+.paper-sign{text-align:right;font-size:24px}
+</style>
+</head>
+<body>
+<div id="fx"></div>
+
+<section class="step active" id="s1">
+  <p class="kicker">Tiệm bánh mở cửa</p>
+  <h1 class="title">Tự Tay Làm Bánh<br>Cho Chị</h1>
+  <p class="sub">Hôm nay chị là đầu bếp chính: chọn cốt bánh, màu kem và đồ trang trí theo ý chị nhé.</p>
+  <div class="cakebuild f-pink" id="preview">
+    <div class="topper" id="topperPrev"></div>
+    <div class="tier t3" data-tier="3"><div class="icing"></div></div>
+    <div class="tier t2"><div class="icing"></div></div>
+    <div class="tier t1"><div class="icing"></div></div>
+  </div>
+  <div class="plate"></div>
+  <div class="stepbox" id="stepBox"></div>
+  <div class="dots" id="dots"><i class="on"></i><i></i><i></i></div>
+  <button class="btn" id="btnLight" style="margin-top:18px">Bánh xong rồi, thắp nến thôi</button>
+</section>
+
+<section class="step" id="s2">
+  <p class="kicker">Chiếc bánh của riêng chị</p>
+  <h2 class="title" style="font-size:34px">Thổi Nến<br>Mừng Sinh Nhật</h2>
+  <div class="cakezone" id="cakeZone">
+    <div class="candles" id="candles">
+      <div class="candle"><i class="flame"></i></div>
+      <div class="candle"><i class="flame"></i></div>
+      <div class="candle"><i class="flame"></i></div>
+    </div>
+    <div class="cakebuild f-pink" id="finalCake" style="min-height:0">
+      <div class="topper" id="topperFinal"></div>
+      <div class="tier t3" data-tier="3"><div class="icing"></div></div>
+      <div class="tier t2"><div class="icing"></div></div>
+      <div class="tier t1"><div class="icing"></div></div>
+    </div>
+    <div class="plate"></div>
+  </div>
+  <p class="hint" style="margin-top:16px"><b>Nhấn và giữ</b> vào chiếc bánh cho đến khi nến tắt</p>
+</section>
+
+<section class="step" id="s3">
+  <p class="kicker">Bánh ngon, lời chúc cũng ngon</p>
+  <h2 class="title" style="font-size:34px">Chúc Mừng Sinh Nhật, Chị</h2>
+  <div class="paper">
+    <div class="polaroid">
+      <img src="../assets/art/bouquet.webp" alt="Bó hoa tặng chị">
+      <span class="tape"></span>
+    </div>
+    <div class="paper-text">
+      <p id="cakeEcho">Chiếc bánh chị tự làm hôm nay là chiếc bánh đặc biệt nhất năm.</p>
+      <p>Chúc chị tuổi mới nhiều lớp niềm vui như bánh nhiều tầng: tầng nào cũng ngọt, tầng nào cũng có người thương.</p>
+      <p class="paper-sign">— Thương chị nhiều</p>
+    </div>
+  </div>
+  <button class="btn show" style="margin-top:22px;opacity:1;pointer-events:auto;transform:none" onclick="location.reload()">Làm lại chiếc bánh khác</button>
+</section>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const rand=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+document.addEventListener("contextmenu",e=>e.preventDefault());
+function go(id){document.querySelectorAll(".step").forEach(s=>s.classList.toggle("active",s.id===id));window.scrollTo(0,0)}
+const fx=$("fx"),PC=["#F7A8C4","#FFD9A8","#F49AC1","#FBC2D5"];
+function petal(){if(fx.querySelectorAll(".petal").length>16)return;const p=document.createElement("div");p.className="petal";const s=rand(9,16);p.style.cssText=`left:${rand(0,97)}%;width:${s}px;height:${s}px;background:${pick(PC)};animation-duration:${rand(7,11)}s`;fx.appendChild(p);setTimeout(()=>p.remove(),11500)}
+setInterval(petal,850);petal();
+/* dựng bánh */
+const state={tiers:3,flavor:"f-pink",topper:"berry"};
+const STEPS=[
+ {key:"tiers",title:"Bước 1 — Cốt bánh mấy tầng?",opts:[{v:2,t:"2 tầng xinh xắn"},{v:3,t:"3 tầng hoành tráng"}]},
+ {key:"flavor",title:"Bước 2 — Kem màu gì?",opts:[{v:"f-pink",t:"Hồng dâu"},{v:"f-cream",t:"Kem vani"},{v:"f-choco",t:"Socola sữa"}]},
+ {key:"topper",title:"Bước 3 — Trang trí đỉnh bánh?",opts:[{v:"berry",t:"Dâu tây"},{v:"flower",t:"Hoa nhỏ"},{v:"star",t:"Ngôi sao vàng"}]}];
+let stepIdx=0;
+function topperHTML(kind){
+  if(kind==="berry")return '<span class="berry"></span><span class="berry"></span><span class="berry"></span>';
+  if(kind==="star")return '<span class="mini-star">★</span>';
+  let petals="";for(let i=0;i<5;i++)petals+=`<i style="transform:rotate(${i*72}deg)"></i>`;
+  return `<span class="mini-fl">${petals}<b></b></span><span class="mini-fl">${petals}<b></b></span><span class="mini-fl">${petals}<b></b></span>`;
+}
+function paint(){
+  [$("preview"),$("finalCake")].forEach(c=>{
+    c.className="cakebuild "+state.flavor;
+    c.querySelectorAll('[data-tier="3"]').forEach(t=>t.style.display=state.tiers===3?"block":"none");
+  });
+  $("topperPrev").innerHTML=topperHTML(state.topper);
+  $("topperFinal").innerHTML=topperHTML(state.topper);
+}
+function renderStep(){
+  const st=STEPS[stepIdx];if(!st)return;
+  $("stepBox").innerHTML=`<h3>${st.title}</h3><div class="choices">${st.opts.map(o=>`<button class="choice" data-v="${o.v}">${o.t}</button>`).join("")}</div>`;
+  $("stepBox").querySelectorAll(".choice").forEach(btn=>btn.addEventListener("click",()=>{
+    state[st.key]=st.key==="tiers"?parseInt(btn.dataset.v):btn.dataset.v;
+    paint();
+    stepIdx++;
+    [...$("dots").children].forEach((d,i)=>d.classList.toggle("on",i<=stepIdx));
+    if(stepIdx>=STEPS.length){$("stepBox").innerHTML='<h3>Xong! Một chiếc bánh rất ra dáng.</h3>';$("btnLight").classList.add("show")}
+    else renderStep();
+  }));
+}
+paint();renderStep();
+$("btnLight").addEventListener("click",()=>go("s2"));
+/* thổi nến trên bánh CSS */
+const zone=$("cakeZone");let blown=false,holding=false,holdP=0,raf=null;
+const flames=()=>zone.querySelectorAll(".flame");
+function applyF(){flames().forEach(f=>{f.style.transform=`translateX(-50%) scale(${1-.85*holdP}) skewX(${-18*holdP}deg)`;f.style.opacity=String(1-.3*holdP)})}
+function clearF(){flames().forEach(f=>{f.style.transform="";f.style.opacity=""})}
+function loop(){if(holding&&!blown)holdP=Math.min(1,holdP+1/70);else if(!holding&&!blown)holdP=Math.max(0,holdP-1/38);if(!blown){applyF();raf=requestAnimationFrame(loop)}if(holdP>=1&&!blown)blowOut()}
+function blowOut(){blown=true;holding=false;cancelAnimationFrame(raf);raf=null;
+  flames().forEach((f,i)=>{f.classList.add("out");f.style.transform="";f.style.opacity="";const sm=document.createElement("i");sm.className="smoke";f.parentElement.appendChild(sm);sm.animate([{transform:"translateY(0) scale(1)",opacity:.75},{transform:`translateY(-${rand(40,58)}px) translateX(${rand(-8,8)}px) scale(2.6)`,opacity:0}],{duration:rand(1200,1700),delay:i*130,easing:"ease-out"}).onfinish=()=>sm.remove()});
+  const flavorName={"f-pink":"hồng dâu","f-cream":"kem vani","f-choco":"socola sữa"}[state.flavor];
+  $("cakeEcho").textContent=`Chiếc bánh ${state.tiers} tầng ${flavorName} chị tự tay làm hôm nay là chiếc bánh đặc biệt nhất năm.`;
+  setTimeout(()=>go("s3"),1600)}
+zone.addEventListener("pointerdown",e=>{e.preventDefault();if(blown)return;holding=true;zone.classList.add("blowing");if(!raf)loop()});
+["pointerup","pointercancel","pointerleave"].forEach(ev=>window.addEventListener(ev,()=>{if(!holding)return;holding=false;zone.classList.remove("blowing");if(!blown)clearF()}));
+</script>
+</body>
+</html>

@@ -2,127 +2,52 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Chúc Mừng Sinh Nhật Chị</title>
-<link rel="stylesheet" href="css/fonts.css?v=5">
-<link rel="stylesheet" href="css/app.css?v=5">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 Phiên Bản Quà Sinh Nhật — Chờ Duyệt</title>
+<link rel="stylesheet" href="css/fonts.css?v=7">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Roboto Flex',sans-serif;background:linear-gradient(180deg,#FFE9F1,#FFF3E4 55%,#FFF8EE);color:#6B4453;min-height:100dvh}
+.wrap{max-width:560px;margin:0 auto;padding:44px 20px 50px}
+.kicker{font-family:'Dancing Script',cursive;font-size:34px;color:#D96C97;text-align:center}
+h1{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(36px,10vw,48px);line-height:1.12;color:#7A344F;text-align:center;margin:10px 0 10px}
+.intro{text-align:center;font-size:16px;line-height:25px;color:#9A6478;max-width:44ch;margin:0 auto 28px}
+.card{display:block;text-decoration:none;background:#FFFDF9;border:1.5px solid #F6CFE0;border-radius:20px;padding:18px 20px;margin-bottom:14px;box-shadow:0 8px 22px rgba(190,90,130,.12);transition:transform .15s}
+.card:active{transform:scale(.98)}
+.card h2{font-family:'Playfair Display',serif;font-size:20px;color:#7A344F;margin-bottom:5px}
+.card h2 .no{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:linear-gradient(180deg,#F27BA7,#E0528A);color:#fff;font-size:15px;margin-right:9px;vertical-align:2px}
+.card p{font-size:14.5px;line-height:22px;color:#9A6478}
+.card .open{display:inline-block;margin-top:9px;font-family:'Playfair Display',serif;font-weight:700;font-size:14.5px;color:#C2437C}
+.note{text-align:center;font-size:14px;color:#B98A9A;margin-top:22px;line-height:22px}
+</style>
 </head>
 <body>
-<div class="page" id="app">
-  <div id="fxLayer"></div>
+<div class="wrap">
+  <p class="kicker">10 ý tưởng, một người nhận</p>
+  <h1>Quà Sinh Nhật Cho Chị — Các Phiên Bản</h1>
+  <p class="intro">Cả 10 bản đều theo tông sáng pastel hồng + kem, mỗi bản một ý tưởng và hành trình riêng. Mở từng bản trải nghiệm rồi chọn bản ưng nhất.</p>
 
-  <!-- MÀN 1: mở đầu -->
-  <section class="step step-night active" id="step-intro">
-    <div class="intro-wrap">
-      <div class="stars" id="introStars"></div>
-      <p class="intro-kicker hand">Một món quà nhỏ</p>
-      <h1 class="intro-title">Happy<br>Birthday</h1>
-      <p class="intro-sub">Hôm nay là một ngày thật đặc biệt —<br>ngày của người chị tuyệt vời nhất nhà mình.</p>
-      <button class="btn-glow" id="btnStart">Bắt đầu</button>
-      <p class="intro-hint">Đeo tai nghe và bật tiếng lên nhé</p>
-    </div>
-  </section>
+  <a class="card" href="v1/"><h2><span class="no">1</span>Tiệc Trong Vườn Hoa</h2><p>Mở quà bất ngờ, tìm quả bóng bay giấu ngôi sao, thổi nến, chạm cho nhành hoa nở thành bó để chọn điều ước, khép lại bằng mưa lời chúc và tấm thiệp hoa.</p><span class="open">Mở bản 1</span></a>
 
-  <!-- MÀN 2: thắp nến bằng diêm + thổi nến -->
-  <section class="step step-night" id="step-cake">
-    <div class="cake-wrap v5" id="cakeWrap">
-      <p class="cake-pre hand" id="cakePre">Đang thắp nến cho chị…</p>
-      <div class="cake-photo" id="cakePhoto">
-        <img src="assets/art/cake.webp" alt="Bánh sinh nhật hai tầng">
-        <i class="aflame f1"></i><i class="aflame f2"></i><i class="aflame f3"></i>
-        <div class="cake-dim" id="cakeDim"></div>
-      </div>
-      <div class="match-box" id="matchBox">
-        <div class="match" id="match"><i class="match-head"></i><i class="match-flame"></i></div>
-        <p class="match-hint">Chạm vào que diêm để thắp nến</p>
-      </div>
-      <h2 class="cake-title" id="cakeTitle">Có một món quà nhỏ dành cho chị…</h2>
-      <p class="cake-hint" id="cakeHint">Nhưng trước khi mở, mình thổi nến trước nhé.<br><b>Nhấn và giữ</b> vào ngọn nến cho đến khi lửa tắt.</p>
-    </div>
-  </section>
+  <a class="card" href="v2/"><h2><span class="no">2</span>Hộp Thư Bí Mật</h2><p>Mở chiếc hộp quà buộc nơ cho trái tim bay ra, đọc lá thư tay mở ra từng đoạn, thổi nến, rồi nhận tấm ảnh polaroid kèm điều ước.</p><span class="open">Mở bản 2</span></a>
 
-  <!-- MÀN 3: màn đen chuyển cảnh -->
-  <section class="step step-black" id="step-black">
-    <div class="black-wrap">
-      <p class="black-text hand" id="blackText">Ngọn nến đã tắt…</p>
-    </div>
-  </section>
+  <a class="card" href="v3/"><h2><span class="no">3</span>Vòng Quay Điều Ước</h2><p>Quay vòng quay may mắn 6 ô để điều ước của năm tự chọn chị, pháo giấy ăn mừng, thổi nến cho điều ước thêm linh, thiệp niêm phong điều ước.</p><span class="open">Mở bản 3</span></a>
 
-  <!-- MÀN 4: chọn một điều ước -->
-  <section class="step step-night" id="step-wish">
-    <div class="wish-wrap">
-      <p class="wish-kicker hand">Một điều ước</p>
-      <h2 class="wish-title">Giờ thì… chọn một điều ước<br>cho ngày sinh nhật của chị</h2>
-      <div class="wish-tags" id="wishTags">
-        <button class="wish-tag" data-wish="Hạnh phúc hơn">Hạnh phúc hơn</button>
-        <button class="wish-tag" data-wish="Khỏe mạnh hơn">Khỏe mạnh hơn</button>
-        <button class="wish-tag" data-wish="Bình yên hơn">Bình yên hơn</button>
-        <button class="wish-tag" data-wish="Thật nhiều may mắn">Thật nhiều may mắn</button>
-      </div>
-      <p class="wish-note" id="wishNote"></p>
-      <button class="btn-glow wish-go" id="btnToHeart">Tiếp tục</button>
-    </div>
-  </section>
+  <a class="card" href="v4/"><h2><span class="no">4</span>Vườn Bướm</h2><p>Dạo trong vườn xanh, chạm cho từng bụi hoa nở và gọi bướm bay ra, tìm đủ 5 trái tim đang trốn, rồi thổi nến mừng tuổi mới.</p><span class="open">Mở bản 4</span></a>
 
-  <!-- MÀN 5: trái tim kỷ niệm (cao trào) -->
-  <section class="step step-night" id="step-heart">
-    <div class="heart-wrap">
-      <div class="heart-grid" id="heartGrid"></div>
-      <p class="heart-text" id="heartText">Tất cả những khoảnh khắc đẹp nhất này<br>là dành cho chị. <b>Chúc mừng sinh nhật, chị iu.</b><br>Hôm nay, chị nhất định phải thật hạnh phúc.</p>
-      <p class="heart-hint" id="heartHint">Chạm vào trái tim</p>
-      <button class="btn-glow wish-go" id="btnToLetter">Có một lá thư dành cho chị</button>
-    </div>
-  </section>
+  <a class="card" href="v5/"><h2><span class="no">5</span>Bóng Bay Mang Thư</h2><p>Sáu quả bóng bay trên nền trời sáng, mỗi quả mang một mẩu thư. Vỡ hết bóng để ghép trọn lời chúc, rồi thổi nến và nhận phong bì niêm phong.</p><span class="open">Mở bản 5</span></a>
 
-  <!-- MÀN 6: lá thư tay -->
-  <section class="step step-night" id="step-letter">
-    <div class="letter-wrap">
-      <p class="letter-kicker hand">Lá thư nhỏ</p>
-      <div class="paper">
-        <div class="polaroid">
-          <img src="assets/art/bouquet.webp" alt="Bó hoa tặng chị">
-          <span class="tape"></span>
-        </div>
-        <div class="paper-text hand">
-          <p>Em không giỏi nói mấy lời hoa mỹ, nên viết đơn giản thôi: chúc mừng sinh nhật chị nhé.</p>
-          <p>Năm vừa rồi chắc chẳng dễ dàng gì, vậy mà chị vẫn luôn là chỗ dựa cho cả nhà. Giỏi hơn chị nghĩ nhiều đấy.</p>
-          <p>Em chỉ mong chị ăn ngon, ngủ đủ, bớt lo một chút — và nhớ là lúc nào cũng có em ở đây, khi chị cần.</p>
-          <p class="paper-sign">— Em của chị</p>
-        </div>
-      </div>
-      <button class="btn-glow" id="btnToCard">Vẫn còn nữa</button>
-    </div>
-  </section>
+  <a class="card" href="v6/"><h2><span class="no">6</span>Tự Tay Làm Bánh</h2><p>Chị làm đầu bếp chính: chọn cốt bánh 2 hay 3 tầng, màu kem và đồ trang trí, ngắm chiếc bánh dựng dần, thắp nến lên chính chiếc bánh đó và thổi tắt.</p><span class="open">Mở bản 6</span></a>
 
-  <!-- MÀN 7: thiệp cuối -->
-  <section class="step step-night" id="step-card">
-    <div class="card-wrap">
-      <p class="card-kicker">Dành cho chị</p>
-      <h2 class="card-title">Chúc Mừng<br>Sinh Nhật, Chị</h2>
-      <img class="card-art" src="assets/art/envelope.webp" alt="Phong bì hoa">
-      <p class="card-text" id="cardText">Mong điều ước chị chọn lúc nãy<br>thật sự tìm được đường đến với chị trong năm nay.</p>
-      <button class="btn-glow" id="btnSky">Gửi điều ước lên trời</button>
-      <br>
-      <button class="btn-ghost" id="btnReplay">Bắt đầu lại từ đầu</button>
-    </div>
-  </section>
+  <a class="card" href="v7/"><h2><span class="no">7</span>Pháo Hoa Đếm Ngược</h2><p>Đếm ngược 3-2-1 trên nền hoàng hôn pastel, pháo hoa nổ rợp trời, dòng chữ Happy Birthday hiện ra từng ký tự, rồi mới đến bánh và nến.</p><span class="open">Mở bản 7</span></a>
 
-  <!-- MÀN 8: gửi điều ước lên trời sao -->
-  <section class="step step-night" id="step-sky">
-    <div class="sky-wrap">
-      <div class="stars" id="stars"></div>
-      <div class="shooting" id="shooting"></div>
-      <p class="sky-kicker hand">Gửi lên trời</p>
-      <h2 class="sky-title">Biến điều ước<br>thành sao băng</h2>
-      <div class="wish-star" id="wishStar">
-        <span class="msr">star</span>
-        <span class="wish-star-label" id="wishStarLabel"></span>
-      </div>
-      <p class="sky-text" id="skyText">Chạm vào ngôi sao để gửi điều ước của chị đi nhé</p>
-      <button class="btn-ghost sky-restart" id="btnRestart">Xem lại từ đầu</button>
-    </div>
-  </section>
+  <a class="card" href="v8/"><h2><span class="no">8</span>Album Scrapbook</h2><p>Một cuốn album dán tay 3 trang: trang hoa, trang bánh (thổi nến ngay trong album mới lật tiếp được), và trang lời chúc cuối ghi thêm điều ước của chị.</p><span class="open">Mở bản 8</span></a>
+
+  <a class="card" href="v9/"><h2><span class="no">9</span>Vườn Bí Mật</h2><p>Cánh cổng vườn khóa kín, 3 chiếc chìa khóa vàng giấu trong các bụi hoa. Tìm đủ chìa, cổng tự mở ra để lộ món quà và lời chúc bên trong.</p><span class="open">Mở bản 9</span></a>
+
+  <a class="card" href="v10/"><h2><span class="no">10</span>Chồng Ảnh Polaroid</h2><p>Từng tấm polaroid rơi xuống xếp thành chồng theo mỗi cái chạm — hoa, bánh, phong thư — và tấm cuối cùng chính là lời chúc viết tay.</p><span class="open">Mở bản 10</span></a>
+
+  <p class="note">Cả 10 bản đều đã khóa menu nhấn-giữ của trình duyệt để thao tác thổi nến không bị gián đoạn.</p>
 </div>
-<script src="js/app.js?v=5"></script>
 </body>
 </html>

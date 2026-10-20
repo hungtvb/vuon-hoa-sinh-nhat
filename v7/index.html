@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bản 7 — Pháo Hoa Đếm Ngược</title>
+<link rel="stylesheet" href="../css/fonts.css?v=7">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+:root{--ease:cubic-bezier(.2,0,0,1);--spring:cubic-bezier(.34,1.45,.64,1);--ink:#6B4453;--deep:#7A344F;--soft:#9A6478;--rose:#E0528A}
+body{font-family:'Roboto Flex',sans-serif;background:linear-gradient(180deg,#FFE9F1,#FFF3E4 55%,#FFF8EE);color:var(--ink);overflow-x:hidden;user-select:none;-webkit-user-select:none}
+img{pointer-events:none}
+.step{display:none;min-height:100dvh;flex-direction:column;align-items:center;padding:40px 22px 34px;text-align:center;position:relative}
+.step.active{display:flex}
+.btn{display:inline-flex;align-items:center;height:52px;padding:0 32px;border-radius:999px;border:none;cursor:pointer;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;background:linear-gradient(180deg,#F27BA7,#E0528A);box-shadow:0 10px 24px rgba(224,82,138,.35);transition:all .3s var(--ease);opacity:0;pointer-events:none;transform:translateY(10px)}
+.btn.show{opacity:1;pointer-events:auto;transform:none}
+.btn:active{transform:scale(.96)}
+.kicker{font-family:'Dancing Script',cursive;font-size:32px;color:#D96C97}
+.title{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(36px,10.5vw,48px);line-height:1.12;color:var(--deep);margin:10px 0 8px}
+.sub{font-size:16px;line-height:25px;color:var(--soft);max-width:35ch}
+.hint{font-size:14.5px;color:var(--soft);animation:hp 1.8s ease-in-out infinite}
+@keyframes hp{0%,100%{opacity:.55}50%{opacity:1}}
+/* màn pháo hoa */
+#s1{background:linear-gradient(180deg,#FFD9A8 0%,#FFB59E 34%,#F78FB3 68%,#C3A6E8 100%);overflow:hidden}
+#fwCanvas{position:absolute;inset:0;width:100%;height:100%}
+.count-num{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%);font-family:'Playfair Display',serif;font-weight:900;font-size:150px;color:#FFF6E8;text-shadow:0 10px 44px rgba(160,40,90,.45);opacity:0;z-index:3}
+.count-num.pop{animation:countPop .92s var(--ease) forwards}
+@keyframes countPop{0%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}18%{opacity:1;transform:translate(-50%,-50%) scale(1)}78%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(.92)}}
+.fw-center{position:relative;z-index:3;margin-top:16dvh;display:flex;flex-direction:column;align-items:center}
+.fw-title{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(42px,13vw,62px);line-height:1.08;color:#FFF6E8;text-shadow:0 6px 34px rgba(160,40,90,.4);min-height:2.2em}
+.fw-title span{display:inline-block;opacity:0;transform:translateY(16px) scale(.7)}
+.fw-title span.on{opacity:1;transform:none;transition:all .45s var(--spring)}
+.fw-sub{font-family:'Dancing Script',cursive;font-size:30px;color:#FFF6E8;text-shadow:0 3px 16px rgba(160,40,90,.4);opacity:0;transition:opacity .8s}
+.fw-sub.on{opacity:1}
+#s1 .btn{position:relative;z-index:3;margin-top:26px;background:linear-gradient(180deg,#FFF,#FFE3EE);color:#C2437C;box-shadow:0 10px 26px rgba(120,30,80,.35)}
+/* bánh + thiệp */
+.cake-photo{position:relative;width:min(340px,88vw);border-radius:26px;overflow:hidden;box-shadow:0 18px 40px rgba(190,90,130,.26);margin:20px 0 6px;cursor:pointer}
+.cake-photo img{width:100%;display:block}
+.aflame{position:absolute;width:12px;height:20px;transform:translate(-50%,-100%) scale(0);transform-origin:50% 92%;background:radial-gradient(circle at 50% 82%,#FFF6C9 0 22%,#FFCA3A 45%,#FF7B00 78%,rgba(255,123,0,0) 100%);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;filter:drop-shadow(0 0 9px rgba(255,160,40,.95));transition:transform .35s var(--spring);z-index:3}
+.aflame.f1{left:45.4%;top:24.6%}.aflame.f2{left:50.2%;top:23.9%}.aflame.f3{left:54.7%;top:24.6%}
+.lit .aflame{transform:translate(-50%,-100%) scale(1);animation:flickA .3s ease-in-out infinite alternate}
+@keyframes flickA{from{transform:translate(-50%,-100%) scale(1) rotate(-3deg)}to{transform:translate(-50%,-100%) scale(1.09,1.17) rotate(3deg)}}
+.blowing .aflame{animation:none}
+.aflame.out{transform:translate(-50%,-100%) scale(0) !important;animation:none;transition:transform .18s}
+.cake-dim{position:absolute;inset:0;background:rgba(30,10,20,.45);opacity:0;transition:opacity 1s;z-index:2}
+.dim .cake-dim{opacity:1}
+.smoke{position:absolute;width:9px;height:9px;border-radius:50%;background:rgba(120,110,115,.55);filter:blur(2.5px);z-index:4}
+.paper{background:linear-gradient(#FFFDF7,#FBF1DE);border-radius:10px;padding:24px;width:100%;max-width:400px;box-shadow:0 22px 44px rgba(150,80,60,.2);transform:rotate(-.5deg);text-align:left;margin-top:20px}
+.polaroid{position:relative;background:#fff;padding:8px 8px 24px;box-shadow:0 6px 18px rgba(90,50,20,.22);transform:rotate(1.6deg);margin-bottom:16px}
+.polaroid img{width:100%;display:block}
+.tape{position:absolute;top:-12px;left:50%;transform:translateX(-50%) rotate(-4deg);width:92px;height:24px;background:rgba(246,222,160,.78)}
+.paper-text{font-family:'Dancing Script',cursive;font-size:21.5px;line-height:1.55;color:#5A3A28}
+.paper-text p{margin-bottom:12px}
+.paper-sign{text-align:right;font-size:24px}
+</style>
+</head>
+<body>
+
+<section class="step active" id="s1">
+  <canvas id="fwCanvas"></canvas>
+  <div class="count-num" id="countNum">3</div>
+  <div class="fw-center">
+    <div class="fw-title" id="fwTitle"></div>
+    <p class="fw-sub" id="fwSub">hôm nay là ngày của chị</p>
+    <button class="btn" id="btnCake">Sau pháo hoa là bánh nè</button>
+  </div>
+</section>
+
+<section class="step" id="s2">
+  <p class="kicker">Pháo hoa xong, ước thôi</p>
+  <h2 class="title" style="font-size:34px">Thổi Nến<br>Mừng Sinh Nhật</h2>
+  <div class="cake-photo" id="cakePhoto">
+    <img src="../assets/art/cake.webp" alt="Bánh sinh nhật">
+    <i class="aflame f1"></i><i class="aflame f2"></i><i class="aflame f3"></i>
+    <div class="cake-dim"></div>
+  </div>
+  <p class="hint"><b>Nhấn và giữ</b> vào chiếc bánh cho đến khi nến tắt</p>
+</section>
+
+<section class="step" id="s3">
+  <p class="kicker">Rực rỡ như pháo hoa</p>
+  <h2 class="title" style="font-size:34px">Chúc Mừng Sinh Nhật, Chị</h2>
+  <div class="paper">
+    <div class="polaroid">
+      <img src="../assets/art/bouquet.webp" alt="Bó hoa tặng chị">
+      <span class="tape"></span>
+    </div>
+    <div class="paper-text">
+      <p>Người ta bắn pháo hoa cho những dịp thật đặc biệt — và sinh nhật chị xứng đáng là một dịp như thế. Chúc chị tuổi mới sáng rực, ấm áp và đầy ắp tiếng cười.</p>
+      <p class="paper-sign">— Thương chị nhiều</p>
+    </div>
+  </div>
+  <button class="btn show" style="margin-top:22px;opacity:1;pointer-events:auto;transform:none" onclick="location.reload()">Xem pháo hoa lại</button>
+</section>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const rand=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+document.addEventListener("contextmenu",e=>e.preventDefault());
+function go(id){document.querySelectorAll(".step").forEach(s=>s.classList.toggle("active",s.id===id));window.scrollTo(0,0);if(id==="s2")$("s2").classList.add("lit");fwRunning=(id==="s1")}
+/* pháo hoa canvas */
+const cv=$("fwCanvas"),ctx=cv.getContext("2d");
+let W=0,H=0,fwRunning=true;
+function sizeCv(){const r=cv.parentElement.getBoundingClientRect();W=cv.width=r.width;H=cv.height=r.height}
+sizeCv();addEventListener("resize",sizeCv);
+const COLORS=["#FF5D8F","#FFB340","#FFF3B0","#8CE8C3","#7FC8F8","#C3A6E8","#FF8FAB"];
+let rockets=[],parts=[];
+function launch(){rockets.push({x:rand(W*.15,W*.85),y:H+6,vy:-rand(9.5,12.5),vx:rand(-1,1),target:rand(H*.16,H*.42),color:pick(COLORS)})}
+function explode(r){
+  const n=64;
+  for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2,sp=rand(1.2,5.2);
+    parts.push({x:r.x,y:r.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,decay:rand(.008,.016),color:r.color,size:rand(1.6,3)})}
+}
+function fwLoop(){
+  requestAnimationFrame(fwLoop);
+  if(!fwRunning)return;
+  ctx.clearRect(0,0,W,H);
+  if(Math.random()<.045&&rockets.length<5)launch();
+  rockets.forEach(r=>{r.x+=r.vx;r.y+=r.vy;r.vy+=.09;
+    ctx.beginPath();ctx.arc(r.x,r.y,2.4,0,7);ctx.fillStyle="#FFF3B0";ctx.fill();
+    if(r.y<=r.target||r.vy>=-.5){explode(r);r.dead=true}});
+  rockets=rockets.filter(r=>!r.dead);
+  parts=parts.filter(p=>p.life>0);
+  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.035;p.vx*=.985;p.vy*=.99;p.life-=p.decay;
+    ctx.globalAlpha=Math.max(p.life,0);ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,7);ctx.fillStyle=p.color;ctx.fill();ctx.globalAlpha=1});
+}
+launch();setTimeout(launch,500);setTimeout(launch,1100);fwLoop();
+/* đếm ngược + chữ hiện */
+const numEl=$("countNum");
+[3,2,1].forEach((n,i)=>setTimeout(()=>{numEl.textContent=n;numEl.classList.remove("pop");void numEl.offsetWidth;numEl.classList.add("pop")},500+i*950));
+setTimeout(()=>{
+  const title=$("fwTitle");const text="HAPPY BIRTHDAY";
+  title.innerHTML=text.split("").map(ch=>ch===" "?"<span>&nbsp;</span>":`<span>${ch}</span>`).join("");
+  title.querySelectorAll("span").forEach((s,i)=>setTimeout(()=>s.classList.add("on"),i*65));
+  setTimeout(()=>$("fwSub").classList.add("on"),text.length*65+250);
+  setTimeout(()=>$("btnCake").classList.add("show"),text.length*65+800);
+},500+3*950);
+$("btnCake").addEventListener("click",()=>go("s2"));
+/* thổi nến */
+const photo=$("cakePhoto");let blown=false,holding=false,holdP=0,raf=null;
+const flames=()=>photo.querySelectorAll(".aflame");
+function applyF(){flames().forEach(f=>{f.style.transform=`translate(-50%,-100%) scale(${1-.8*holdP}) skewX(${-16*holdP}deg)`;f.style.opacity=String(1-.3*holdP)})}
+function clearF(){flames().forEach(f=>{f.style.transform="";f.style.opacity=""})}
+function loop(){if(holding&&!blown)holdP=Math.min(1,holdP+1/70);else if(!holding&&!blown)holdP=Math.max(0,holdP-1/38);if(!blown){applyF();raf=requestAnimationFrame(loop)}if(holdP>=1&&!blown)blowOut()}
+function blowOut(){blown=true;holding=false;cancelAnimationFrame(raf);raf=null;flames().forEach((f,i)=>{f.classList.add("out");f.style.transform="";f.style.opacity="";const pr=photo.getBoundingClientRect(),fr=f.getBoundingClientRect();const sm=document.createElement("i");sm.className="smoke";sm.style.cssText=`left:${fr.left-pr.left+fr.width/2}px;top:${fr.top-pr.top}px`;photo.appendChild(sm);sm.animate([{transform:"translateY(0) scale(1)",opacity:.75},{transform:`translateY(-${rand(44,64)}px) translateX(${rand(-9,9)}px) scale(2.6)`,opacity:0}],{duration:rand(1300,1800),delay:i*130,easing:"ease-out"}).onfinish=()=>sm.remove()});photo.classList.add("dim");$("s2").classList.remove("lit");setTimeout(()=>go("s3"),1700)}
+photo.addEventListener("pointerdown",e=>{e.preventDefault();if(blown)return;holding=true;photo.classList.add("blowing");if(!raf)loop()});
+["pointerup","pointercancel","pointerleave"].forEach(ev=>window.addEventListener(ev,()=>{if(!holding)return;holding=false;photo.classList.remove("blowing");if(!blown)clearF()}));
+</script>
+</body>
+</html>

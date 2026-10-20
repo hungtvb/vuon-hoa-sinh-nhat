@@ -471,3 +471,100 @@ body{
 
 /* --- Màn 8: trời sao --- */
 .sky-kicker{font-size:31px; color:#eeb9c8; position:relative; z-index:2; margin-bottom:6px}
+
+/* ================= V6 — BẢN 1: tông sáng pastel hồng + kem ================= */
+.step-light{background:linear-gradient(180deg,#FFE9F1 0%,#FFF3E4 55%,#FFF8EE 100%); color:#6B4453}
+.btn-rose{display:inline-flex; align-items:center; gap:8px; height:52px; padding:0 32px; border-radius:999px; border:none; cursor:pointer;
+  font-family:var(--font-display); font-size:17px; font-weight:700; color:#fff;
+  background:linear-gradient(180deg,#F27BA7,#E0528A); box-shadow:0 10px 24px rgba(224,82,138,.35), inset 0 1px 0 rgba(255,255,255,.4);
+  transition:transform .15s var(--ease-emph)}
+.btn-rose:active{transform:scale(.96)}
+/* Màn mở quà */
+.open-wrap{min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:38px 24px; text-align:center}
+.open-kicker{font-size:32px; color:#D96C97}
+.open-title{font-family:var(--font-display); font-weight:900; font-size:clamp(44px,13vw,60px); line-height:1.1; color:#7A344F; margin:10px 0 22px}
+.open-art{position:relative; width:min(320px,84vw); border-radius:28px; overflow:hidden; box-shadow:0 18px 40px rgba(190,90,130,.28); animation:artWiggle 3.2s ease-in-out infinite}
+.open-art img{width:100%; display:block}
+@keyframes artWiggle{0%,100%{transform:rotate(-1.1deg)}50%{transform:rotate(1.1deg) translateY(-4px)}}
+.open-sparkle{position:absolute; color:#F2A93B; font-size:22px; animation:sparklePulse 1.6s ease-in-out infinite}
+.open-sparkle.s1{left:10%; top:12%}
+.open-sparkle.s2{right:12%; top:26%; animation-delay:.5s}
+.open-sparkle.s3{left:16%; bottom:14%; animation-delay:1s}
+@keyframes sparklePulse{0%,100%{transform:scale(.7); opacity:.5}50%{transform:scale(1.25); opacity:1}}
+.open-sub{margin:24px 0 26px; font-size:16.5px; line-height:26px; color:#9A6478}
+/* Màn bóng bay */
+.party-wrap{min-height:100dvh; display:flex; flex-direction:column; align-items:center; padding:40px 20px 30px; text-align:center}
+.party-kicker{font-size:31px; color:#D96C97}
+.party-title{font-family:var(--font-display); font-weight:800; font-size:27px; color:#7A344F; margin:8px 0 8px}
+.party-hint{font-size:15.5px; line-height:24px; color:#9A6478; max-width:34ch}
+.balloon-field{position:relative; width:100%; max-width:420px; height:50dvh; margin-top:8px; overflow:hidden}
+.balloon{position:absolute; bottom:-110px; width:56px; height:70px; border-radius:50%/55% 55% 45% 45%; cursor:pointer;
+  box-shadow:inset -8px -10px 16px rgba(0,0,0,.08); animation:balloonUp linear infinite; z-index:2}
+.balloon::before{content:""; position:absolute; left:50%; bottom:-7px; transform:translateX(-50%);
+  border:5px solid transparent; border-top:7px solid inherit}
+.balloon::after{content:""; position:absolute; left:50%; top:calc(100% + 5px); width:2px; height:42px;
+  background:rgba(107,68,83,.3); border-radius:2px}
+.balloon .bstar{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#F2A93B; font-size:24px; text-shadow:0 1px 6px rgba(255,255,255,.8)}
+.balloon.popped{animation:popB .25s ease-out forwards}
+@keyframes balloonUp{from{transform:translateY(0) translateX(0)}25%{transform:translateY(-32dvh) translateX(8px)}50%{transform:translateY(-62dvh) translateX(-8px)}75%{transform:translateY(-92dvh) translateX(7px)}to{transform:translateY(-125dvh) translateX(0)}}
+@keyframes popB{to{transform:scale(1.6); opacity:0}}
+.confetti-bit{position:absolute; width:8px; height:11px; border-radius:2px; z-index:3; pointer-events:none}
+#btnToCake{margin-top:10px}
+/* Màn bánh sáng */
+.cake-wrap.v6 .cake-pre{color:#D96C97}
+.cake-wrap.v6 .cake-title{color:#7A344F}
+.cake-wrap.v6 .cake-hint{color:#9A6478}
+/* Màn vườn hoa */
+.garden-wrap{min-height:100dvh; display:flex; flex-direction:column; align-items:center; padding:38px 20px 30px; text-align:center}
+.garden-kicker{font-size:31px; color:#D96C97}
+.garden-title{font-family:var(--font-display); font-weight:800; font-size:26px; color:#7A344F; margin:8px 0 4px}
+.garden-stage{position:relative; width:100%; max-width:400px; height:330px; cursor:pointer}
+.garden-ground{position:absolute; left:6%; right:6%; bottom:26px; height:16px; border-radius:50%; background:rgba(160,58,99,.13)}
+.garden-hint{font-size:15px; color:#9A6478; animation:hintPulse2 1.8s ease-in-out infinite}
+@keyframes hintPulse2{0%,100%{opacity:.55}50%{opacity:1}}
+.wish-chips{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:14px; max-width:400px;
+  opacity:0; transform:translateY(10px); pointer-events:none; transition:all .6s var(--ease-emph)}
+.wish-chips.show{opacity:1; transform:none; pointer-events:auto}
+.wish-chip{padding:11px 18px; border-radius:999px; border:1.5px solid #F0A8C6; background:#fff; cursor:pointer;
+  font-family:var(--font-display); font-size:15.5px; font-weight:700; color:#A03A63; transition:all .2s}
+.wish-chip.selected{background:#E0528A; border-color:#E0528A; color:#fff; box-shadow:0 8px 20px rgba(224,82,138,.4)}
+#btnToRain{margin-top:18px}
+/* Màn mưa lời chúc (nền sáng) */
+.rain-wrap{position:relative; min-height:100dvh; overflow:hidden}
+.rain-wrap .wishwall{position:absolute; inset:0; perspective:900px; overflow:hidden}
+.rain-wrap .wish3d{color:#C2437C; text-shadow:0 1px 0 rgba(255,255,255,.7)}
+.rain-wrap .wc-sub{color:#A03A63}
+.rain-wrap .wishwall-btn{position:absolute; left:50%; bottom:36px; transform:translateX(-50%); z-index:6; height:52px; margin:0}
+.rain-wrap .wishwall-btn:active{transform:translateX(-50%) scale(.96)}
+/* Màn thiệp cuối */
+.final-wrap{min-height:100dvh; display:flex; flex-direction:column; align-items:center; padding:38px 20px 34px; text-align:center}
+.final-kicker{font-size:34px; color:#D96C97; margin-bottom:18px}
+.final-wrap .paper{text-align:left}
+.mini-row{display:flex; gap:14px; justify-content:center; margin:22px 0 6px; min-height:40px}
+.mini-row .flower{--fs:36px}
+#btnAgain{margin-top:16px}
+
+/* ================= V6 FIX — bổ sung class còn thiếu cho BẢN 1 ================= */
+.sprig .fstem{position:absolute; bottom:0; left:-2.5px; width:5px; height:100%; border-radius:4px;
+  background:linear-gradient(to top,#4e7d4a,#8ab887); transform:scaleY(0); transform-origin:bottom; transition:transform .75s var(--ease-emph)}
+.sprig.grown .fstem{transform:scaleY(1)}
+.sprig .fleaf{position:absolute; width:28px; height:16px; z-index:1;
+  background:linear-gradient(135deg,#93c48d,#5c8a58); transform:scale(0); transition:transform .6s var(--ease-spring) .3s}
+.sprig .fleaf.l1{border-radius:2px 80% 2px 80%; left:3px; bottom:34%; transform-origin:0 100%}
+.sprig.grown .fleaf.l1{transform:scale(1) rotate(-26deg)}
+.sprig .fleaf.l2{border-radius:80% 2px 80% 2px; right:3px; bottom:56%; transform-origin:100% 100%}
+.sprig.grown .fleaf.l2{transform:scale(1) rotate(26deg)}
+.garden-ground{bottom:56px !important}
+/* màn mưa lời chúc bản 1: tiêu đề giữa + từng lời chúc bay */
+.rain-wrap .wishwall-center{position:absolute; left:50%; top:42%; transform:translate(-50%,-50%);
+  text-align:center; z-index:4; width:100%; padding:0 24px; pointer-events:none}
+.rain-wrap .wc-small{font-size:36px; color:#D96C97}
+.rain-wrap .wc-big{font-family:'Playfair Display',serif; font-weight:900; font-size:clamp(40px,12vw,56px);
+  letter-spacing:2px; background:linear-gradient(92deg,#E0528A,#F2A93B); -webkit-background-clip:text; background-clip:text; color:transparent; margin:2px 0 6px}
+.rain-wrap .wc-sub{font-family:var(--font-display); font-size:19px; font-weight:700; color:#A03A63}
+.rain-wrap .wish3d{position:absolute; inset:auto; font-family:var(--font-display); font-weight:700; line-height:1.3;
+  color:#C2437C; white-space:normal; width:max-content; max-width:44vw; text-align:center;
+  transform:translateZ(var(--z,0px)); filter:blur(var(--blur,0px)); opacity:.92;
+  animation:wishDrift1 7s ease-in-out infinite alternate, wishGlow1 3.4s ease-in-out infinite alternate}
+@keyframes wishDrift1{from{margin-top:0}to{margin-top:-18px}}
+@keyframes wishGlow1{from{opacity:.5}to{opacity:.95}}

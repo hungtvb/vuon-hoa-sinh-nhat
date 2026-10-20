@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Chúc Mừng Sinh Nhật Chị</title>
+<link rel="stylesheet" href="../css/fonts.css?v=7">
+<link rel="stylesheet" href="../css/app.css?v=7">
+</head>
+<body>
+<div class="page" id="app">
+  <div id="fxLayer"></div>
+
+  <!-- MÀN 1: mở quà -->
+  <section class="step step-light active" id="step-open">
+    <div class="open-wrap">
+      <p class="open-kicker hand">Một món quà nhỏ</p>
+      <h1 class="open-title">Sinh Nhật<br>Của Chị</h1>
+      <div class="open-art" id="openArt">
+        <img src="../assets/art/envelope.webp" alt="Phong bì hoa hồng">
+        <span class="open-sparkle s1">✦</span>
+        <span class="open-sparkle s2">✦</span>
+        <span class="open-sparkle s3">✦</span>
+      </div>
+      <p class="open-sub">Có một điều bất ngờ đang chờ chị ở trong này.<br>Sẵn sàng chưa nè?</p>
+      <button class="btn-rose" id="btnOpen">Mở quà bất ngờ</button>
+    </div>
+  </section>
+
+  <!-- MÀN 2: bóng bay tìm ngôi sao -->
+  <section class="step step-light" id="step-party">
+    <div class="party-wrap">
+      <p class="party-kicker hand">Tiệc bắt đầu rồi!</p>
+      <h2 class="party-title">Tìm quả bóng giấu ngôi sao</h2>
+      <p class="party-hint" id="partyHint">Giữa những quả bóng bay này có một quả giấu ngôi sao may mắn. Chạm vỡ nó nhé!</p>
+      <div class="balloon-field" id="balloonField"></div>
+      <button class="btn-rose wish-go" id="btnToCake">Đến chiếc bánh thôi</button>
+    </div>
+  </section>
+
+  <!-- MÀN 3: bánh + thổi nến -->
+  <section class="step step-light" id="step-cake">
+    <div class="cake-wrap v6" id="cakeWrap">
+      <p class="cake-pre hand">Nhắm mắt lại, ước một điều…</p>
+      <div class="cake-photo" id="cakePhoto">
+        <img src="../assets/art/cake.webp" alt="Bánh sinh nhật hai tầng">
+        <i class="aflame f1"></i><i class="aflame f2"></i><i class="aflame f3"></i>
+        <div class="cake-dim" id="cakeDim"></div>
+      </div>
+      <h2 class="cake-title">Thổi nến mừng sinh nhật!</h2>
+      <p class="cake-hint"><b>Nhấn và giữ</b> vào chiếc bánh cho đến khi nến tắt hết nhé.</p>
+    </div>
+  </section>
+
+  <!-- MÀN 4: vườn hoa điều ước -->
+  <section class="step step-light" id="step-garden">
+    <div class="garden-wrap">
+      <p class="garden-kicker hand">Vườn hoa điều ước</p>
+      <h2 class="garden-title" id="gardenTitle">Một nhành hoa nhỏ…</h2>
+      <div class="garden-stage" id="gardenStage">
+        <div class="garden-ground"></div>
+      </div>
+      <p class="garden-hint" id="gardenHint">Chạm vào nhành hoa xem điều kỳ diệu</p>
+      <div class="wish-chips" id="wishChips">
+        <button class="wish-chip" data-wish="Sức khỏe dồi dào">Sức khỏe dồi dào</button>
+        <button class="wish-chip" data-wish="Hạnh phúc ngập tràn">Hạnh phúc ngập tràn</button>
+        <button class="wish-chip" data-wish="Bình an mỗi ngày">Bình an mỗi ngày</button>
+        <button class="wish-chip" data-wish="May mắn mỉm cười">May mắn mỉm cười</button>
+      </div>
+      <button class="btn-rose wish-go" id="btnToRain">Xem điều bất ngờ</button>
+    </div>
+  </section>
+
+  <!-- MÀN 5: mưa lời chúc -->
+  <section class="step step-light" id="step-rain">
+    <div class="rain-wrap">
+      <div class="wishwall" id="wishWall"></div>
+      <div class="wishwall-center">
+        <div class="wc-small hand">Chúc mừng</div>
+        <div class="wc-big">SINH NHẬT</div>
+        <div class="wc-sub">chị iu của em</div>
+      </div>
+      <button class="btn-rose wishwall-btn" id="btnToFinal">Mở tấm thiệp cuối</button>
+    </div>
+  </section>
+
+  <!-- MÀN 6: thiệp hoa -->
+  <section class="step step-light" id="step-final">
+    <div class="final-wrap">
+      <p class="final-kicker hand">Gửi chị iu,</p>
+      <div class="paper">
+        <div class="polaroid">
+          <img src="../assets/art/bouquet.webp" alt="Bó hoa tặng chị">
+          <span class="tape"></span>
+        </div>
+        <div class="paper-text hand">
+          <p>Chúc mừng sinh nhật chị nhé. Em không giỏi nói lời hoa mỹ, nên chỉ mong những điều giản dị nhất: chị ăn ngon, ngủ đủ, cười nhiều, và lúc nào cũng thấy mình được thương.</p>
+          <p>Cảm ơn chị vì luôn là điểm tựa ấm áp của cả nhà. Tuổi mới, mong mọi điều tốt đẹp sẽ nở rộ quanh chị như vườn hoa này.</p>
+          <p class="paper-sign">— Thương chị nhiều</p>
+        </div>
+      </div>
+      <div class="mini-row" id="miniRow"></div>
+      <button class="btn-rose" id="btnAgain">Xem lại từ đầu</button>
+    </div>
+  </section>
+</div>
+<script src="app.js?v=2"></script>
+</body>
+</html>

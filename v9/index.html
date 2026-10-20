@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bản 9 — Vườn Bí Mật</title>
+<link rel="stylesheet" href="../css/fonts.css?v=7">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+:root{--ease:cubic-bezier(.2,0,0,1);--spring:cubic-bezier(.34,1.45,.64,1);--ink:#6B4453;--deep:#7A344F;--soft:#9A6478;--rose:#E0528A}
+body{font-family:'Roboto Flex',sans-serif;background:linear-gradient(180deg,#E9F7EE 0%,#FFF3E4 50%,#FFE9F1 100%);color:var(--ink);overflow-x:hidden;user-select:none;-webkit-user-select:none}
+img{pointer-events:none}
+.step{display:none;min-height:100dvh;flex-direction:column;align-items:center;padding:40px 22px 34px;text-align:center}
+.step.active{display:flex}
+.btn{display:inline-flex;align-items:center;height:52px;padding:0 32px;border-radius:999px;border:none;cursor:pointer;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;background:linear-gradient(180deg,#F27BA7,#E0528A);box-shadow:0 10px 24px rgba(224,82,138,.35);transition:all .3s var(--ease);opacity:0;pointer-events:none;transform:translateY(10px)}
+.btn.show{opacity:1;pointer-events:auto;transform:none}
+.btn:active{transform:scale(.96)}
+.kicker{font-family:'Dancing Script',cursive;font-size:32px;color:#D96C97}
+.title{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(36px,10.5vw,48px);line-height:1.12;color:var(--deep);margin:10px 0 8px}
+.sub{font-size:16px;line-height:25px;color:var(--soft);max-width:35ch}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.petal{position:absolute;top:-24px;border-radius:62% 38% 60% 40%/55% 45% 55% 45%;opacity:.7;animation:pfall linear forwards}
+@keyframes pfall{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(14px,28dvh) rotate(120deg)}50%{transform:translate(-10px,56dvh) rotate(220deg)}75%{transform:translate(12px,84dvh) rotate(310deg)}100%{transform:translate(-6px,112dvh) rotate(400deg)}}
+/* cổng vườn */
+.gate{position:relative;width:236px;height:262px;margin:14px auto 0;perspective:900px}
+.behind{position:absolute;left:50%;top:54%;transform:translate(-50%,-50%) scale(.8);width:190px;border-radius:18px;overflow:hidden;opacity:0;transition:all 1.1s var(--ease) .35s;box-shadow:0 14px 32px rgba(150,80,90,.3)}
+.behind img{width:100%;display:block}
+.gate.open .behind{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.arch{position:absolute;left:50%;top:16px;transform:translateX(-50%);width:236px;height:56px;border:6px solid #B96A8E;border-bottom:none;border-radius:118px 118px 0 0;z-index:3}
+.door{position:absolute;top:50px;width:112px;height:212px;z-index:2;transition:transform 1.2s var(--ease);
+  background:repeating-linear-gradient(90deg,rgba(185,106,142,.85) 0 5px,transparent 5px 24px),repeating-linear-gradient(0deg,rgba(185,106,142,.85) 0 5px,transparent 5px 30px);
+  border:5px solid #B96A8E;background-color:rgba(255,233,241,.55)}
+.door.l{left:6px;border-radius:60px 6px 6px 6px;transform-origin:left center}
+.door.r{right:6px;border-radius:6px 60px 6px 6px;transform-origin:right center}
+.gate.open .door.l{transform:rotateY(-72deg)}
+.gate.open .door.r{transform:rotateY(72deg)}
+.gate-knob{position:absolute;top:150px;width:13px;height:13px;border-radius:50%;background:#F2A93B;z-index:4;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.gate-knob.l{right:118px}.gate-knob.r{left:118px}
+.gate.open .gate-knob{opacity:0;transition:opacity .4s}
+/* bụi hoa + chìa khóa */
+.bushes{position:relative;width:100%;max-width:400px;height:300px;margin-top:8px}
+.bush{position:absolute;width:104px;height:88px;cursor:pointer}
+.bush .leafbase{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:92px;height:42px;border-radius:50%;background:radial-gradient(ellipse at 50% 60%,#9CCB86,#6FA85C)}
+.bf{position:absolute;width:42px;height:42px}
+.bp{position:absolute;left:50%;top:50%;width:14px;height:20px;margin:-20px 0 0 -7px;border-radius:50%;transform-origin:50% 100%;transform:rotate(var(--r)) scale(.52);transition:transform .55s var(--spring);transition-delay:var(--d)}
+.bf.open .bp{transform:rotate(var(--r)) scale(1)}
+.bc{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#FFE9A8,#F2A93B);transform:scale(.55);transition:transform .5s var(--spring);transition-delay:.15s;z-index:2}
+.bf.open .bc{transform:scale(1)}
+.key{position:absolute;left:50%;top:-8px;transform:translateX(-50%) scale(0) rotate(-24deg);z-index:6;transition:transform .55s var(--spring)}
+.key svg{width:34px;height:34px;filter:drop-shadow(0 4px 8px rgba(180,120,20,.45))}
+.bush.found .key{transform:translateX(-50%) scale(1) rotate(-24deg)}
+.keybar{font-family:'Playfair Display',serif;font-weight:800;font-size:19px;color:var(--deep);margin-top:4px}
+.keybar .slot{display:inline-flex;width:30px;height:30px;border-radius:50%;border:2px dashed #D9A05B;align-items:center;justify-content:center;margin:0 3px;vertical-align:-8px;background:#FFF8EE}
+.keybar .slot svg{width:19px;height:19px;opacity:0;transform:scale(.4);transition:all .4s var(--spring)}
+.keybar .slot.got{border-style:solid;background:#FFE9A8}
+.keybar .slot.got svg{opacity:1;transform:scale(1)}
+/* màn trong vườn */
+.hero-art{width:min(320px,84vw);border-radius:24px;overflow:hidden;box-shadow:0 18px 40px rgba(150,80,90,.3);margin-top:18px}
+.hero-art img{width:100%;display:block}
+.paper{background:linear-gradient(#FFFDF7,#FBF1DE);border-radius:10px;padding:24px;width:100%;max-width:400px;box-shadow:0 22px 44px rgba(150,80,60,.2);transform:rotate(-.5deg);text-align:left;margin-top:20px}
+.paper-text{font-family:'Dancing Script',cursive;font-size:21.5px;line-height:1.55;color:#5A3A28}
+.paper-text p{margin-bottom:12px}
+.paper-sign{text-align:right;font-size:24px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px;max-width:400px}
+.chip{padding:11px 18px;border-radius:999px;border:1.5px solid #F0A8C6;background:#fff;cursor:pointer;font-family:'Playfair Display',serif;font-size:15.5px;font-weight:700;color:#A03A63}
+.chip.sel{background:var(--rose);border-color:var(--rose);color:#fff;box-shadow:0 8px 20px rgba(224,82,138,.4)}
+</style>
+</head>
+<body>
+<div id="fx"></div>
+
+<section class="step active" id="s1">
+  <p class="kicker">Một khu vườn bị khóa</p>
+  <h1 class="title">Vườn Bí Mật<br>Sinh Nhật</h1>
+  <p class="sub">Sau cánh cổng này là món quà sinh nhật của chị. Nhưng cổng cần <b>3 chiếc chìa khóa</b> — chúng đang giấu trong những bụi hoa quanh đây.</p>
+  <div class="gate" id="gate">
+    <div class="behind"><img src="../assets/art/bouquet.webp" alt="Bó hoa sau cổng"></div>
+    <div class="arch"></div>
+    <div class="door l"></div><div class="door r"></div>
+    <span class="gate-knob l"></span><span class="gate-knob r"></span>
+  </div>
+  <div class="bushes" id="bushes"></div>
+  <p class="keybar">Chìa khóa: <span class="slot" id="slot0"></span><span class="slot" id="slot1"></span><span class="slot" id="slot2"></span></p>
+  <p class="sub" id="gateMsg" style="margin-top:8px">Chạm vào các bụi hoa để tìm chìa khóa</p>
+  <button class="btn" id="btnEnter" style="margin-top:12px">Bước vào vườn</button>
+</section>
+
+<section class="step" id="s2">
+  <p class="kicker">Cổng đã mở rồi</p>
+  <h2 class="title" style="font-size:34px">Món Quà Trong Vườn<br>Là Dành Cho Chị</h2>
+  <div class="hero-art"><img src="../assets/art/bouquet.webp" alt="Bó hoa tặng chị"></div>
+  <div class="paper">
+    <div class="paper-text">
+      <p>Chúc mừng sinh nhật chị. Người ta nói vườn bí mật chỉ mở cho người thật đặc biệt — và hôm nay, người đó là chị.</p>
+      <p>Mong tuổi mới của chị như khu vườn này: càng đi vào càng thấy hoa, và bất ngờ nào cũng dễ thương.</p>
+      <p class="paper-sign">— Thương chị nhiều</p>
+    </div>
+  </div>
+  <div class="chips" id="chips">
+    <button class="chip">Sức khỏe dồi dào</button>
+    <button class="chip">Hạnh phúc ngập tràn</button>
+    <button class="chip">Bình an mỗi ngày</button>
+    <button class="chip">May mắn mỉm cười</button>
+  </div>
+  <p class="sub" id="wishLine" style="min-height:26px;margin-top:10px"></p>
+  <button class="btn show" style="margin-top:10px;opacity:1;pointer-events:auto;transform:none" onclick="location.reload()">Chơi lại từ đầu</button>
+</section>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const rand=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+document.addEventListener("contextmenu",e=>e.preventDefault());
+function go(id){document.querySelectorAll(".step").forEach(s=>s.classList.toggle("active",s.id===id));window.scrollTo(0,0)}
+const fx=$("fx"),PC=["#F7A8C4","#BEE3C0","#FFD9A8","#FBC2D5"];
+function petal(){if(fx.querySelectorAll(".petal").length>14)return;const p=document.createElement("div");p.className="petal";const s=rand(8,14);p.style.cssText=`left:${rand(0,97)}%;width:${s}px;height:${s}px;background:${pick(PC)};animation-duration:${rand(7,11)}s`;fx.appendChild(p);setTimeout(()=>p.remove(),11500)}
+setInterval(petal,950);petal();
+const KEYSVG='<svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="5" stroke="#C8912A" stroke-width="2.4"/><path d="M11.5 11.5 L20 20 M17 17 L19.5 14.5 M14.5 14.5 L17 12" stroke="#C8912A" stroke-width="2.4" stroke-linecap="round"/></svg>';
+document.querySelectorAll(".keybar .slot").forEach(s=>s.innerHTML=KEYSVG);
+/* bụi hoa + khóa */
+const TONES=[["#F78FB3","#F5A8C9"],["#FFB59E","#FFC7AE"],["#C3A6E8","#D3BDF0"],["#FFD66B","#FFE08F"],["#F49AC1","#F8B4D4"]];
+const POS=[{l:"0%",t:"4%"},{l:"34%",t:"0%"},{l:"67%",t:"5%"},{l:"6%",t:"38%"},{l:"40%",t:"34%"},{l:"72%",t:"40%"},{l:"24%",t:"70%"},{l:"58%",t:"72%"}];
+const withKey=new Set();while(withKey.size<3)withKey.add(Math.floor(rand(0,8)));
+let keys=0;
+const bushes=$("bushes");
+function makeFlower(tone,delay){
+  const f=document.createElement("div");f.className="bf";
+  for(let i=0;i<5;i++){const p=document.createElement("i");p.className="bp";p.style.cssText=`--r:${i*72}deg;--d:${delay+i*40}ms;background:linear-gradient(180deg,${tone[0]},${tone[1]})`;f.appendChild(p)}
+  const c=document.createElement("i");c.className="bc";f.appendChild(c);return f;
+}
+POS.forEach((pos,idx)=>{
+  const bush=document.createElement("div");bush.className="bush";
+  bush.style.cssText=`left:${pos.l};top:${pos.t}`;
+  bush.innerHTML='<div class="leafbase"></div>'+(withKey.has(idx)?`<span class="key">${KEYSVG}</span>`:"");
+  const spots=[{l:4,t:12},{l:36,t:0},{l:60,t:14}];
+  spots.forEach((sp,j)=>{const f=makeFlower(TONES[(idx+j)%5],j*70);f.style.cssText=`position:absolute;left:${sp.l}px;top:${sp.t}px;transform:scale(${rand(.82,1.05)})`;bush.appendChild(f)});
+  bush.addEventListener("pointerdown",()=>{
+    bush.querySelectorAll(".bf").forEach(f=>f.classList.add("open"));
+    if(withKey.has(idx)&&!bush.classList.contains("found")){
+      bush.classList.add("found");
+      $("slot"+keys).classList.add("got");keys++;
+      $("gateMsg").textContent=keys<3?`Tìm thấy chìa khóa thứ ${keys}! Còn ${3-keys} chiếc nữa.`:"Đủ 3 chìa khóa rồi — cổng đang mở!";
+      if(keys>=3){$("gate").classList.add("open");$("btnEnter").classList.add("show");
+        for(let i=0;i<10;i++)setTimeout(petal,i*90)}
+    }
+  });
+  bushes.appendChild(bush);
+});
+$("btnEnter").addEventListener("click",()=>go("s2"));
+document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{document.querySelectorAll(".chip").forEach(x=>x.classList.remove("sel"));c.classList.add("sel");$("wishLine").textContent="Đã treo điều ước “"+c.textContent+"” lên cổng vườn cho chị rồi."}));
+</script>
+</body>
+</html>
