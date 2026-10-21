@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Ngàn Cánh Hoa — Chúc Mừng Sinh Nhật</title>
+<link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+<div id="stage">
+  <canvas id="world"></canvas>
+
+  <!-- PHASE 1: the locked gift -->
+  <div id="lockUI">
+    <p id="lockTitle">Một món quà đang khoá</p>
+    <img id="lockEnv" src="assets/img/envelope.webp" alt="">
+    <div id="slots">
+      <svg class="slot" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.9-10-9.3C.4 8.6 2.3 5 5.7 5c2 0 3.4 1.1 4.3 2.6h4C15 6.1 16.4 5 18.4 5c3.4 0 5.3 3.6 3.6 6.7C19.5 16.1 12 21 12 21z" transform="scale(0.92) translate(1,0)"/></svg>
+      <svg class="slot" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.9-10-9.3C.4 8.6 2.3 5 5.7 5c2 0 3.4 1.1 4.3 2.6h4C15 6.1 16.4 5 18.4 5c3.4 0 5.3 3.6 3.6 6.7C19.5 16.1 12 21 12 21z" transform="scale(0.92) translate(1,0)"/></svg>
+      <svg class="slot" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.9-10-9.3C.4 8.6 2.3 5 5.7 5c2 0 3.4 1.1 4.3 2.6h4C15 6.1 16.4 5 18.4 5c3.4 0 5.3 3.6 3.6 6.7C19.5 16.1 12 21 12 21z" transform="scale(0.92) translate(1,0)"/></svg>
+      <svg class="slot" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.9-10-9.3C.4 8.6 2.3 5 5.7 5c2 0 3.4 1.1 4.3 2.6h4C15 6.1 16.4 5 18.4 5c3.4 0 5.3 3.6 3.6 6.7C19.5 16.1 12 21 12 21z" transform="scale(0.92) translate(1,0)"/></svg>
+    </div>
+    <div id="keypad">
+      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+      <span></span><button data-k="0">0</button><button data-k="del" id="delBtn">&#8592;</button>
+    </div>
+    <p id="lockHint">Mật mã là ngày đặc biệt của chị — ngày và tháng</p>
+  </div>
+
+  <!-- PHASE 2: the envelope -->
+  <div id="envWrap" class="hidden">
+    <img id="bigEnv" src="assets/img/envelope.webp" alt="">
+    <p id="envHint">Chạm để mở phong bì</p>
+  </div>
+
+  <div id="typeBox" class="hidden">
+    <div id="typeTitle"></div>
+    <div id="typeSub"></div>
+  </div>
+
+  <!-- PHASE 3: the cream letter card -->
+  <div id="cardWrap" class="hidden">
+    <div id="card">
+      <button id="cardClose" aria-label="Đóng">&times;</button>
+      <div class="card-strip"></div>
+      <img id="cardFlower" src="assets/img/peony.webp" alt="">
+      <div class="card-body">
+        <h1>Chúc Mừng Sinh Nhật</h1>
+        <p class="dear">Gửi chị,</p>
+        <p>Phong bì này chứa một ngàn cánh hoa và một lời chúc: chúc chị tuổi mới thật nhiều sức khoẻ, nhiều tiếng cười, và luôn được yêu thương như chị xứng đáng.</p>
+        <p>Mong những điều đẹp nhất sẽ tìm đến chị — nhẹ nhàng như hoa rơi, và ở lại thật lâu.</p>
+        <p>Sinh nhật vui vẻ, chị nhé!</p>
+        <p class="sign">— Em của chị</p>
+        <p class="credit">Nhạc piano: Salamander Grand Piano (CC BY 3.0)</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="line" class="hidden"></div>
+  <canvas id="front"></canvas>
+  <button id="replay" class="hidden" title="Xem lại từ đầu">&#8635;</button>
+  <div id="vignette"></div>
+</div>
+
+<audio id="music" src="assets/audio/music.mp3" loop preload="auto"></audio>
+<audio id="unlockSnd" src="assets/audio/unlock.mp3" preload="auto"></audio>
+<audio id="wrongSnd" src="assets/audio/wrong.mp3" preload="auto"></audio>
+<audio id="shimmer" src="assets/audio/shimmer.mp3" preload="auto"></audio>
+<audio id="chime" src="assets/audio/chime.mp3" preload="auto"></audio>
+
+<script src="app.js?v=2"></script>
+</body>
+</html>
