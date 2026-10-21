@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Người Giao Hoa — Chúc Mừng Sinh Nhật</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="stage">
+  <!-- STREET -->
+  <section class="scene" id="scene-street">
+    <div class="strip" id="streetStrip">
+      <img src="assets/img/bg-street.webp" alt=""><img src="assets/img/bg-street.webp" alt=""><img src="assets/img/bg-street.webp" alt="">
+    </div>
+    <div class="sunwash"></div>
+    <img id="bike" src="assets/img/bike.webp" alt="">
+    <div id="ridebar"><div id="ridefill"></div></div>
+  </section>
+
+  <!-- DOOR -->
+  <section class="scene" id="scene-door">
+    <div class="doorbg"></div>
+    <div id="knocker" aria-label="Gõ cửa"></div>
+    <div class="doorflash"></div>
+  </section>
+
+  <!-- GARDEN -->
+  <section class="scene" id="scene-garden">
+    <div class="gardenbg"></div>
+    <div class="gardenflash"></div>
+  </section>
+
+  <!-- SHOP -->
+  <section class="scene active" id="scene-shop">
+    <div class="shopbg"></div>
+    <div class="sunbeam"></div>
+    <button id="bell" aria-label="Chuông cửa">
+      <svg viewBox="0 0 64 64" width="54" height="54"><path d="M32 6c3 0 5 2 5 5 8 2 13 9 13 18 0 8 2 12 4 15H10c2-3 4-7 4-15 0-9 5-16 13-18 0-3 2-5 5-5z" fill="#E8B34B" stroke="#B97F26" stroke-width="2.5"/><circle cx="32" cy="50" r="5" fill="#B97F26"/><path d="M14 20c2-5 6-9 11-11" stroke="#FFF3D6" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+    </button>
+    <div id="shopFlowers">
+      <img class="sf" data-i="0" src="assets/img/rose.webp" alt="">
+      <img class="sf" data-i="1" src="assets/img/hydrangea.webp" alt="">
+      <img class="sf" data-i="2" src="assets/img/peony.webp" alt="">
+    </div>
+    <div id="tray">
+      <div class="trayitem" data-flower="peony"><img src="assets/img/peony.webp" alt=""><span>Mẫu đơn</span></div>
+      <div class="trayitem" data-flower="lisianthus"><img src="assets/img/lisianthus.webp" alt=""><span>Cát tường</span></div>
+      <div class="trayitem" data-flower="tulip"><img src="assets/img/tulip.webp" alt=""><span>Tulip</span></div>
+      <div class="trayitem" data-flower="hydrangea"><img src="assets/img/hydrangea.webp" alt=""><span>Tú cầu</span></div>
+      <div class="trayitem" data-flower="baby"><img src="assets/img/baby.webp" alt=""><span>Baby</span></div>
+    </div>
+  </section>
+
+  <!-- THE BOUQUET: one hero object carried through every scene -->
+  <div id="bouquet" class="hidden pos-counter">
+    <div id="bheads"></div>
+    <img id="bbase" src="assets/img/bouquet-base.webp" alt="">
+    <div class="flap flap-l"></div>
+    <div class="flap flap-r"></div>
+    <div id="ribbon"><i class="bow bow-l"></i><i class="bow bow-r"></i><i class="knot"></i></div>
+    <div id="bcard"><span>Để tới nơi<br>hãy mở</span></div>
+    <div id="holdring"><svg viewBox="0 0 60 60"><circle class="ringbg" cx="30" cy="30" r="26"/><circle class="ringfg" cx="30" cy="30" r="26"/></svg></div>
+  </div>
+
+  <canvas id="fx"></canvas>
+  <div id="flash"></div>
+
+  <!-- LETTER -->
+  <div id="letter" class="hidden">
+    <div class="paper">
+      <h3>Chúc mừng sinh nhật chị</h3>
+      <div id="letterBody"></div>
+      <p class="sign">— Em của chị</p>
+      <button id="closeLetter">Đóng thư</button>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden"></div>
+  <div id="hint">Chạm vào chuông cửa nhé</div>
+  <button id="mute" aria-label="Tắt/bật nhạc">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#8a5a44"/><path class="wv" d="M16 9c1.5 1.5 1.5 4.5 0 6M18.5 7c2.5 2.5 2.5 7.5 0 10" stroke="#8a5a44" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+  </button>
+  <audio id="music" src="assets/audio/music.mp3" loop preload="auto"></audio>
+  <audio id="sfx-bell" src="assets/audio/bell.mp3" preload="auto"></audio>
+  <audio id="sfx-knock" src="assets/audio/knock.mp3" preload="auto"></audio>
+  <audio id="sfx-spray" src="assets/audio/spray.mp3" preload="auto"></audio>
+</div>
+<script src="app.js?v=1"></script>
+</body>
+</html>
