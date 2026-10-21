@@ -74,7 +74,7 @@
   let samplesReady = false;
   function preloadSamples() {
     const tmp = new (window.AudioContext || window.webkitAudioContext)();
-    Promise.all(GRID.map(g => fetch("assets/notes/" + g.file + ".ogg")
+    Promise.all(GRID.map(g => fetch("assets/notes/" + g.file + ".mp3")
       .then(r => r.arrayBuffer()).then(ab => tmp.decodeAudioData(ab))
       .then(buf => { SAMPLES[g.midi] = buf; }).catch(() => {})))
       .then(() => { samplesReady = Object.keys(SAMPLES).length >= 12; tmp.close(); });
