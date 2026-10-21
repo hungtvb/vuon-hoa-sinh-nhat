@@ -1,0 +1,57 @@
+@font-face { font-family: 'Dancing Script'; src: url('assets/fonts/dancing-vietnamese.woff2') format('woff2'); font-weight: 400 700; font-display: swap; }
+@font-face { font-family: 'Dancing Script'; src: url('assets/fonts/dancing-latin.woff2') format('woff2'); font-weight: 400 700; font-display: swap; }
+@font-face { font-family: 'Playfair Display'; src: url('assets/fonts/playfair-vietnamese.woff2') format('woff2'); font-weight: 400 700; font-display: swap; }
+@font-face { font-family: 'Playfair Display'; src: url('assets/fonts/playfair-latin.woff2') format('woff2'); font-weight: 400 700; font-display: swap; }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Playfair Display', serif;
+  background: #17102B;
+  color: #F7E9EE;
+  -webkit-user-select: none; user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+}
+body.vib #stage { animation: vib .18s linear; }
+@keyframes vib { 0%,100% { transform: translate(0,0); } 30% { transform: translate(.7px,-.5px); } 65% { transform: translate(-.6px,.5px); } }
+#stage { position: fixed; inset: 0; overflow: hidden; }
+#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hidden { display: none !important; }
+#flash { position: absolute; inset: 0; background: radial-gradient(circle at 50% 46%, #FFF3DC 0%, #FFD9C2 42%, rgba(255,217,194,0) 78%); opacity: 0; pointer-events: none; transition: opacity .5s ease; z-index: 5; }
+
+/* ---------- intro ---------- */
+#intro { position: absolute; inset: 0; z-index: 8; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; cursor: pointer; transition: opacity .8s ease, visibility .8s; background: radial-gradient(ellipse at 50% 62%, rgba(23,16,43,0) 30%, rgba(23,16,43,.55) 100%); }
+#intro.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+.intro-kicker { font-size: 13px; letter-spacing: .34em; text-transform: uppercase; color: #EFC3D4; opacity: .85; margin-bottom: 18px; }
+.intro-title { font-family: 'Dancing Script', cursive; font-weight: 700; font-size: clamp(52px, 15vw, 84px); line-height: 1.04; color: #FFF1E2; text-shadow: 0 0 26px rgba(255,170,190,.55), 0 2px 30px rgba(0,0,0,.35); margin-bottom: 20px; }
+.intro-sub { font-size: 16.5px; line-height: 1.65; color: #F3DCE6; max-width: 340px; margin-bottom: 40px; }
+.intro-cta { font-family: 'Dancing Script', cursive; font-size: 23px; color: #FFD9A8; animation: ctaPulse 2.2s ease-in-out infinite; }
+@keyframes ctaPulse { 0%,100% { opacity: .55; transform: scale(1); } 50% { opacity: 1; transform: scale(1.045); } }
+
+/* ---------- hud ---------- */
+#hint { position: absolute; left: 50%; bottom: calc(26px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 7; background: rgba(30,20,52,.72); color: #FFE9D6; font-size: 15.5px; padding: 11px 22px; border-radius: 999px; border: 1px solid rgba(255,205,190,.35); backdrop-filter: blur(6px); white-space: nowrap; max-width: 92vw; text-overflow: ellipsis; overflow: hidden; }
+#wishLabel { position: absolute; left: 50%; top: 15%; transform: translate(-50%,-50%) scale(.8); z-index: 7; font-family: 'Dancing Script', cursive; font-weight: 700; font-size: 44px; color: #FFE9BC; text-shadow: 0 0 22px rgba(255,190,120,.8), 0 2px 14px rgba(0,0,0,.4); opacity: 0; pointer-events: none; transition: opacity .45s ease, transform .45s ease; }
+#wishLabel.show { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+#ring { position: absolute; z-index: 7; transform: translate(-50%,-50%); pointer-events: none; }
+#ring .rbg { fill: rgba(23,16,43,.45); stroke: rgba(255,220,200,.35); stroke-width: 4; }
+#ring .rfg { fill: none; stroke: #FFC98F; stroke-width: 4; stroke-linecap: round; transform: rotate(-90deg); transform-origin: center; }
+#mute { position: absolute; top: calc(14px + env(safe-area-inset-top)); right: 14px; z-index: 9; width: 44px; height: 44px; border-radius: 50%; border: none; background: rgba(255,244,235,.92); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 16px rgba(10,5,25,.35); }
+#mute.off { opacity: .55; }
+#mute.off .wv { display: none; }
+
+/* ---------- letter card + letter ---------- */
+#lettercard { position: absolute; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 8; border: 1px solid rgba(255,214,190,.55); cursor: pointer; background: linear-gradient(160deg, #FFF6EC, #FFE3D3); color: #7A3B55; border-radius: 18px; padding: 15px 26px 13px; display: flex; flex-direction: column; gap: 2px; align-items: center; box-shadow: 0 14px 38px rgba(5,2,18,.5), 0 0 24px rgba(255,180,150,.25); font-family: inherit; animation: cardIn .7s cubic-bezier(.2,1.4,.4,1) both; }
+#lettercard.locked { animation: cardShake .3s ease; }
+.lc-title { font-family: 'Dancing Script', cursive; font-weight: 700; font-size: 24px; }
+.lc-sub { font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; opacity: .75; }
+@keyframes cardIn { from { opacity: 0; transform: translate(-50%, 18px) scale(.92); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
+@keyframes cardShake { 0%,100% { transform: translateX(-50%); } 30% { transform: translateX(calc(-50% - 5px)); } 65% { transform: translateX(calc(-50% + 5px)); } }
+#letter { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 9; width: min(88vw, 400px); max-height: 82vh; overflow-y: auto; background: linear-gradient(168deg, #FFF9F0, #FFEFE2); color: #6B4257; border-radius: 22px; padding: 30px 28px 24px; box-shadow: 0 24px 60px rgba(3,1,12,.6); animation: cardIn2 .6s cubic-bezier(.2,1.3,.4,1) both; }
+@keyframes cardIn2 { from { opacity: 0; transform: translate(-50%,-46%) scale(.94); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+.letter-title { font-family: 'Dancing Script', cursive; font-weight: 700; font-size: 32px; text-align: center; color: #B0526F; margin-bottom: 16px; }
+#letterBody p { font-size: 16.5px; line-height: 1.62; margin-bottom: 11px; opacity: 0; transform: translateY(7px); transition: opacity .5s ease, transform .5s ease; }
+#letterBody p.show { opacity: 1; transform: none; }
+.sign { font-family: 'Dancing Script', cursive; font-size: 24px; text-align: right; color: #B0526F; margin: 8px 0 16px; opacity: 0; transition: opacity .6s ease; }
+.sign.show { opacity: 1; }
+#closeLetter { display: block; margin: 0 auto; border: none; cursor: pointer; background: #D4708E; color: #FFF6EC; font-family: 'Dancing Script', cursive; font-weight: 700; font-size: 19px; padding: 9px 34px; border-radius: 999px; box-shadow: 0 8px 20px rgba(180,90,120,.4); }
