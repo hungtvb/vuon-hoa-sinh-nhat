@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Gió Và Hoa — Chúc Mừng Sinh Nhật</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="stage">
+  <canvas id="world"></canvas>
+
+  <div id="line" class="hidden"></div>
+
+  <div id="letter" class="hidden" aria-hidden="true">
+    <div class="letter-inner">
+      <h1>Chúc Mừng Sinh Nhật</h1>
+      <p class="dear">Gửi chị,</p>
+      <p>Hôm nay em gửi tặng chị một cơn gió lành — gió cuốn đi những mệt mỏi của năm cũ, và mang về một mùa hoa mới rực rỡ hơn.</p>
+      <p>Chúc chị tuổi mới thật nhiều sức khoẻ, nhiều niềm vui, và luôn nhẹ lòng như cánh hoa trong gió: đi đâu cũng thong dong, ở đâu cũng được yêu thương.</p>
+      <p>Sinh nhật vui vẻ, chị nhé!</p>
+      <p class="sign">— Em của chị</p>
+      <p class="credit">Nhạc piano: Salamander Grand Piano (CC BY 3.0)</p>
+    </div>
+  </div>
+
+  <canvas id="front"></canvas>
+  <button id="replay" class="hidden" title="Xem lại từ đầu">&#8635;</button>
+  <div id="vignette"></div>
+</div>
+
+<audio id="music" src="assets/audio/music.mp3" loop preload="auto"></audio>
+<audio id="shimmer" src="assets/audio/shimmer.mp3" preload="auto"></audio>
+<audio id="chime" src="assets/audio/chime.mp3" preload="auto"></audio>
+
+<script src="app.js?v=1"></script>
+</body>
+</html>
