@@ -19,7 +19,6 @@ const typeBox = document.getElementById('typeBox');
 const typeTitle = document.getElementById('typeTitle');
 const typeSub = document.getElementById('typeSub');
 const cardWrap = document.getElementById('cardWrap');
-const letterBtn = document.getElementById('letterBtn');
 const lineEl = document.getElementById('line');
 const replayBtn = document.getElementById('replay');
 const music = document.getElementById('music');
@@ -93,8 +92,9 @@ const ambient = [];
 for (let i = 0; i < 14; i++) ambient.push({ x: Math.random() * W, y: Math.random() * H, s: 7 + Math.random() * 9, vy: 9 + Math.random() * 13, ph: Math.random() * 6.28, rot: Math.random() * 6.28 });
 
 // ---------- state ----------
-let phase = 'lock';          // lock | sealed | fountain | await | card | finale
-let sealedAt = 0, letterAt = 0;
+let phase = 'lock';          // lock | sealed | fountain | finale | card
+let sealedAt = 0;
+let finaleStarted = false, heartSetupDone = false, letterRead = false, heartFormedAt = 0;
 let phaseT = 0;
 let entered = '';
 let lockBusy = false;
@@ -217,6 +217,7 @@ function startType() {
 function showCard() {
   if (cardShown) return;
   cardShown = true;
+  letterRead = true;
   phase = 'card'; phaseT = 0;
   typeBox.classList.add('hidden');
   playSnd(chime);
@@ -227,16 +228,13 @@ function hideCard() {
   cardWrap.classList.remove('show');
   setTimeout(() => {
     cardWrap.classList.add('hidden');
-    if (phase === 'card') { phase = 'finale'; phaseT = 0; finaleT = 0; }
+    if (phase === 'card') {
+      phase = 'finale'; phaseT = 0;
+      if (!finaleStarted) { finaleStarted = true; finaleT = 0; }
+    }
     setTimeout(() => replayBtn.classList.remove('hidden'), 2400);
   }, 480);
 }
-letterBtn.addEventListener('click', () => {
-  if (phase !== 'await') return;
-  if (performance.now() - letterAt < 400) return;
-  letterBtn.classList.add('hidden');
-  showCard();
-});
 document.getElementById('cardClose').addEventListener('click', hideCard);
 cardWrap.addEventListener('click', (e) => { if (e.target === cardWrap) hideCard(); });
 replayBtn.addEventListener('click', () => location.reload());
@@ -257,6 +255,7 @@ function setupFinale() {
     });
     b.tx = hp.x; b.ty = hp.y;
     b.riseDelay = Math.random() * 4.2;
+    b.ht = 0;
   }
 }
 function spawnDrifters(n) {
@@ -285,8 +284,8 @@ stage.addEventListener('pointerdown', (e) => {
         break;
       }
     }
-    // tap the heart: the letter returns
-    if (heartFormed && Math.hypot(L.heart.x - e.clientX, L.heart.y - e.clientY) < L.heart.s * 1.25) {
+    // tap the heart: the letter lives inside it
+    if (heartFormed && performance.now() - heartFormedAt > 500 && Math.hypot(L.heart.x - e.clientX, L.heart.y - e.clientY) < L.heart.s * 1.25) {
       cardShown = false; showCard();
     }
   }
@@ -327,11 +326,9 @@ function update(dt, now) {
           size: 24 + Math.random() * 38,
         });
       }
-    } else if (phaseT > 7.6 && !cardShown) {
-      // the letter never opens itself: it waits, glowing, for a deliberate tap
-      phase = 'await'; phaseT = 0;
-      letterAt = performance.now();
-      letterBtn.classList.remove('hidden');
+    } else if (phaseT > 7.6) {
+      // the fountain settles into a sea of flowers; the heart gathers — and the letter waits inside it
+      phase = 'finale'; phaseT = 0; finaleT = 0; finaleStarted = true;
     }
   }
 
@@ -344,7 +341,8 @@ function update(dt, now) {
     if (finaleT > 16 && trickleT <= 0) { trickleT = 2 + Math.random() * 1.4; spawnDrifters(1 + Math.floor(Math.random() * 3)); }
     if (finaleT > 8.6 && !heartFormed) {
       heartFormed = true;
-      showLine('Rê tay qua biển hoa, chạm vào trái tim nhé', 5600);
+      heartFormedAt = performance.now();
+      showLine(letterRead ? 'Rê tay qua biển hoa…' : 'Chạm vào trái tim nhé', 5400);
     }
     heartLean.x *= Math.pow(0.12, dt); heartLean.y *= Math.pow(0.12, dt);
     if (pointer.down && (Math.abs(pointer.vx) > 0.25 || Math.abs(pointer.vy) > 0.25)) {
@@ -395,7 +393,8 @@ function update(dt, now) {
       b.fade = Math.min(1, Math.max(0, (b.ttl - b.life) / 3));
       if (b.y < -50 || b.life > b.ttl) blooms.splice(i, 1);
     } else if (b.state === 'heart') {
-      const t = finaleT - (b.riseDelay || 0);
+      b.ht = (b.ht || 0) + dt;
+      const t = b.ht - (b.riseDelay || 0);
       if (t < 5) {           // rising with the others
         b.y -= dt * (26 + (b.ph % 1) * 16);
         b.x += Math.sin(now + b.ph) * 8 * dt;
@@ -478,7 +477,7 @@ function frame(ts) {
   const now = ts / 1000;
   let dt = (ts - last) / 1000; last = ts;
   dt = Math.min(dt, 0.033);
-  if (phase === 'finale' && finaleT === 0 && blooms.every(b => b.state !== 'heart')) setupFinale();
+  if (phase === 'finale' && !heartSetupDone) { heartSetupDone = true; setupFinale(); }
   update(dt, now);
   draw(now);
   requestAnimationFrame(frame);
@@ -490,7 +489,7 @@ window.__petals = {
   phase: () => phase,
   enterPin: (digits) => { for (const d of digits) pinKey(d); },
   openEnvelope: () => bigEnv.click(),
-  openLetter: () => letterBtn.click(),
+  tapHeart: () => { if (heartFormed) { cardShown = false; showCard(); } },
   fountainCount: () => blooms.filter(b => b.state === 'fountain').length,
   heartFormed: () => heartFormed,
   cardVisible: () => !cardWrap.classList.contains('hidden'),
