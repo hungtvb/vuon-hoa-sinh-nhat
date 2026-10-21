@@ -24,7 +24,7 @@ window.Rose = (function () {
     const c = document.createElement("canvas"); c.width = 256; c.height = 256;
     const g = c.getContext("2d");
     const grad = g.createLinearGradient(0, 256, 0, 0);
-    grad.addColorStop(0, "#F3D3BC");   // gốc cánh: kem ấm
+    grad.addColorStop(0, "#EFA9C0");   // gốc cánh: hồng vừa (bớt mảng kem lạc lõng)
     grad.addColorStop(0.45, "#F0A0B8"); // blush đậm
     grad.addColorStop(0.8, "#EC74A4");  // hồng rõ
     grad.addColorStop(1, "#D94F7A");    // mép: hồng đậm
@@ -61,10 +61,10 @@ window.Rose = (function () {
     petalTex = makePetalTexture();
     group = new THREE.Group();
     // thân + lá
-    const stemMat = new THREE.MeshStandardMaterial({ color: 0x3F6B3C, roughness: 0.85 });
+    const stemMat = new THREE.MeshStandardMaterial({ color: 0x7FA36B, roughness: 0.9 });
     const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.06, 2.4, 8), stemMat);
     stem.position.y = -1.2; group.add(stem);
-    const leafMat = new THREE.MeshStandardMaterial({ color: 0x3F6B3C, roughness: 0.8, side: THREE.DoubleSide });
+    const leafMat = new THREE.MeshStandardMaterial({ color: 0x8FB573, roughness: 0.85, side: THREE.DoubleSide });
     [[-0.5, -0.9, 0.7], [0.5, -1.4, -0.7]].forEach(L => {
       const leaf = new THREE.Mesh(petalGeometry(0.55, 0.8, 0.5, 0.3), leafMat);
       leaf.position.set(L[0] * 0.4, L[1] + 0.8, 0);
@@ -94,7 +94,7 @@ window.Rose = (function () {
     });
     group.scale.setScalar(4.2);
     group.position.set(0, -2.6, 10);
-    group.rotation.x = 0.45; // nghiêng về phía người xem để thấy tâm xoắn ốc
+    group.rotation.x = 0.72; // nghiêng mạnh về phía người xem để thấy tâm xoắn ốc từ trên-xéo
     scene.add(group);
   }
 

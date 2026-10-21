@@ -13,7 +13,7 @@ window.Rain = (function () {
     "Công việc thuận lợi", "Luôn xinh đẹp như hôm nay", "Được thương thật nhiều",
     "Chị là tuyệt nhất", "Năm nay thật nhiều tin vui", "Thương chị nhiều"
   ];
-  const TEXTCOLORS = ["#8A2A4E", "#C2437C", "#A03A63", "#B85C00", "#7A344F"];
+  const TEXTCOLORS = ["#8A2A4E", "#C2437C", "#A03A63", "#6D2A4A", "#7A344F"];
   const HOLD_S = 1.8;
 
   let scene, camera, lite = false;
@@ -112,7 +112,13 @@ window.Rain = (function () {
   function build(sc, cam, isLite) {
     scene = sc; camera = cam; lite = !!isLite;
     group = new THREE.Group(); group.visible = false; scene.add(group);
-    const textPool = MESSAGES.map((m, i) => textTexture(m, TEXTCOLORS[i % TEXTCOLORS.length], i % 4 === 0));
+    const HERO = { "Chúc mừng sinh nhật chị": 1, "Chúc chị luôn khỏe mạnh": 1, "Thương chị nhiều": 1 };
+    const textPool = MESSAGES.map((m, i) => {
+      const hero = !!HERO[m];
+      const t = textTexture(m, TEXTCOLORS[i % TEXTCOLORS.length], hero);
+      t.hero = hero;
+      return t;
+    });
     const heartTex = heartTexture();
     const flowerTexA = flowerTexture("#F78FB3", "#F5A8C9");
     const flowerTexB = flowerTexture("#FFD66B", "#FFC7AE");
@@ -135,7 +141,7 @@ window.Rain = (function () {
       for (let col = 0; col < cols; col++) {
         const pickT = textPool[Math.floor(Math.random() * textPool.length)];
         const x = -26 + (52 / (cols - 1)) * col + rand(-1.4, 1.4);
-        addSprite(pickT.tex, pickT.aspect, 1.55 * scaleF, x, rand(-30, 40), z,
+        addSprite(pickT.tex, pickT.aspect, 1.55 * scaleF * (pickT.hero ? 1.35 : 1), x, rand(-30, 40), z,
           (0.98 - l * 0.06), "text", (13 + Math.random() * 7) * (0.7 + 0.3 * scaleF));
       }
     }
@@ -210,7 +216,7 @@ window.Rain = (function () {
     hg.fill(); hg.fill();
     const htex = new THREE.CanvasTexture(hc); htex.encoding = THREE.sRGBEncoding;
     heartGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: htex, transparent: true, opacity: 0, depthWrite: false }));
-    heartGlow.scale.set(18.1, 18.1, 1);
+    heartGlow.scale.set(21.2, 21.2, 1);
     group.add(heartGlow);
   }
 
@@ -253,13 +259,13 @@ window.Rain = (function () {
     const t = (k * 2.39996) % (Math.PI * 2);
     const x = 16 * Math.pow(Math.sin(t), 3);
     const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
-    return new THREE.Vector3(x * 0.46, y * 0.46 + 0.4, (Math.random() - 0.5) * 1.7);
+    return new THREE.Vector3(x * 0.54, y * 0.54 + 0.4, (Math.random() - 0.5) * 1.7);
   }
   function insidePoint() {
     for (let tries = 0; tries < 14; tries++) {
       const x = (Math.random() * 2 - 1) * 1.02, y = (Math.random() * 2 - 1) * 1.02;
       const q = Math.pow(x * x + y * y - 1, 3) - x * x * Math.pow(y, 3);
-      if (q < -0.06) return new THREE.Vector3(x * 6.85, y * 6.35 - 0.85, (Math.random() - 0.5) * 1.3);
+      if (q < -0.06) return new THREE.Vector3(x * 7.95, y * 7.45 - 1.0, (Math.random() - 0.5) * 1.3);
     }
     return new THREE.Vector3(0, 0.4, 0);
   }
@@ -305,7 +311,7 @@ window.Rain = (function () {
   function update(dt, t) {
     if (!group || mode === "off") return;
     if (rainFade < 1) rainFade = Math.min(1, rainFade + dt / 1.2);
-    const damp = Math.exp(-2.3 * dt), dampForm = Math.exp(-3.4 * dt);
+    const damp = Math.exp(-1.9 * dt), dampForm = Math.exp(-3.4 * dt);
 
     if (mode === "gather" || mode === "fall") {
       if (holding && mode === "gather") {
@@ -331,9 +337,9 @@ window.Rain = (function () {
         if (holding) {
           const aw = pointerWorld(pointerPx.x, pointerPx.y, p.z);
           const dir = aw.clone().sub(p); const d = Math.max(0.001, dir.length());
-          const pull = 30 * (0.35 + holdProgress * 1.5) * Math.min(1, d / 6 + 0.3);
+          const pull = 34 * (0.95 + holdProgress * 1.25) * Math.min(1, d / 6 + 0.35);
           const acc = dir.multiplyScalar(pull / d);
-          const tang = new THREE.Vector3(-dir.y, dir.x, 0).multiplyScalar(9 * (1 - holdProgress * 0.45) / d);
+          const tang = new THREE.Vector3(-dir.y, dir.x, 0).multiplyScalar(19 * (1 - holdProgress * 0.3) / d);
           f.vel.add(acc.add(tang).multiplyScalar(dt));
         } else {
           f.vel.y -= f.speed * 0.6 * dt;
@@ -374,10 +380,10 @@ window.Rain = (function () {
       }
     }
     if (heartGlow) {
-      const ht = (mode === "form" || mode === "heart") ? 0.85 : 0;
+      const ht = (mode === "form" || mode === "heart") ? 0.95 : 0;
       heartGlow.material.opacity += (ht - heartGlow.material.opacity) * Math.min(1, dt * (mode === "burst" ? 6 : 2));
-      heartGlow.position.set(heartCenter.x, heartCenter.y - 0.84, -2.5);
-      const hs = 18.1 * (mode === "heart" ? pulse : 1);
+      heartGlow.position.set(heartCenter.x, heartCenter.y - 0.99, -2.5);
+      const hs = 21.2 * (mode === "heart" ? pulse : 1);
       heartGlow.scale.set(hs, hs, 1);
     }
     if (mode === "burst") {
@@ -386,6 +392,22 @@ window.Rain = (function () {
     }
     if (sparkles) {
       const posA = sparkles.geometry.attributes.position.array;
+      if (mode === "gather") {
+        const kk = 1 - Math.exp(-1.1 * dt);
+        for (let i = 0; i < posA.length; i += 3) {
+          posA[i] += (attractor.x - posA[i]) * kk * 0.4;
+          posA[i + 1] += (attractor.y - posA[i + 1]) * kk * 0.4;
+        }
+        sparkles.geometry.attributes.position.needsUpdate = true;
+      } else if (mode === "fall") {
+        const kk = 1 - Math.exp(-0.7 * dt);
+        for (let i = 0; i < posA.length; i += 3) {
+          posA[i] += (sparkleHome[i] - posA[i]) * kk;
+          posA[i + 1] += (sparkleHome[i + 1] - posA[i + 1]) * kk;
+          posA[i + 2] += (sparkleHome[i + 2] - posA[i + 2]) * kk;
+        }
+        sparkles.geometry.attributes.position.needsUpdate = true;
+      }
       if (mode === "form" || mode === "heart") {
         sparkles.rotation.y *= Math.exp(-2.5 * dt);
         const k = 1 - Math.exp(-2.8 * dt);

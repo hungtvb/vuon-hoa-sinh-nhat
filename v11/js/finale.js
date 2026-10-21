@@ -59,7 +59,7 @@ window.Finale = (function () {
     for (let i = 0; i < 10; i++) {
       const s = document.createElement("div");
       const sz = 8 + Math.random() * 8;
-      s.style.cssText = `position:fixed;left:${c.x}px;top:${c.y}px;width:${sz}px;height:${sz}px;z-index:8;pointer-events:none;border-radius:62% 38% 60% 40%/55% 45% 55% 45%;background:${["#F7A8C4", "#FFD9A8", "#F49AC1"][i % 3]}`;
+      s.style.cssText = `position:fixed;left:${c.x}px;top:${c.y}px;width:${sz}px;height:${sz}px;z-index:8;pointer-events:none;border-radius:62% 38% 60% 40%/55% 45% 55% 45%;background:${["#F7A8C4", "#FFD9A8", "#DCC9F5"][i % 3]}`;
       document.body.appendChild(s);
       const a = Math.random() * Math.PI * 2, d = 60 + Math.random() * 90;
       s.animate([
@@ -87,7 +87,7 @@ window.Finale = (function () {
     for (let i = 0; i < 26; i++) {
       const s = document.createElement("div");
       const sz = 9 + Math.random() * 10;
-      s.style.cssText = `position:fixed;left:${Math.random() * 100}vw;top:-30px;width:${sz}px;height:${sz}px;z-index:13;pointer-events:none;border-radius:62% 38% 60% 40%/55% 45% 55% 45%;background:${["#F7A8C4", "#FFD9A8", "#F49AC1", "#FBC2D5"][i % 4]}`;
+      s.style.cssText = `position:fixed;left:${Math.random() * 100}vw;top:-30px;width:${sz}px;height:${sz}px;z-index:13;pointer-events:none;border-radius:62% 38% 60% 40%/55% 45% 55% 45%;background:${["#F7A8C4", "#FFD9A8", "#F49AC1", "#DCC9F5"][i % 4]}`;
       document.body.appendChild(s);
       s.animate([
         { transform: "translateY(0) rotate(0)", opacity: 1 },
@@ -108,7 +108,7 @@ window.Finale = (function () {
     if (cyc < SURGE_DUR) { const p = cyc / SURGE_DUR; surgeM = 1 + 3 * Math.sin(p * Math.PI); }
     if (focusedIdx < 0) angle += dt * (Math.PI * 2 / PERIOD) * brakeM * surgeM;
     const c = projectFn ? projectFn() : { x: innerWidth / 2, y: innerHeight / 2 };
-    const rx = Math.min(innerWidth * 0.43, 340), ry = rx * 0.34;
+    const rx = Math.min(innerWidth * 0.46, 360), ry = rx * 0.34;
     cardEls.forEach((el, i) => {
       if (i === focusedIdx) {
         el.style.transform = `translate(${c.x}px, ${c.y - 190}px) translate(-50%,-50%) scale(1.3)`;
@@ -118,8 +118,8 @@ window.Finale = (function () {
       const a = angle + (i / cardEls.length) * Math.PI * 2;
       const x = c.x + Math.cos(a) * rx, y = c.y + Math.sin(a) * ry;
       const depth = (Math.sin(a) + 1) / 2;
-      el.style.transform = `translate(${x}px, ${y}px) translate(-50%,-50%) scale(${0.72 + 0.3 * depth})`;
-      el.style.opacity = String(0.5 + 0.5 * depth);
+      el.style.transform = `translate(${x}px, ${y}px) translate(-50%,-50%) scale(${0.58 + 0.4 * depth})`;
+      el.style.opacity = String(0.32 + 0.68 * depth);
       el.style.zIndex = String(4 + Math.round(depth * 10));
     });
   }
