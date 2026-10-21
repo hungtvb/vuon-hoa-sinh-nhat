@@ -56,116 +56,26 @@
     };
   }
 
-  /* ---------------- nhạc: SAMPLER piano thật (đúng cách lovegift làm) ----------------
-     Phát MẪU GHI ÂM piano thật (Salamander Grand Piano, CC BY 3.0 — Alexander
-     Holm) bằng sampler: chọn mẫu gần nhất + dịch cao độ; hợp âm rải chậm +
-     giai điệu ngũ cung thưa; nhạc bắt đầu từ tương tác đầu tiên.
-     QUAN TRỌNG cho iOS: file chỉ được TẢI TRƯỚC dạng thô; việc GIẢI MÃ phải
-     diễn ra trên AudioContext tạo ngay trong cú chạm (context tạo sớm bị iOS
-     treo -> giải mã không xong -> im lặng). Có lớp bảo hiểm: mẫu hỏng thì
-     chuyển sang đệm synth dự phòng, không bao giờ để trang câm. */
-  let AC = null, master = null, delaySend = null, muted = false;
-  let chordTimer = null, tickTimer = null, chordIdx = 0, noteCount = 0, melDeg = 2;
-  let mode = "pending";                     // sampler | synth | pending
-  const SAMPLES = {};                       // midi -> AudioBuffer
-  const RAW = {};                           // midi -> ArrayBuffer (chưa giải mã)
-  const GRID = [];
-  for (const [nm, pc] of [["C", 0], ["Ds", 3], ["Fs", 6], ["A", 9]])
-    for (let oct = 2; oct <= 6; oct++) GRID.push({ file: nm + oct, midi: 12 * (oct + 1) + pc });
-  const CHORDS = [
-    [50, 57, 62, 66], [47, 54, 59, 62], [43, 50, 55, 59], [45, 52, 57, 61]
-  ];
-  const SCALE = [74, 76, 78, 81, 83, 86, 88, 90];
-  const FREQ = m => 440 * Math.pow(2, (m - 69) / 12);
-  for (const g of GRID)
-    fetch("assets/notes/" + g.file + ".mp3").then(r => r.arrayBuffer())
-      .then(ab => { RAW[g.midi] = ab; }).catch(() => {});
-  function playNote(midi, vol, echo) {
-    let best = null, bd = 1e9;
-    for (const m in SAMPLES) { const d = Math.abs(m - midi); if (d < bd) { bd = d; best = +m; } }
-    if (best === null) return;
-    const src = AC.createBufferSource();
-    src.buffer = SAMPLES[best];
-    src.playbackRate.value = Math.pow(2, (midi - best) / 12);
-    const g = AC.createGain(); g.gain.value = vol;
-    src.connect(g); g.connect(master);
-    if (echo) g.connect(delaySend);
-    src.start();
-    noteCount++;
-  }
-  /* --- lớp dự phòng: đệm + chuông synth (chỉ khi mẫu piano nạp hỏng) --- */
-  function padSynth(midis) {
-    const t = AC.currentTime;
-    const lp = AC.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 820;
-    lp.connect(master);
-    for (const m of midis) for (const det of [1, 1.004]) {
-      const o = AC.createOscillator(), g = AC.createGain();
-      o.type = det === 1 ? "triangle" : "sine"; o.frequency.value = FREQ(m) * det;
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.03, t + 2.6);
-      g.gain.setValueAtTime(0.03, t + 7.2);
-      g.gain.linearRampToValueAtTime(0, t + 10.4);
-      o.connect(g); g.connect(lp); o.start(t); o.stop(t + 10.6);
-    }
-  }
-  function bellSynth(midi) {
-    const t = AC.currentTime, f = FREQ(midi);
-    const g = AC.createGain();
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.11, t + 0.012);
-    g.gain.exponentialRampToValueAtTime(0.0008, t + 1.9);
-    g.connect(master); g.connect(delaySend);
-    const o = AC.createOscillator(); o.type = "sine"; o.frequency.value = f;
-    o.connect(g); o.start(t); o.stop(t + 2);
-    noteCount++;
-  }
-  function playChord(notes) {
-    if (mode === "sampler") {
-      notes.forEach((n, k) => setTimeout(() => playNote(n, 0.34 - k * 0.045, false), k * 380));
-      if (Math.random() < 0.5) setTimeout(() => playNote(notes[3] + 12, 0.1, true), 1650);
-    } else padSynth(notes);
-  }
-  function begin() {
-    playChord(CHORDS[0]); chordIdx = 1;
-    chordTimer = setInterval(() => { playChord(CHORDS[chordIdx % CHORDS.length]); chordIdx++; }, 8000);
-    tickTimer = setInterval(() => {
-      if (Math.random() < 0.23) {
-        melDeg = Math.max(0, Math.min(SCALE.length - 1, melDeg + Math.floor(rand(-2, 2.99))));
-        if (mode === "sampler") playNote(SCALE[melDeg], 0.3, true); else bellSynth(SCALE[melDeg]);
-      }
-    }, 430);
-  }
+  /* ---------------- nhạc: bản piano kết xuất sẵn, phát bằng thẻ audio ----------------
+     Nhạc được SOẠN bằng mẫu piano thật (Salamander Grand Piano, CC BY 3.0 —
+     Alexander Holm) theo lối sampler: hợp âm rải + giai điệu ngũ cung + vọng,
+     rồi KẾT XUẤT thành assets/music.mp3 ngay từ khâu sản xuất. Trang chỉ phát
+     bằng thẻ <audio> thường — kênh đã chứng minh chạy tốt trên iPhone của
+     người dùng (WebAudio bị iOS tắt tiếng trong các lần thử trước). */
+  const bgm = document.getElementById("bgm");
+  let muted = false;
   function startMusic() {
-    if (AC) { if (AC.state !== "running") AC.resume(); return; }
-    try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
-    if (AC.state !== "running") AC.resume();
-    master = AC.createGain(); master.gain.value = muted ? 0 : 0.9;
-    master.connect(AC.destination);
-    const delay = AC.createDelay(1); delay.delayTime.value = 0.42;
-    const fb = AC.createGain(); fb.gain.value = 0.32;
-    const dlp = AC.createBiquadFilter(); dlp.type = "lowpass"; dlp.frequency.value = 1700;
-    delay.connect(dlp); dlp.connect(fb); fb.connect(delay);
-    const wet = AC.createGain(); wet.gain.value = 0.33;
-    delay.connect(wet); wet.connect(master);
-    delaySend = AC.createGain(); delaySend.gain.value = 1; delaySend.connect(delay);
-    let begun = false;
-    const go = m => { if (begun) return; begun = true; mode = m; begin(); };
-    // giải mã bằng CHÍNH context vừa tạo trong cú chạm
-    const jobs = Object.keys(RAW).map(m => AC.decodeAudioData(RAW[m].slice(0))
-      .then(buf => { SAMPLES[m] = buf; }).catch(() => {}));
-    Promise.all(jobs).then(() => {
-      if (Object.keys(SAMPLES).length >= 12) go("sampler"); else go("synth");
-    });
-    setTimeout(() => { if (!begun) go(Object.keys(SAMPLES).length >= 12 ? "sampler" : "synth"); }, 5000);
-    window.__music = { get notes() { return noteCount; }, ctx: () => AC && AC.state,
-      samples: () => Object.keys(SAMPLES).length, mode: () => mode };
+    if (!bgm) return;
+    bgm.muted = muted;
+    if (bgm.paused) { const p = bgm.play(); if (p) p.catch(() => {}); }
   }
   document.getElementById("mute").addEventListener("click", e => {
     e.stopPropagation();
     muted = !muted;
-    if (master) master.gain.value = muted ? 0 : 0.9;
+    if (bgm) bgm.muted = muted;
     e.currentTarget.classList.toggle("muted", muted);
   });
+  window.__music = { playing: () => !!(bgm && !bgm.paused), at: () => bgm ? bgm.currentTime : -1 };
 
   /* ---------------- nhập liệu ---------------- */
   let downAt = null, dragDy = 0;
