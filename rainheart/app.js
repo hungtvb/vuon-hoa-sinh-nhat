@@ -23,7 +23,7 @@ function setHint(t) { if (t) { hintEl.textContent = t; hintEl.classList.remove('
 
 /* ---------------- particles ---------------- */
 const WORDS = ['Chúc mừng sinh nhật', 'Sức khỏe', 'Bình an', 'Hạnh phúc', 'Luôn rạng rỡ', 'Sum vầy', 'Vui vẻ', 'May mắn', 'An nhiên', 'Tươi như hoa', 'Cười thật nhiều', 'Tuổi mới rực rỡ'];
-const COLORS = ['#B0526F', '#C9657F', '#D06A86', '#C07A54', '#A85B7E', '#C95D63'];
+const COLORS = ['#FFE7DC', '#FBD9CF', '#F8CDC2', '#FFDFD2', '#F6C4B8', '#FFEFE6'];
 const petalImg = new Image(); petalImg.src = 'assets/img/petal.webp';
 const roseImg = new Image(); roseImg.src = 'assets/img/rose.webp';
 /* Bản mờ của cánh hoa cho lớp xa — mắt đọc thành chiều sâu thật, không phải hạt nhỏ đi đơn thuần */
@@ -279,9 +279,16 @@ function drawParticle(p) {
   if (p.kind === 'word') {
     ctx.globalAlpha = p.alpha * dim;
     ctx.font = (p.z > .82 ? '700 ' : '500 ') + p.size + 'px ' + p.font;
-    ctx.fillStyle = p.color;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(p.word, p.x, p.y);
+    if (p.hero) {           /* cụm chính: kem ngà + bóng sâu → tách hẳn khỏi nền hoàng hôn */
+      ctx.fillStyle = '#FFF7EA';
+      ctx.shadowColor = 'rgba(110,30,55,.5)'; ctx.shadowBlur = 6;
+      ctx.fillText(p.word, p.x, p.y);
+      ctx.shadowBlur = 0;
+    } else {
+      ctx.fillStyle = p.color;
+      ctx.fillText(p.word, p.x, p.y);
+    }
   } else if (p.kind === 'petal') {
     ctx.globalAlpha = p.alpha * dim;
     ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
@@ -325,7 +332,7 @@ function frame(now) {
     /* quầng sáng hồng sau lưng tim — neo silhouette cho tim đọc rõ trên nền sáng */
     const R = Math.min(W, H) * .54, gx = W / 2, gy = H * .42;
     const gr = ctx.createRadialGradient(gx, gy, 0, gx, gy, R);
-    gr.addColorStop(0, 'rgba(240,150,175,.26)'); gr.addColorStop(.7, 'rgba(240,150,175,.12)'); gr.addColorStop(1, 'rgba(240,150,175,0)');
+    gr.addColorStop(0, 'rgba(255,205,190,.34)'); gr.addColorStop(.7, 'rgba(255,190,180,.15)'); gr.addColorStop(1, 'rgba(255,190,180,0)');
     ctx.fillStyle = gr; ctx.fillRect(gx - R, gy - R, R * 2, R * 2);
   }
   if (state.phase === 'rain' || state.phase === 'gather' || state.phase === 'heart' || state.phase === 'burst') {
