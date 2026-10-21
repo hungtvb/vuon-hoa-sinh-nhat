@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Hành Tinh Hoa — Chúc Mừng Sinh Nhật</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl"></canvas>
+  <div id="flash"></div>
+
+  <div id="intro">
+    <p class="intro-kicker">một món quà nhỏ, từ một hành tinh xa</p>
+    <h1 class="intro-title">Hành Tinh<br>Hoa</h1>
+    <p class="intro-sub">Có một hành tinh nhỏ đang ngủ yên giữa vũ trụ.<br>Chạm vào nó ba lần — và xem điều kỳ diệu xảy ra.</p>
+    <p class="intro-cta">Chạm để bay tới hành tinh</p>
+  </div>
+
+  <div id="wishLabel" class="hidden"></div>
+  <div id="hint" class="hidden"></div>
+
+  <svg id="ring" class="hidden" width="76" height="76" viewBox="0 0 76 76">
+    <circle class="rbg" cx="38" cy="38" r="31"/>
+    <circle class="rfg" cx="38" cy="38" r="31"/>
+  </svg>
+
+  <button id="lettercard" class="hidden" type="button">
+    <span class="lc-title">Một lá thư từ hành tinh hoa</span>
+    <span class="lc-sub">Chạm để mở thư</span>
+  </button>
+
+  <div id="letter" class="hidden">
+    <h2 class="letter-title">Từ hành tinh hoa, gửi chị</h2>
+    <div id="letterBody"></div>
+    <p class="sign">— Em của chị</p>
+    <button id="closeLetter" type="button">Đóng thư</button>
+  </div>
+
+  <button id="mute" class="hidden" type="button" aria-label="Bật hoặc tắt nhạc">
+    <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#7A4A63"/><path class="wv" d="M16 9.5a4 4 0 0 1 0 5M18.2 7.2a7.2 7.2 0 0 1 0 9.6" stroke="#7A4A63" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg>
+  </button>
+
+  <audio id="music" src="assets/audio/music.mp3" loop preload="auto"></audio>
+  <audio id="sfx-chime" src="assets/audio/chime.mp3" preload="auto"></audio>
+  <audio id="sfx-shimmer" src="assets/audio/shimmer.mp3" preload="auto"></audio>
+</div>
+<script src="vendor/three-r128.min.js"></script>
+<script src="vendor/three-bloom-r128.js"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>
