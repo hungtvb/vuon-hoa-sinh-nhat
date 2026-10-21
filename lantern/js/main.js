@@ -56,73 +56,72 @@
     };
   }
 
-  /* ---------------- nhạc: ambient tự sinh bằng WebAudio ----------------
-     Đệm hợp âm chậm (Dmaj7 - Bm7 - Gmaj7 - A) + chuông nhạc hộp thưa thớt
-     theo thang ngũ cung, có echo — đúng chất đêm yên, không dùng file ngoài. */
+  /* ---------------- nhạc: SAMPLER piano thật (đúng cách lovegift làm) ----------------
+     Không dùng dao động synth cho nhạc nền. Phát MẪU GHI ÂM piano thật
+     (Salamander Grand Piano, CC BY 3.0 — Alexander Holm) bằng sampler:
+     chọn mẫu gần nhất + dịch cao độ; hợp âm rải chậm + giai điệu ngũ cung
+     thưa; nhạc chỉ bắt đầu từ tương tác đầu tiên của người dùng. */
   let AC = null, master = null, delaySend = null, muted = false;
-  let chordTimer = null, tickTimer = null, chordIdx = 0, noteCount = 0, melDeg = 3;
-  const CHORDS = [
-    [146.83, 220.00, 293.66, 369.99],
-    [123.47, 185.00, 246.94, 293.66],
-    [ 98.00, 146.83, 196.00, 246.94],
-    [110.00, 164.81, 220.00, 277.18]
+  let chordTimer = null, tickTimer = null, chordIdx = 0, noteCount = 0, melDeg = 2;
+  const SAMPLES = {};   // midi -> AudioBuffer
+  const GRID = [];
+  for (const [nm, pc] of [["C", 0], ["Ds", 3], ["Fs", 6], ["A", 9]])
+    for (let oct = 2; oct <= 6; oct++) GRID.push({ file: nm + oct, midi: 12 * (oct + 1) + pc });
+  const CHORDS = [           // Dmaj7 · Bm7 · Gmaj7 · A — số là nốt MIDI
+    [50, 57, 62, 66], [47, 54, 59, 62], [43, 50, 55, 59], [45, 52, 57, 61]
   ];
-  const SCALE = [293.66, 329.63, 369.99, 440.00, 493.88, 587.33, 659.25, 739.99];
-  function pad(freqs) {
-    const t = AC.currentTime;
-    const lp = AC.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 850;
-    lp.connect(master);
-    for (const f of freqs) {
-      for (const det of [1, 1.004]) {
-        const o = AC.createOscillator(), g = AC.createGain();
-        o.type = det === 1 ? "triangle" : "sine";
-        o.frequency.value = f * det;
-        g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(0.032, t + 2.6);
-        g.gain.setValueAtTime(0.032, t + 7.2);
-        g.gain.linearRampToValueAtTime(0, t + 10.4);
-        o.connect(g); g.connect(lp);
-        o.start(t); o.stop(t + 10.6);
-      }
-    }
+  const SCALE = [74, 76, 78, 81, 83, 86, 88, 90];   // ngũ cung Rê trưởng, quãng cao
+  let samplesReady = false;
+  function preloadSamples() {
+    const tmp = new (window.AudioContext || window.webkitAudioContext)();
+    Promise.all(GRID.map(g => fetch("assets/notes/" + g.file + ".ogg")
+      .then(r => r.arrayBuffer()).then(ab => tmp.decodeAudioData(ab))
+      .then(buf => { SAMPLES[g.midi] = buf; }).catch(() => {})))
+      .then(() => { samplesReady = Object.keys(SAMPLES).length >= 12; tmp.close(); });
   }
-  function bell(freq) {
-    const t = AC.currentTime;
-    const g = AC.createGain();
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.13, t + 0.012);
-    g.gain.exponentialRampToValueAtTime(0.0008, t + 1.9);
-    g.connect(master); g.connect(delaySend);
-    const o = AC.createOscillator(); o.type = "sine"; o.frequency.value = freq;
-    o.connect(g); o.start(t); o.stop(t + 2);
-    const o2 = AC.createOscillator(), g2 = AC.createGain();
-    o2.type = "sine"; o2.frequency.value = freq * 2; g2.gain.value = 0.32;
-    o2.connect(g2); g2.connect(g); o2.start(t); o2.stop(t + 1.2);
+  function playNote(midi, vol, echo) {
+    if (!AC || !samplesReady) return;
+    let best = null, bd = 1e9;
+    for (const m in SAMPLES) { const d = Math.abs(m - midi); if (d < bd) { bd = d; best = +m; } }
+    if (best === null) return;
+    const src = AC.createBufferSource();
+    src.buffer = SAMPLES[best];
+    src.playbackRate.value = Math.pow(2, (midi - best) / 12);
+    const g = AC.createGain(); g.gain.value = vol;
+    src.connect(g); g.connect(master);
+    if (echo) g.connect(delaySend);
+    src.start();
     noteCount++;
+  }
+  function playChord(notes) {
+    notes.forEach((n, k) => setTimeout(() => playNote(n, 0.34 - k * 0.045, false), k * 380));
+    if (Math.random() < 0.5) setTimeout(() => playNote(notes[3] + 12, 0.1, true), 1650);
   }
   function startMusic() {
     if (AC) { if (AC.state === "suspended") AC.resume(); return; }
-    try {
-      AC = new (window.AudioContext || window.webkitAudioContext)();
-    } catch (e) { return; }
+    try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
     master = AC.createGain(); master.gain.value = muted ? 0 : 0.9;
     master.connect(AC.destination);
     const delay = AC.createDelay(1); delay.delayTime.value = 0.42;
-    const fb = AC.createGain(); fb.gain.value = 0.34;
+    const fb = AC.createGain(); fb.gain.value = 0.32;
     const dlp = AC.createBiquadFilter(); dlp.type = "lowpass"; dlp.frequency.value = 1700;
     delay.connect(dlp); dlp.connect(fb); fb.connect(delay);
-    const wet = AC.createGain(); wet.gain.value = 0.35;
+    const wet = AC.createGain(); wet.gain.value = 0.33;
     delay.connect(wet); wet.connect(master);
     delaySend = AC.createGain(); delaySend.gain.value = 1; delaySend.connect(delay);
-    pad(CHORDS[0]); chordIdx = 1;
-    chordTimer = setInterval(() => { pad(CHORDS[chordIdx % CHORDS.length]); chordIdx++; }, 8000);
-    tickTimer = setInterval(() => {
-      if (Math.random() < 0.4) {
-        melDeg = Math.max(0, Math.min(SCALE.length - 1, melDeg + Math.floor(rand(-2, 2.99))));
-        bell(SCALE[melDeg] * (Math.random() < 0.16 ? 0.5 : 1));
-      }
-    }, 430);
-    window.__music = { get notes() { return noteCount; }, ctx: () => AC && AC.state };
+    const begin = () => {
+      playChord(CHORDS[0]); chordIdx = 1;
+      chordTimer = setInterval(() => { playChord(CHORDS[chordIdx % CHORDS.length]); chordIdx++; }, 8000);
+      tickTimer = setInterval(() => {
+        if (Math.random() < 0.23) {
+          melDeg = Math.max(0, Math.min(SCALE.length - 1, melDeg + Math.floor(rand(-2, 2.99))));
+          playNote(SCALE[melDeg], 0.3, true);
+        }
+      }, 430);
+    };
+    if (samplesReady) begin();
+    else { const iv = setInterval(() => { if (samplesReady) { clearInterval(iv); begin(); } }, 300); }
+    window.__music = { get notes() { return noteCount; }, ctx: () => AC && AC.state, samples: () => Object.keys(SAMPLES).length };
   }
   document.getElementById("mute").addEventListener("click", e => {
     e.stopPropagation();
@@ -130,6 +129,7 @@
     if (master) master.gain.value = muted ? 0 : 0.9;
     e.currentTarget.classList.toggle("muted", muted);
   });
+  preloadSamples();
 
   /* ---------------- nhập liệu ---------------- */
   let downAt = null, dragDy = 0;
