@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Trời Hoa 3D — Chúc Mừng Sinh Nhật</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="stage">
+  <div id="gl"></div>
+
+  <div id="titleCard">
+    <h1>Bay Qua Trời Hoa</h1>
+    <p>Một hành trình lên mây tặng chị</p>
+  </div>
+
+  <!-- the letter, waiting inside the 3D heart -->
+  <div id="cardWrap" class="hidden">
+    <div id="card">
+      <button id="cardClose" aria-label="Đóng">&times;</button>
+      <div class="card-strip"></div>
+      <img id="cardFlower" src="assets/img/peony.webp" alt="">
+      <div class="card-body">
+        <h1>Chúc Mừng Sinh Nhật</h1>
+        <p class="dear">Gửi chị,</p>
+        <p>Em dẫn chị bay qua cả một trời hoa để nói câu này: chúc chị tuổi mới thật nhiều sức khoẻ, nhiều tiếng cười, và luôn được yêu thương như chị xứng đáng.</p>
+        <p>Mong những điều đẹp nhất sẽ tìm đến chị — rực rỡ như hoa nở trên mây, và ở lại thật lâu.</p>
+        <p>Sinh nhật vui vẻ, chị nhé!</p>
+        <p class="sign">— Em của chị</p>
+        <p class="credit">Nhạc piano: Salamander Grand Piano (CC BY 3.0)</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="line" class="hidden"></div>
+  <button id="replay" class="hidden" title="Bay lại từ đầu">&#8635;</button>
+  <div id="vignette"></div>
+</div>
+
+<audio id="music" src="assets/audio/music.mp3" loop preload="auto"></audio>
+<audio id="shimmer" src="assets/audio/shimmer.mp3" preload="auto"></audio>
+<audio id="chime" src="assets/audio/chime.mp3" preload="auto"></audio>
+<audio id="unlockSnd" src="assets/audio/unlock.mp3" preload="auto"></audio>
+
+<script src="vendor/three-r128.min.js"></script>
+<script src="vendor/three-bloom-r128.js"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>
