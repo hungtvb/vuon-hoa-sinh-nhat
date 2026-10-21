@@ -1,0 +1,144 @@
+@font-face {
+  font-family: 'Dancing Script';
+  src: url('assets/fonts/dancing-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+  font-weight: 400 700; font-display: swap;
+}
+@font-face {
+  font-family: 'Dancing Script';
+  src: url('assets/fonts/dancing-latin.woff2') format('woff2');
+  font-weight: 400 700; font-display: swap;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('assets/fonts/playfair-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+  font-weight: 400 800; font-display: swap;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('assets/fonts/playfair-latin.woff2') format('woff2');
+  font-weight: 400 800; font-display: swap;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: #f8ecdd; }
+body {
+  font-family: 'Playfair Display', Georgia, serif;
+  color: #7c2d4e;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none; user-select: none;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+#stage {
+  position: fixed; inset: 0; overflow: hidden;
+  background:
+    radial-gradient(120% 70% at 50% 0%, #fff8ec 0%, rgba(255,248,236,0) 60%),
+    linear-gradient(180deg, #fdeef2 0%, #fbeed9 55%, #f7e3cd 100%);
+}
+#world { position: absolute; inset: 0; display: block; }
+#vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 42%, transparent 58%, rgba(150, 90, 60, 0.14) 100%);
+}
+.hidden { display: none !important; }
+img { -webkit-user-drag: none; user-select: none; pointer-events: none; }
+
+/* ---------- the envelope ---------- */
+#envWrap {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+}
+#bigEnv {
+  width: min(80vw, 330px); border-radius: 12px; cursor: pointer; pointer-events: auto;
+  box-shadow: 0 22px 48px rgba(160, 80, 90, 0.32), 0 4px 12px rgba(160, 80, 90, 0.2);
+  animation: envFloat 2.6s ease-in-out infinite;
+  transition: transform 0.45s ease, opacity 0.45s ease;
+}
+#bigEnv.opening { transform: scale(1.07) rotate(-2.5deg); opacity: 0; }
+@keyframes envFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+#envHint {
+  font-family: 'Dancing Script', cursive; font-size: clamp(22px, 6.4vw, 30px); color: #a02c58;
+  animation: hintPulse 1.8s ease-in-out infinite;
+}
+@keyframes hintPulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+
+/* ---------- typewriter greeting ---------- */
+#typeBox {
+  position: absolute; left: 0; right: 0; top: 13%; z-index: 4; text-align: center; pointer-events: none; padding: 0 18px;
+}
+#typeTitle {
+  font-family: 'Playfair Display', serif; font-weight: 800;
+  font-size: clamp(30px, 9vw, 46px); color: #a51f52; letter-spacing: 0.5px;
+  text-shadow: 0 2px 0 rgba(255,255,255,0.75), 0 6px 22px rgba(217, 79, 122, 0.25);
+  min-height: 1.25em;
+}
+#typeSub {
+  font-family: 'Dancing Script', cursive; font-size: clamp(22px, 6.6vw, 32px); color: #c2437b;
+  margin-top: 8px; min-height: 1.3em;
+}
+
+/* ---------- the letter card ---------- */
+#cardWrap {
+  position: absolute; inset: 0; z-index: 8;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(120, 60, 70, 0.25); backdrop-filter: blur(2px);
+  opacity: 0; transition: opacity 0.45s ease;
+}
+#cardWrap.show { opacity: 1; }
+#card {
+  position: relative; width: min(88vw, 360px); max-height: 82vh; overflow-y: auto;
+  background: linear-gradient(168deg, #fffaf0 0%, #fdf1dc 60%, #f8e7cb 100%);
+  border-radius: 14px; padding: 30px 26px 24px;
+  box-shadow: 0 30px 70px rgba(120, 50, 70, 0.4);
+  text-align: center; transform: translateY(16px) scale(0.97); transition: transform 0.45s ease;
+}
+#cardWrap.show #card { transform: translateY(0) scale(1); }
+.card-strip {
+  height: 8px; border-radius: 6px; margin: -14px -8px 16px;
+  background: repeating-linear-gradient(45deg, #f3b8c6 0 14px, #f9d976 14px 28px, #f3b8c6 28px 42px);
+  opacity: 0.85;
+}
+#cardClose {
+  position: absolute; top: 8px; right: 12px; border: none; background: none;
+  font-size: 28px; line-height: 1; color: #b06a82; cursor: pointer; z-index: 2;
+}
+#cardFlower { width: 92px; height: 92px; object-fit: contain; margin: 2px auto 6px; display: block; }
+#card h1 {
+  font-family: 'Dancing Script', cursive; font-weight: 700;
+  font-size: clamp(29px, 8.4vw, 38px); color: #a51f52; margin-bottom: 10px;
+}
+#card p { font-size: 15.5px; line-height: 1.62; color: #6d4453; margin-bottom: 9px; text-align: left; }
+#card p.dear { font-weight: 700; color: #8e2f52; }
+#card p.sign { font-family: 'Dancing Script', cursive; font-size: 23px; color: #a51f52; text-align: right; margin-top: 4px; }
+#card p.credit { font-size: 10.5px; color: #b59aa4; margin-top: 12px; text-align: center; }
+/* the letter reveals itself line by line */
+#card .reveal { opacity: 0; transform: translateY(7px); transition: opacity 0.55s ease, transform 0.55s ease; }
+#card .reveal.show { opacity: 1; transform: none; }
+
+/* ---------- shared chrome ---------- */
+#line {
+  position: absolute; left: 50%; bottom: calc(26px + env(safe-area-inset-bottom));
+  transform: translateX(-50%); z-index: 6; pointer-events: none;
+  font-family: 'Dancing Script', cursive; font-size: clamp(20px, 6vw, 27px);
+  color: #a02c58; text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  opacity: 0; transition: opacity 1.2s ease;
+  width: max-content; max-width: 92vw; text-align: center; line-height: 1.3;
+}
+#line.show { opacity: 1; }
+#muteBtn, #replay {
+  position: absolute; z-index: 9;
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid rgba(160, 44, 88, 0.3);
+  background: rgba(255, 250, 240, 0.88); cursor: pointer;
+  box-shadow: 0 6px 18px rgba(150, 70, 80, 0.25);
+  display: flex; align-items: center; justify-content: center;
+}
+#muteBtn { top: calc(14px + env(safe-area-inset-top)); right: calc(14px + env(safe-area-inset-right)); }
+#muteBtn.off { opacity: 0.55; }
+#replay {
+  right: calc(16px + env(safe-area-inset-right));
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  color: #a02c58; font-size: 22px;
+}

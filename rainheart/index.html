@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Mưa Lời Chúc — Chúc Mừng Sinh Nhật</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="stage">
+  <canvas id="sky"></canvas>
+  <div id="flash"></div>
+
+  <!-- INTRO -->
+  <div id="intro">
+    <h1>Mưa Lời Chúc</h1>
+    <p class="sub">một món quà sinh nhật</p>
+    <img id="hero" src="assets/img/peony.webp" alt="">
+    <p class="tap-hint">Chạm để bắt đầu</p>
+  </div>
+
+  <!-- HOLD RING -->
+  <div id="ring" class="hidden">
+    <svg viewBox="0 0 72 72"><circle class="rbg" cx="36" cy="36" r="31"/><circle class="rfg" cx="36" cy="36" r="31"/></svg>
+  </div>
+
+  <!-- LETTER CARD (in-scene, after the burst) -->
+  <div id="lettercard" class="hidden">
+    <svg viewBox="0 0 64 64" width="40" height="40"><path d="M32 54S8 39.5 8 23.6C8 14.9 14.6 9 22.2 9c4.3 0 7.9 2 9.8 4.9C33.9 11 37.5 9 41.8 9 49.4 9 56 14.9 56 23.6 56 39.5 32 54 32 54z" fill="#E88CA0" stroke="#C05B7C" stroke-width="2.5"/></svg>
+    <p>Một lá thư cho chị</p>
+    <span>chạm để mở</span>
+  </div>
+
+  <!-- ORBIT WORD CARDS (finale) -->
+  <div id="orbit" class="hidden"></div>
+
+  <!-- LETTER -->
+  <div id="letter" class="hidden">
+    <div class="paper">
+      <h3>Chúc mừng sinh nhật chị</h3>
+      <div id="letterBody"></div>
+      <p class="sign">— Em của chị</p>
+      <button id="closeLetter">Đóng thư</button>
+    </div>
+  </div>
+
+  <div id="hint" class="hidden"></div>
+  <button id="mute" class="hidden" aria-label="Tắt/bật nhạc">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#8a5a44"/><path class="wv" d="M16 9c1.5 1.5 1.5 4.5 0 6M18.5 7c2.5 2.5 2.5 7.5 0 10" stroke="#8a5a44" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+  </button>
+  <audio id="music" src="assets/audio/music.mp3" loop preload="auto"></audio>
+  <audio id="sfx-chime" src="assets/audio/chime.mp3" preload="auto"></audio>
+  <audio id="sfx-shimmer" src="assets/audio/shimmer.mp3" preload="auto"></audio>
+</div>
+<script src="app.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Dưới Ánh Nến — Chúc Mừng Sinh Nhật</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="stage">
+  <div class="wall"></div>
+  <div class="garland" aria-hidden="true"></div>
+  <div class="table"></div>
+  <div id="darkness"></div>
+
+  <header id="title">
+    <p class="eyebrow">một buổi tối sinh nhật</p>
+    <h1>Dưới Ánh Nến</h1>
+  </header>
+
+  <!-- birthday cake -->
+  <div id="cake" aria-label="Bánh sinh nhật">
+    <div id="candles">
+      <button class="candle" data-i="0" style="--x:13%" aria-label="Thắp nến 1"><i class="wick"></i><i class="wax"></i></button>
+      <button class="candle" data-i="1" style="--x:32%" aria-label="Thắp nến 2"><i class="wick"></i><i class="wax"></i></button>
+      <button class="candle" data-i="2" style="--x:50%" aria-label="Thắp nến 3"><i class="wick"></i><i class="wax"></i></button>
+      <button class="candle" data-i="3" style="--x:68%" aria-label="Thắp nến 4"><i class="wick"></i><i class="wax"></i></button>
+      <button class="candle" data-i="4" style="--x:87%" aria-label="Thắp nến 5"><i class="wick"></i><i class="wax"></i></button>
+    </div>
+    <div class="tier tier-top">
+      <img class="bloom bloom-tl" src="assets/img/rose.webp" alt="">
+      <img class="bloom bloom-tr" src="assets/img/peony.webp" alt="">
+    </div>
+    <div class="tier tier-mid">
+      <img class="bloom bloom-ml" src="assets/img/lisianthus.webp" alt="">
+      <img class="bloom bloom-mr" src="assets/img/tulip.webp" alt="">
+    </div>
+    <div class="tier tier-bottom">
+      <img class="bloom bloom-bl" src="assets/img/hydrangea.webp" alt="">
+      <img class="bloom bloom-bc" src="assets/img/baby.webp" alt="">
+      <img class="bloom bloom-br" src="assets/img/rose.webp" alt="">
+    </div>
+    <div class="plate"></div>
+  </div>
+
+  <div id="blowZone" class="hidden" aria-hidden="true"></div>
+
+  <!-- wish -->
+  <div id="wish" class="hidden" aria-live="polite">
+    <p class="wish-line">Một điều ước cho tuổi mới</p>
+    <p class="wish-main">Bình an, khỏe mạnh</p>
+    <p class="wish-line">và luôn được thương yêu</p>
+  </div>
+
+  <!-- letter beside the cake -->
+  <button id="letterCard" class="hidden" aria-label="Mở lá thư">
+    <span class="env-flap"></span>
+    <span class="env-seal"><img src="assets/img/petal.webp" alt=""></span>
+    <span class="env-text">Một lá thư<br>để dành cuối buổi</span>
+  </button>
+
+  <canvas id="fx"></canvas>
+
+  <!-- opened letter -->
+  <div id="letter" class="hidden">
+    <div class="paper">
+      <h2>Chúc mừng sinh nhật chị</h2>
+      <div id="letterBody"></div>
+      <p class="sign">— Em của chị</p>
+      <button id="closeLetter">Gấp thư lại</button>
+    </div>
+  </div>
+
+  <div id="holdRing" class="hidden" aria-hidden="true">
+    <svg viewBox="0 0 74 74"><circle class="rb" cx="37" cy="37" r="32"/><circle class="rf" cx="37" cy="37" r="32"/></svg>
+    <span>đang thổi…</span>
+  </div>
+
+  <div id="hint">Chạm để thắp từng ngọn nến</div>
+  <button id="mute" aria-label="Tắt hoặc bật nhạc">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#f3d9ae"/><path class="wv" d="M16 9c1.5 1.5 1.5 4.5 0 6M18.5 7c2.5 2.5 2.5 7.5 0 10" stroke="#f3d9ae" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+  </button>
+
+  <audio id="music" src="assets/audio/music.mp3" loop preload="auto"></audio>
+  <audio id="sfxChime" src="assets/audio/chime.mp3" preload="auto"></audio>
+  <audio id="sfxShimmer" src="assets/audio/shimmer.mp3" preload="auto"></audio>
+</div>
+<script src="app.js?v=1"></script>
+</body>
+</html>

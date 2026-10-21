@@ -1,0 +1,53 @@
+@font-face{font-family:'Playfair Display';src:url('assets/fonts/playfair-vietnamese.woff2') format('woff2');font-weight:400 800;font-display:swap}
+@font-face{font-family:'Playfair Display';src:url('assets/fonts/playfair-latin.woff2') format('woff2');font-weight:400 800;font-display:swap}
+@font-face{font-family:'Dancing Script';src:url('assets/fonts/dancing-vietnamese.woff2') format('woff2');font-weight:500 700;font-display:swap}
+@font-face{font-family:'Dancing Script';src:url('assets/fonts/dancing-latin.woff2') format('woff2');font-weight:500 700;font-display:swap}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#F8C8B4;font-family:'Playfair Display',serif;color:#7a4458;
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:none}
+#stage{position:fixed;inset:0;max-width:480px;margin:0 auto;overflow:hidden}
+.hidden{display:none!important}
+
+/* sunset sky: rose-violet top, peach middle, whisper of violet at the horizon */
+#sky{position:absolute;inset:0;background:linear-gradient(180deg,
+  #EFC0DA 0%, #F6BFD2 22%, #F9BFA9 48%, #FFD3AC 68%, #F3CFE4 86%, #E9D2F2 100%)}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* wish cluster markers */
+.wishmark{position:absolute;z-index:10;width:0;height:0;pointer-events:none;transition:opacity .8s ease}
+.wishmark .glow{position:absolute;left:-70px;top:-70px;width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,236,170,.85) 0%,rgba(255,205,150,.35) 42%,rgba(255,205,150,0) 70%);
+  opacity:.28;transform:scale(.8);transition:opacity .7s ease,transform .7s ease}
+.wishmark span{position:absolute;left:0;top:34px;transform:translateX(-50%);white-space:nowrap;
+  font-family:'Dancing Script',cursive;font-size:20px;color:#A34E6E;opacity:.45;transition:opacity .7s ease;
+  text-shadow:0 1px 8px rgba(255,244,220,.9)}
+.wishmark.lit .glow{opacity:.95;transform:scale(1.15)}
+.wishmark.lit span{opacity:1;color:#C2185B}
+.wishmark.gone{opacity:0}
+
+#toast{position:absolute;left:50%;top:16%;transform:translateX(-50%) rotate(-2deg);z-index:40;background:#FFFDF6;
+  border:1.5px solid #EFB9CD;color:#B0526F;font-family:'Dancing Script',cursive;font-size:24px;
+  padding:8px 22px;border-radius:999px;box-shadow:0 8px 20px rgba(160,80,110,.3);white-space:nowrap}
+#toast.pop{animation:toastpop 2.2s ease forwards}
+@keyframes toastpop{0%{opacity:0;transform:translateX(-50%) translateY(10px) rotate(-2deg) scale(.8)}12%{opacity:1;transform:translateX(-50%) translateY(0) rotate(-2deg) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-12px) rotate(-2deg)}}
+
+/* letter — glowing cream paper in the middle of the galaxy */
+#letter{position:absolute;inset:0;z-index:50;display:grid;place-items:center;background:rgba(122,60,90,.28);padding:20px}
+#letter .paper{background:linear-gradient(175deg,#FFFDF4,#FCEFD9);border-radius:12px;
+  box-shadow:0 0 44px rgba(255,226,160,.75),0 18px 44px rgba(90,40,60,.4);
+  padding:26px 24px 20px;max-width:400px;width:100%;max-height:82%;overflow-y:auto}
+#letter h3{font-family:'Dancing Script',cursive;font-size:29px;line-height:1.4;padding-bottom:4px;color:#C05B7C;text-align:center;margin-bottom:12px}
+#letterBody p{font-size:16.5px;line-height:1.55;margin-bottom:9px;opacity:0;transform:translateY(6px);transition:opacity .7s ease,transform .7s ease}
+#letterBody p.show{opacity:1;transform:none}
+#letter .sign{font-family:'Dancing Script',cursive;font-size:23px;color:#C05B7C;text-align:right;margin-top:6px;opacity:0;transition:opacity .8s}
+#letter .sign.show{opacity:1}
+#closeLetter{display:block;margin:14px auto 2px;background:#E88CA0;color:#fff;border:none;border-radius:999px;
+  padding:10px 26px;font-family:'Dancing Script',cursive;font-size:19px;cursor:pointer;box-shadow:0 4px 12px rgba(190,90,120,.4)}
+
+#hint{position:absolute;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:40;
+  background:rgba(255,253,246,.92);color:#96617C;font-family:'Dancing Script',cursive;font-size:21px;
+  padding:7px 20px;border-radius:22px;box-shadow:0 4px 14px rgba(140,70,100,.25);transition:opacity .4s;pointer-events:none;text-align:center;max-width:92%;line-height:1.3}
+#mute{position:absolute;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:55;background:rgba(255,253,246,.9);
+  border:none;border-radius:50%;width:40px;height:40px;display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 10px rgba(140,70,100,.25)}
+#mute.off .wv{display:none}
+img{-webkit-user-drag:none;user-drag:none}

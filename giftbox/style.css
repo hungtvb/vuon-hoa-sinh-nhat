@@ -1,0 +1,41 @@
+@font-face{font-family:'Playfair Display';src:url('assets/fonts/playfair-vietnamese.woff2') format('woff2');font-weight:400 800;font-display:swap}
+@font-face{font-family:'Playfair Display';src:url('assets/fonts/playfair-latin.woff2') format('woff2');font-weight:400 800;font-display:swap}
+@font-face{font-family:'Dancing Script';src:url('assets/fonts/dancing-vietnamese.woff2') format('woff2');font-weight:500 700;font-display:swap}
+@font-face{font-family:'Dancing Script';src:url('assets/fonts/dancing-latin.woff2') format('woff2');font-weight:500 700;font-display:swap}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:'Playfair Display',serif;color:#6d4433;
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:none;
+  background:radial-gradient(120% 90% at 50% 30%,#FFFBF2 0%,#FDEBD9 42%,#F9D3DC 78%,#F3BECB 100%)}
+#stage{position:fixed;inset:0;max-width:480px;margin:0 auto;overflow:hidden}
+.hidden{display:none!important}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+#title{position:absolute;top:calc(16px + env(safe-area-inset-top));left:0;right:0;text-align:center;z-index:10;
+  font-family:'Dancing Script',cursive;font-size:37px;font-weight:700;color:#C05B7C;pointer-events:none;
+  text-shadow:0 2px 10px rgba(255,255,255,.8)}
+#hint{position:absolute;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:40;
+  background:rgba(255,253,246,.93);color:#8a5a44;font-family:'Dancing Script',cursive;font-size:21px;
+  padding:7px 20px;border-radius:999px;box-shadow:0 4px 14px rgba(120,70,40,.22);white-space:nowrap;pointer-events:none;
+  transition:opacity .4s}
+#mute{position:absolute;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:55;background:rgba(255,253,246,.92);
+  border:none;border-radius:50%;width:40px;height:40px;display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 3px 10px rgba(120,70,40,.25)}
+#mute.off .wv{display:none}
+
+/* letter — a paper card living in the scene */
+#letter{position:absolute;inset:0;z-index:50;display:grid;place-items:center;padding:20px;
+  background:radial-gradient(90% 70% at 50% 45%,rgba(255,246,230,.25),rgba(120,60,50,.28))}
+#letter .paper{background:linear-gradient(175deg,#FFFDF6,#FCEFD9);border-radius:10px;
+  box-shadow:0 18px 44px rgba(80,40,20,.4);padding:26px 24px 20px;max-width:400px;width:100%;
+  max-height:82%;overflow-y:auto;transform:rotate(-1deg)}
+#letter h3{font-family:'Dancing Script',cursive;font-size:29px;line-height:1.4;padding-bottom:4px;
+  color:#C05B7C;text-align:center;margin-bottom:12px}
+#letterBody p{font-size:16.5px;line-height:1.55;margin-bottom:9px;opacity:0;transform:translateY(6px);
+  transition:opacity .7s ease,transform .7s ease}
+#letterBody p.show{opacity:1;transform:none}
+#letter .sign{font-family:'Dancing Script',cursive;font-size:23px;color:#C05B7C;text-align:right;
+  margin-top:6px;opacity:0;transition:opacity .8s}
+#letter .sign.show{opacity:1}
+#closeLetter{display:block;margin:14px auto 2px;background:#E88CA0;color:#fff;border:none;border-radius:999px;
+  padding:10px 26px;font-family:'Dancing Script',cursive;font-size:19px;cursor:pointer;
+  box-shadow:0 4px 12px rgba(190,90,120,.4)}
+img{-webkit-user-drag:none}

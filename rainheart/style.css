@@ -1,0 +1,74 @@
+@font-face{font-family:'Playfair Display';src:url('assets/fonts/playfair-vietnamese.woff2') format('woff2');font-weight:400 800;font-display:swap}
+@font-face{font-family:'Playfair Display';src:url('assets/fonts/playfair-latin.woff2') format('woff2');font-weight:400 800;font-display:swap}
+@font-face{font-family:'Dancing Script';src:url('assets/fonts/dancing-vietnamese.woff2') format('woff2');font-weight:500 700;font-display:swap}
+@font-face{font-family:'Dancing Script';src:url('assets/fonts/dancing-latin.woff2') format('woff2');font-weight:500 700;font-display:swap}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#FDEFE3;font-family:'Playfair Display',serif;color:#6d4433;
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:none}
+body.vib #stage{animation:vib .18s linear}
+@keyframes vib{0%{transform:translate(0,0)}25%{transform:translate(.7px,-.5px)}50%{transform:translate(-.7px,.5px)}75%{transform:translate(.5px,.7px)}100%{transform:translate(0,0)}}
+#stage{position:fixed;inset:0;max-width:480px;margin:0 auto;overflow:hidden;
+  background:linear-gradient(180deg,#FFF8EC 0%,#FDEBD9 34%,#FBDCE4 72%,#F6CBD9 100%)}
+.hidden{display:none!important}
+#sky{position:absolute;inset:0;z-index:2}
+#flash{position:absolute;inset:0;background:#FFF6E0;opacity:0;pointer-events:none;z-index:5;transition:opacity .5s ease}
+
+/* intro */
+#intro{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  cursor:pointer;transition:opacity .8s ease,transform .8s ease;padding:0 24px;text-align:center}
+#intro.gone{opacity:0;transform:scale(1.06);pointer-events:none}
+#intro h1{font-size:44px;font-weight:800;color:#B0526F;letter-spacing:.5px;text-shadow:0 2px 14px rgba(255,255,255,.8)}
+#intro .sub{font-family:'Dancing Script',cursive;font-size:24px;color:#C07a54}
+#hero{width:58%;max-width:270px;margin:18px 0 8px;filter:drop-shadow(0 18px 26px rgba(176,82,111,.35));
+  animation:floaty 3.6s ease-in-out infinite alternate}
+@keyframes floaty{from{transform:translateY(0) rotate(-1.2deg)}to{transform:translateY(-12px) rotate(1.2deg)}}
+.tap-hint{font-family:'Dancing Script',cursive;font-size:23px;color:#A05268;background:rgba(255,253,246,.85);
+  padding:7px 22px;border-radius:999px;box-shadow:0 4px 14px rgba(160,90,110,.22);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+/* hold ring */
+#ring{position:absolute;width:72px;height:72px;margin:-36px 0 0 -36px;z-index:20;pointer-events:none}
+#ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+#ring circle{fill:rgba(255,253,246,.25);stroke-width:5.5}
+#ring .rbg{stroke:rgba(255,255,255,.75)}
+#ring .rfg{stroke:#D6577F;stroke-linecap:round}
+
+/* letter card in scene */
+#lettercard{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:15;width:186px;
+  background:linear-gradient(170deg,#FFFDF6,#FCEFD9);border:1.5px solid #EBCBCE;border-radius:14px;
+  box-shadow:0 16px 34px rgba(150,70,95,.35);text-align:center;padding:16px 12px 13px;cursor:pointer;
+  animation:cardin .7s cubic-bezier(.34,1.56,.64,1)}
+@keyframes cardin{from{transform:translate(-50%,-50%) scale(.4);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+#lettercard p{font-family:'Dancing Script',cursive;font-size:23px;color:#B0526F;margin-top:2px}
+#lettercard span{font-size:13.5px;color:#A9805F;letter-spacing:.4px}
+#lettercard.locked{animation:cardin .7s cubic-bezier(.34,1.56,.64,1),tease .35s ease .0s}
+@keyframes tease{0%,100%{transform:translate(-50%,-50%) rotate(0)}30%{transform:translate(-50%,-50%) rotate(-1.6deg)}65%{transform:translate(-50%,-50%) rotate(1.6deg)}}
+
+/* orbit cards */
+#orbit{position:absolute;inset:0;z-index:12;pointer-events:none}
+.chip{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer;white-space:nowrap;
+  background:rgba(255,253,246,.94);border:1.5px solid #EFC9D4;color:#B0526F;border-radius:999px;
+  font-family:'Dancing Script',cursive;font-size:20px;padding:6px 16px 7px;
+  box-shadow:0 7px 16px rgba(160,90,110,.28);transition:transform .25s ease}
+.chip.pop{transform:translate(-50%,-50%) scale(1.22)}
+
+/* letter overlay */
+#letter{position:absolute;inset:0;z-index:40;display:grid;place-items:center;background:rgba(90,50,35,.32);backdrop-filter:blur(2px);padding:20px}
+#letter .paper{background:linear-gradient(175deg,#FFFDF6,#FCEFD9);border-radius:10px;box-shadow:0 18px 44px rgba(80,40,20,.4);
+  padding:26px 24px 20px;max-width:400px;width:100%;max-height:82%;overflow-y:auto}
+#letter h3{font-family:'Dancing Script',cursive;font-size:29px;line-height:1.4;padding-bottom:4px;color:#C05B7C;text-align:center;margin-bottom:12px}
+#letterBody p{font-size:16.5px;line-height:1.55;margin-bottom:9px;opacity:0;transform:translateY(6px);transition:opacity .7s ease,transform .7s ease}
+#letterBody p.show{opacity:1;transform:none}
+#letter .sign{font-family:'Dancing Script',cursive;font-size:23px;color:#C05B7C;text-align:right;margin-top:6px;opacity:0;transition:opacity .8s}
+#letter .sign.show{opacity:1}
+#closeLetter{display:block;margin:14px auto 2px;background:#E88CA0;color:#fff;border:none;border-radius:999px;
+  padding:10px 26px;font-family:'Dancing Script',cursive;font-size:19px;cursor:pointer;box-shadow:0 4px 12px rgba(190,90,120,.4)}
+
+/* hint + mute */
+#hint{position:absolute;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;
+  background:rgba(255,253,246,.92);color:#8a5a44;font-family:'Dancing Script',cursive;font-size:21px;
+  padding:7px 20px;border-radius:999px;box-shadow:0 4px 14px rgba(120,70,40,.22);max-width:94%;pointer-events:none;text-align:center}
+#mute{position:absolute;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:45;background:rgba(255,253,246,.9);
+  border:none;border-radius:50%;width:40px;height:40px;display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 10px rgba(120,70,40,.25)}
+#mute.off .wv{display:none}
+img{-webkit-user-drag:none}
