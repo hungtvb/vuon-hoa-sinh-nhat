@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Vườn Hoa Thức Giấc — Chúc Mừng Sinh Nhật</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="stage">
+  <canvas id="world"></canvas>
+
+  <div id="line" class="hidden"></div>
+
+  <div id="letter" class="hidden" aria-hidden="true">
+    <div class="letter-inner">
+      <h1>Chúc Mừng Sinh Nhật</h1>
+      <p class="dear">Gửi chị,</p>
+      <p>Đêm nay em nhờ chị đánh thức cả một khu vườn — vì với em, chị vẫn luôn là người mang ánh sáng đến cho mọi người như thế: chạm vào đâu, ở đó bừng lên ấm áp.</p>
+      <p>Chúc chị tuổi mới thật nhiều sức khoẻ, nhiều niềm vui, và mong mỗi ngày của chị đều bắt đầu bằng một điều gì đó nở rộ.</p>
+      <p>Sinh nhật vui vẻ, chị nhé!</p>
+      <p class="sign">— Em của chị</p>
+      <p class="credit">Nhạc piano: Salamander Grand Piano (CC BY 3.0)</p>
+    </div>
+  </div>
+
+  <canvas id="front"></canvas>
+  <button id="replay" class="hidden" title="Xem lại từ đầu">&#8635;</button>
+  <div id="vignette"></div>
+</div>
+
+<audio id="music" src="assets/audio/music.mp3" loop preload="auto"></audio>
+<audio id="shimmer" src="assets/audio/shimmer.mp3" preload="auto"></audio>
+<audio id="chime" src="assets/audio/chime.mp3" preload="auto"></audio>
+
+<script src="app.js?v=1"></script>
+</body>
+</html>
