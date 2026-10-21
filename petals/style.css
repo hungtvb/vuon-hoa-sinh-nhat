@@ -155,7 +155,8 @@ body {
   transform: translateX(-50%); z-index: 6; pointer-events: none;
   font-family: 'Dancing Script', cursive; font-size: clamp(20px, 6vw, 27px);
   color: #a02c58; text-shadow: 0 1px 0 rgba(255,255,255,0.8);
-  opacity: 0; transition: opacity 1.6s ease; white-space: nowrap;
+  opacity: 0; transition: opacity 1.6s ease;
+  width: max-content; max-width: 92vw; text-align: center; line-height: 1.3;
 }
 #line.show { opacity: 1; }
 #replay {

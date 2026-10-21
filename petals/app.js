@@ -46,7 +46,7 @@ window.addEventListener('resize', layout);
 layout();
 
 // ---------- flower library ----------
-const SPECIES = ['rose', 'peony', 'daisy', 'allium', 'tulip', 'hydrangea'];
+const SPECIES = ['rose', 'peony', 'allium', 'tulip', 'hydrangea', 'lisianthus', 'baby'];
 const flowerImgs = SPECIES.map(n => { const i = new Image(); i.src = `assets/img/${n}.webp`; return i; });
 const imgPetal = new Image(); imgPetal.src = 'assets/img/petal.webp';
 function rndSpecies() { return flowerImgs[Math.floor(Math.random() * flowerImgs.length)]; }
@@ -100,6 +100,11 @@ let fountainLeft = 0, spawnAcc = 0;
 let typeStarted = false, cardShown = false;
 let finaleT = 0, waveIdx = 0, trickleT = 0;
 let heartFormed = false, heartBeatBoost = 1, heartHoldT = 0;
+const heartLean = { x: 0, y: 0 };
+function burstTrail(x, y) {
+  petalBits.push({ x, y, vx: (Math.random() - 0.5) * 26, vy: -8 - Math.random() * 18,
+    rot: Math.random() * 6.28, vr: (Math.random() - 0.5) * 3, size: 5 + Math.random() * 5, life: 0, ttl: 0.9 });
+}
 let started = false, musicVol = 0;
 const pointer = { down: false, x: 0, y: 0, px: 0, py: 0, vx: 0, vy: 0 };
 
@@ -246,10 +251,11 @@ function setupFinale() {
 }
 function spawnDrifters(n) {
   for (let i = 0; i < n; i++) {
-    addBloom(Math.random() * W, H + 26 + Math.random() * 60, {
+    const b = addBloom(Math.random() * W, H + 26 + Math.random() * 60, {
       state: 'drift', vy: -13 - Math.random() * 19, vx: (Math.random() - 0.5) * 7,
       size: 22 + Math.random() * 30, ttl: 46,
     });
+    b.baseVy = b.vy;
   }
 }
 
@@ -323,7 +329,29 @@ function update(dt, now) {
     if (waveIdx < waveTimes.length && finaleT > waveTimes[waveIdx]) { waveIdx++; spawnDrifters(64); }
     trickleT -= dt;
     if (finaleT > 16 && trickleT <= 0) { trickleT = 2 + Math.random() * 1.4; spawnDrifters(1 + Math.floor(Math.random() * 3)); }
-    if (finaleT > 8.6 && !heartFormed) heartFormed = true;
+    if (finaleT > 8.6 && !heartFormed) {
+      heartFormed = true;
+      showLine('Rê tay qua biển hoa, chạm vào trái tim nhé', 5600);
+    }
+    heartLean.x *= Math.pow(0.12, dt); heartLean.y *= Math.pow(0.12, dt);
+    if (pointer.down && (Math.abs(pointer.vx) > 0.25 || Math.abs(pointer.vy) > 0.25)) {
+      for (const b of blooms) {
+        if (b.state !== 'drift') continue;
+        const dx = b.x - pointer.x, dy = b.y - pointer.y;
+        const d = Math.hypot(dx, dy);
+        if (d < 135) {
+          const f = 1 - d / 135;
+          b.vx += pointer.vx * 330 * f * dt + (-dy / (d + 1)) * 46 * f * dt;
+          b.vy += pointer.vy * 330 * f * dt + (dx / (d + 1)) * 46 * f * dt;
+          if (Math.random() < 0.3) burstTrail(b.x, b.y);
+        }
+      }
+      const hd = Math.hypot(L.heart.x - pointer.x, L.heart.y - pointer.y);
+      if (hd < 240) {
+        heartLean.x = Math.max(-16, Math.min(16, (pointer.x - L.heart.x) * 0.10));
+        heartLean.y = Math.max(-16, Math.min(16, (pointer.y - L.heart.y) * 0.10));
+      }
+    }
     // holding on the heart makes it beat faster and glow
     if (pointer.down && Math.hypot(L.heart.x - pointer.x, L.heart.y - pointer.y) < L.heart.s * 1.3) heartHoldT += dt; else heartHoldT = Math.max(0, heartHoldT - dt * 2);
     heartBeatBoost = 1 + Math.min(1.6, heartHoldT * 1.4);
@@ -346,6 +374,8 @@ function update(dt, now) {
       if (b.y > H * 0.94) b.fade -= dt * 1.6;
       if (b.fade <= 0 || b.life > b.ttl) blooms.splice(i, 1);
     } else if (b.state === 'drift') {
+      b.vx += (0 - b.vx) * Math.min(1, dt * 0.9);
+      b.vy += ((b.baseVy || -20) - b.vy) * Math.min(1, dt * 0.9);
       b.x += b.vx * dt + Math.sin(now * 0.9 + b.ph) * b.swayAmp * dt;
       b.y += b.vy * dt;
       b.rot += b.vr * dt * 0.5;
@@ -361,9 +391,9 @@ function update(dt, now) {
         const k = Math.min(1, dt * (1.2 + e * 2.2));
         b.x += (b.tx - b.x) * k;
         b.y += (b.ty - b.y) * k;
-      } else {               // home: gentle breathing on the curve
-        b.x += (b.tx + Math.sin(now * 1.1 + b.ph) * 2.4 - b.x) * Math.min(1, dt * 3);
-        b.y += (b.ty + Math.cos(now * 0.9 + b.ph) * 2.4 - b.y) * Math.min(1, dt * 3);
+      } else {               // home: gentle breathing on the curve, leaning toward her hand
+        b.x += (b.tx + heartLean.x + Math.sin(now * 1.1 + b.ph) * 2.4 - b.x) * Math.min(1, dt * 3);
+        b.y += (b.ty + heartLean.y + Math.cos(now * 0.9 + b.ph) * 2.4 - b.y) * Math.min(1, dt * 3);
       }
       b.rot += b.vr * dt * 0.3;
     }
