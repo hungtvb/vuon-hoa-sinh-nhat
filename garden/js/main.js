@@ -130,6 +130,7 @@
   }
   function startClimax() {
     phase = "gather"; phaseT = 0;
+    document.getElementById("topbar").classList.add("hide");
     const cx = W / 2, cy = H * 0.40, scale = Math.min(W, H) / 34;
     let idx = 0;
     for (const p of plants) {

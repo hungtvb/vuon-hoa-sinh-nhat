@@ -12,18 +12,19 @@
   #cv{position:fixed;inset:0;display:block}
   .hidden{display:none !important}
   #ui{position:fixed;inset:0;pointer-events:none;z-index:5}
-  #head{position:absolute;top:calc(env(safe-area-inset-top,0px) + 26px);left:0;right:0;text-align:center;padding:0 66px 0 22px}
+  #topbar{position:absolute;top:calc(env(safe-area-inset-top,0px) + 26px);left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:12px;transition:opacity .6s ease;padding:0 66px 0 22px}
+  #topbar.hide{opacity:0}
+  #head{text-align:center}
   #kicker{font-family:'Dancing Script',cursive;font-size:clamp(19px,5.4vw,25px);color:#D9628C;white-space:nowrap}
   #title{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(30px,8.8vw,46px);line-height:1.15;color:#A4134F;margin-top:2px;text-shadow:0 2px 16px rgba(255,255,255,.7)}
-  #counter{position:absolute;top:calc(env(safe-area-inset-top,0px) + 168px);left:50%;transform:translateX(-50%);
-    background:rgba(255,255,255,.75);border:1.5px solid rgba(217,98,140,.4);color:#A4134F;border-radius:999px;
+  #counter{background:rgba(255,255,255,.75);border:1.5px solid rgba(217,98,140,.4);color:#A4134F;border-radius:999px;
     padding:7px 18px;font-weight:700;font-size:15px;backdrop-filter:blur(6px);box-shadow:0 6px 18px rgba(217,98,140,.18);white-space:nowrap}
   #counter .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#E7548C;margin-right:8px;vertical-align:1px}
   #hint{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 30px);text-align:center;padding:0 30px;
     font-size:16px;line-height:1.5;color:#8A3560;text-shadow:0 1px 8px rgba(255,255,255,.8)}
   #hint b{color:#C2185B}
   /* tiêu đề cao trào */
-  #big-title{position:absolute;left:0;right:0;top:16%;text-align:center;padding:0 18px;opacity:0;transform:scale(.8);
+  #big-title{position:absolute;left:0;right:0;top:11%;text-align:center;padding:0 18px;opacity:0;transform:scale(.8);
     transition:opacity .7s ease,transform .7s cubic-bezier(.2,1.6,.4,1)}
   #big-title.show{opacity:1;transform:scale(1)}
   #big-title .l1{font-family:'Dancing Script',cursive;font-size:clamp(26px,7.4vw,36px);color:#D9628C}
@@ -54,11 +55,13 @@
 <canvas id="cv"></canvas>
 
 <div id="ui">
-  <div id="head">
-    <div id="kicker">Một khu vườn dành riêng cho hôm nay</div>
-    <div id="title">Vườn Nở Hoa Sinh Nhật</div>
+  <div id="topbar">
+    <div id="head">
+      <div id="kicker">Một khu vườn dành riêng cho hôm nay</div>
+      <div id="title">Vườn Nở Hoa Sinh Nhật</div>
+    </div>
+    <div id="counter"><span class="dot"></span>Đã nở <span id="count">0</span> / 15 bông</div>
   </div>
-  <div id="counter"><span class="dot"></span>Đã nở <span id="count">0</span> / 15 bông</div>
   <div id="big-title">
     <div class="l1">Hôm nay là ngày của chị</div>
     <div class="l2">Chúc Mừng<br>Sinh Nhật</div>
@@ -83,6 +86,6 @@
 </div>
 
 <audio id="bgm" src="assets/music.mp3" loop preload="auto"></audio>
-<script src="js/main.js?v=2"></script>
+<script src="js/main.js?v=3"></script>
 </body>
 </html>
