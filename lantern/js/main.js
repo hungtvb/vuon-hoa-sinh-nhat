@@ -10,7 +10,6 @@
   const wishInput = document.getElementById("wish-input");
   const releaseBtn = document.getElementById("release-btn");
   const letterWrap = document.getElementById("letter-wrap");
-  const bgm = document.getElementById("bgm");
   let W = 0, H = 0, DPR = 1;
 
   const imgUnlit = new Image(); imgUnlit.src = "assets/lantern-unlit.webp";
@@ -27,7 +26,6 @@
   let scrollY = 0, scrollV = 0;   // thế giới trôi xuống khi đèn bay lên
   let starT = 0, starPt = null, flash = 0, streak = null;
   let petal = null, letterOpened = false;
-  let musicStarted = false;
   const rand = (a, b) => a + Math.random() * (b - a);
 
   function resize() {
@@ -58,16 +56,79 @@
     };
   }
 
-  /* ---------------- nhạc ---------------- */
+  /* ---------------- nhạc: ambient tự sinh bằng WebAudio ----------------
+     Đệm hợp âm chậm (Dmaj7 - Bm7 - Gmaj7 - A) + chuông nhạc hộp thưa thớt
+     theo thang ngũ cung, có echo — đúng chất đêm yên, không dùng file ngoài. */
+  let AC = null, master = null, delaySend = null, muted = false;
+  let chordTimer = null, tickTimer = null, chordIdx = 0, noteCount = 0, melDeg = 3;
+  const CHORDS = [
+    [146.83, 220.00, 293.66, 369.99],
+    [123.47, 185.00, 246.94, 293.66],
+    [ 98.00, 146.83, 196.00, 246.94],
+    [110.00, 164.81, 220.00, 277.18]
+  ];
+  const SCALE = [293.66, 329.63, 369.99, 440.00, 493.88, 587.33, 659.25, 739.99];
+  function pad(freqs) {
+    const t = AC.currentTime;
+    const lp = AC.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 850;
+    lp.connect(master);
+    for (const f of freqs) {
+      for (const det of [1, 1.004]) {
+        const o = AC.createOscillator(), g = AC.createGain();
+        o.type = det === 1 ? "triangle" : "sine";
+        o.frequency.value = f * det;
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.032, t + 2.6);
+        g.gain.setValueAtTime(0.032, t + 7.2);
+        g.gain.linearRampToValueAtTime(0, t + 10.4);
+        o.connect(g); g.connect(lp);
+        o.start(t); o.stop(t + 10.6);
+      }
+    }
+  }
+  function bell(freq) {
+    const t = AC.currentTime;
+    const g = AC.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.13, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0008, t + 1.9);
+    g.connect(master); g.connect(delaySend);
+    const o = AC.createOscillator(); o.type = "sine"; o.frequency.value = freq;
+    o.connect(g); o.start(t); o.stop(t + 2);
+    const o2 = AC.createOscillator(), g2 = AC.createGain();
+    o2.type = "sine"; o2.frequency.value = freq * 2; g2.gain.value = 0.32;
+    o2.connect(g2); g2.connect(g); o2.start(t); o2.stop(t + 1.2);
+    noteCount++;
+  }
   function startMusic() {
-    if (musicStarted) return; musicStarted = true;
-    bgm.volume = 0.5;
-    bgm.play().catch(() => {});
+    if (AC) { if (AC.state === "suspended") AC.resume(); return; }
+    try {
+      AC = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) { return; }
+    master = AC.createGain(); master.gain.value = muted ? 0 : 0.9;
+    master.connect(AC.destination);
+    const delay = AC.createDelay(1); delay.delayTime.value = 0.42;
+    const fb = AC.createGain(); fb.gain.value = 0.34;
+    const dlp = AC.createBiquadFilter(); dlp.type = "lowpass"; dlp.frequency.value = 1700;
+    delay.connect(dlp); dlp.connect(fb); fb.connect(delay);
+    const wet = AC.createGain(); wet.gain.value = 0.35;
+    delay.connect(wet); wet.connect(master);
+    delaySend = AC.createGain(); delaySend.gain.value = 1; delaySend.connect(delay);
+    pad(CHORDS[0]); chordIdx = 1;
+    chordTimer = setInterval(() => { pad(CHORDS[chordIdx % CHORDS.length]); chordIdx++; }, 8000);
+    tickTimer = setInterval(() => {
+      if (Math.random() < 0.4) {
+        melDeg = Math.max(0, Math.min(SCALE.length - 1, melDeg + Math.floor(rand(-2, 2.99))));
+        bell(SCALE[melDeg] * (Math.random() < 0.16 ? 0.5 : 1));
+      }
+    }, 430);
+    window.__music = { get notes() { return noteCount; }, ctx: () => AC && AC.state };
   }
   document.getElementById("mute").addEventListener("click", e => {
     e.stopPropagation();
-    bgm.muted = !bgm.muted;
-    e.currentTarget.classList.toggle("muted", bgm.muted);
+    muted = !muted;
+    if (master) master.gain.value = muted ? 0 : 0.9;
+    e.currentTarget.classList.toggle("muted", muted);
   });
 
   /* ---------------- nhập liệu ---------------- */
