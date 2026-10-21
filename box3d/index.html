@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Hộp Bí Mật 3D — Chúc Mừng Sinh Nhật</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden;font-family:'Roboto Flex',sans-serif;color:#7A2A4C;
+    -webkit-touch-callout:none;user-select:none;-webkit-user-select:none;touch-action:none}
+  body{background:radial-gradient(120% 90% at 50% 30%,#FFE3F0 0%,#FFC7DC 46%,#F79FC0 78%,#EF8FB4 100%)}
+  #stage3d{position:fixed;inset:0}
+  #stage3d canvas{display:block}
+  .hidden{display:none !important}
+  #ui{position:fixed;inset:0;pointer-events:none;z-index:5}
+  #topbar{position:absolute;top:calc(env(safe-area-inset-top,0px) + 24px);left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:11px;padding:0 66px 0 22px}
+  #kicker{font-family:'Dancing Script',cursive;font-size:clamp(19px,5.4vw,25px);color:#C2437E;white-space:nowrap}
+  #title{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(30px,8.8vw,44px);line-height:1.12;color:#A4134F;text-align:center;text-shadow:0 2px 14px rgba(255,255,255,.65)}
+  #dots{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.6);border:1.5px solid rgba(196,67,126,.35);
+    border-radius:999px;padding:7px 14px;backdrop-filter:blur(6px)}
+  #dots .d{display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:#B0577F;opacity:.55;transition:all .3s}
+  #dots .d i{width:8px;height:8px;border-radius:50%;background:#D98BB0;display:inline-block}
+  #dots .d.on{opacity:1;color:#A4134F}
+  #dots .d.on i{background:#E7548C;box-shadow:0 0 8px #E7548C}
+  #dots .d.done{opacity:.85;color:#7A2A4C}
+  #dots .d.done i{background:#8FCB8F;box-shadow:none}
+  #dots .sep{width:12px;height:1.5px;background:rgba(196,67,126,.4)}
+  #hint{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 30px);text-align:center;padding:0 30px;
+    font-size:16.5px;line-height:1.5;color:#8A3560;text-shadow:0 1px 8px rgba(255,255,255,.75)}
+  #hint b{color:#C2185B}
+  /* thư */
+  #letter-wrap{position:fixed;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;padding:20px;
+    background:rgba(122,42,76,.3);backdrop-filter:blur(3px)}
+  #letter{position:relative;width:min(92vw,430px);max-height:84vh;overflow:auto;background:#FFFDF6;color:#6B2A44;border-radius:8px;
+    padding:38px 30px 30px;box-shadow:0 30px 70px rgba(164,19,79,.35);transform:rotate(-1.1deg);
+    background-image:repeating-linear-gradient(#FFFDF6,#FFFDF6 30px,#F9E3EC 31px)}
+  #letter:before{content:"";position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(2deg);
+    width:110px;height:26px;background:rgba(249,205,222,.85);border-radius:2px;box-shadow:0 2px 5px rgba(0,0,0,.12)}
+  #letter h2{font-family:'Dancing Script',cursive;font-size:29px;color:#C2185B;margin-bottom:10px}
+  #letter p{font-family:'Dancing Script',cursive;font-size:21.5px;line-height:31px;margin-bottom:8px}
+  #letter .sign{text-align:right;margin-top:6px}
+  #replay{margin-top:16px;width:100%;border:none;border-radius:999px;padding:13px;cursor:pointer;
+    background:linear-gradient(135deg,#F27CA7,#D6336C);color:#FFF;font-family:'Playfair Display',serif;font-weight:700;font-size:16px}
+  #mute{position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);right:14px;z-index:20;width:44px;height:44px;border-radius:50%;
+    border:1.5px solid rgba(196,67,126,.45);background:rgba(255,255,255,.65);backdrop-filter:blur(6px);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;pointer-events:auto}
+  #mute svg{width:21px;height:21px;fill:#A4134F}
+  #mute .off{display:none}
+  #mute.muted .on{display:none}
+  #mute.muted .off{display:block}
+</style>
+</head>
+<body>
+<div id="stage3d"></div>
+
+<div id="ui">
+  <div id="topbar">
+    <div id="kicker">Một món quà đang chờ được mở</div>
+    <div id="title">Hộp Bí Mật 3D</div>
+    <div id="dots">
+      <span class="d on" data-s="spin"><i></i>Xoay</span><span class="sep"></span>
+      <span class="d" data-s="tap"><i></i>Chạm</span><span class="sep"></span>
+      <span class="d" data-s="hold"><i></i>Giữ</span><span class="sep"></span>
+      <span class="d" data-s="swipe"><i></i>Vuốt</span>
+    </div>
+  </div>
+  <div id="hint"><b>Kéo để xoay</b> chiếc hộp, ngắm nó thật kỹ…</div>
+</div>
+
+<button id="mute" type="button" aria-label="Bật tắt nhạc">
+  <svg class="on" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>
+  <svg class="off" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4-2.7-2.7z"/></svg>
+</button>
+
+<div id="letter-wrap" class="hidden">
+  <div id="letter">
+    <h2>Gửi chị, trong ngày sinh nhật,</h2>
+    <p>Chiếc hộp này chỉ mở ra khi có người thật lòng muốn mở nó — cũng như những điều tốt đẹp nhất luôn chờ đúng người, đúng lúc.</p>
+    <p>Chúc chị một tuổi mới thật nhiều sức khỏe và niềm vui; chúc mọi dự định đang ấp ủ sẽ lần lượt bung nở rực rỡ như khoảnh khắc chiếc hộp này vừa mở. Sinh nhật thật vui, chị nhé!</p>
+    <p class="sign">— Với tất cả yêu thương</p>
+    <button id="replay" type="button">Mở lại chiếc hộp</button>
+    <p style="font-family:'Roboto Flex',sans-serif;font-size:11px;line-height:15px;color:#B98AA0;text-align:center;margin-top:12px">Tiếng piano: Salamander Grand Piano — Alexander Holm (CC BY 3.0)</p>
+  </div>
+</div>
+
+<audio id="bgm" src="assets/music.mp3" loop preload="auto"></audio>
+<audio id="pop" src="assets/pop.mp3" preload="auto"></audio>
+<audio id="whoosh" src="assets/whoosh.mp3" preload="auto"></audio>
+<script src="vendor/three-r128.min.js"></script>
+<script src="vendor/three-bloom-r128.js"></script>
+<script src="js/main.js?v=6"></script>
+</body>
+</html>
