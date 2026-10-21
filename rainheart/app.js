@@ -31,26 +31,29 @@ const sparkCv = document.createElement('canvas'); sparkCv.width = sparkCv.height
   gr.addColorStop(0, 'rgba(255,240,205,.95)'); gr.addColorStop(.4, 'rgba(255,226,175,.5)'); gr.addColorStop(1, 'rgba(255,226,175,0)');
   g.fillStyle = gr; g.fillRect(0, 0, 32, 32); }
 
-const N = 1450;
+const N = 2600;
 const parts = [];
 const SHORT_WORDS = WORDS.slice(1);
-function pickWord() { return Math.random() < .14 ? WORDS[0] : SHORT_WORDS[(Math.random() * SHORT_WORDS.length) | 0]; }
+function pickWord(z) {
+  if (z < .78) return SHORT_WORDS[(Math.random() * SHORT_WORDS.length) | 0];  /* lớp xa/trung: chỉ từ ngắn */
+  return Math.random() < .3 ? WORDS[0] : SHORT_WORDS[(Math.random() * SHORT_WORDS.length) | 0];
+}
 function newParticle(init) {
-  const z = .35 + Math.random() * .65;               /* depth layer */
+  const z = .3 + Math.random() * .7;                 /* depth layer */
   const kindR = Math.random();
-  const kind = kindR < .3 ? 'word' : kindR < .68 ? 'petal' : 'spark';
+  const kind = kindR < .45 ? 'spark' : kindR < .79 ? 'petal' : 'word';
   return {
-    kind, z,
+    kind, z, role: 'ambient',
     x: Math.random() * W,
     y: init ? (Math.random() < .55 ? Math.random() * H : -Math.random() * H * .9) : -40 - Math.random() * H * .35,
     vy: (0.55 + Math.random() * 0.9) * (0.45 + z),   /* far = slower */
     sway: Math.random() * 6.28, swaySpd: .4 + Math.random() * .9, swayAmp: 8 + Math.random() * 16,
     rot: Math.random() * 6.28, vr: (Math.random() - .5) * .02,
-    size: kind === 'word' ? 11 + z * 10.5 : kind === 'petal' ? 11 + z * 17 : 3.5 + z * 5.5,
-    word: pickWord(),
+    size: kind === 'word' ? 10 + z * 9 : kind === 'petal' ? 9 + z * 16 : 2.5 + z * 5,
+    word: pickWord(z),
     color: COLORS[(Math.random() * COLORS.length) | 0],
     font: Math.random() < .6 ? "'Dancing Script', cursive" : "'Playfair Display', serif",
-    alpha: kind === 'word' ? .3 + z * .55 : kind === 'petal' ? .45 + z * .45 : .35 + z * .4,
+    alpha: kind === 'word' ? .2 + z * .55 : kind === 'petal' ? .35 + z * .5 : .3 + z * .45,
     gx: 0, gy: 0, sx: 0, sy: 0, vx: 0, vy2: 0, dead: false
   };
 }
@@ -72,12 +75,25 @@ const ring = $('#ring'), rfg = ring.querySelector('.rfg');
 const CIRC = 2 * Math.PI * 31; rfg.style.strokeDasharray = CIRC; rfg.style.strokeDashoffset = CIRC;
 const HOLD_MS = 1400;
 
-function heartPoint() {
-  const t = Math.random() * 6.283, u = Math.sqrt(Math.random());
-  const hx = 16 * Math.pow(Math.sin(t), 3);
-  const hy = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
-  const S = Math.min(W, H) / 37, cx = W / 2, cy = H * .42;
-  return [cx + S * hx * u, cy - S * hy * u];
+/* Tim: lấy mẫu điểm đều — viền tham số + ruột bằng rejection sampling trên lưới jitter.
+   Trả về điểm trong hệ tọa độ màn hình; R = bán kính chuẩn hóa. */
+function heartTargets(count, scale) {
+  const cx = W / 2, cy = H * .42, R = Math.min(W, H) * .40 * scale;
+  const pts = [];
+  const nEdge = Math.round(count * .5);
+  for (let i = 0; i < nEdge; i++) {
+    const t = (i / nEdge) * 6.283 + (Math.random() - .5) * .05;
+    const hx = 16 * Math.pow(Math.sin(t), 3) / 16;
+    const hy = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 16;
+    pts.push([cx + hx * R + (Math.random() - .5) * 5, cy - hy * R + (Math.random() - .5) * 5]);
+  }
+  let guard = 0;
+  while (pts.length < count && guard++ < count * 30) {
+    const nx = (Math.random() * 2 - 1) * 1.08, ny = (Math.random() * 2 - 1) * 1.02;
+    const a = nx * nx + ny * ny - 1;
+    if (a * a * a - nx * nx * ny * ny * ny <= 0) pts.push([cx + nx * R, cy - ny * R]);
+  }
+  return pts;
 }
 
 function start() {
@@ -94,7 +110,18 @@ function gather() {
   state.phase = 'gather'; state.gatherT0 = performance.now();
   ring.classList.add('hidden'); holdStart = 0;
   setHint('');
-  for (const p of parts) { p.sx = p.x; p.sy = p.y; const g = heartPoint(); p.gx = g[0]; p.gy = g[1]; }
+  /* Phân vai: lõi tim = 640 hạt (cánh/sao/từ NGẮN), quầng = 520 hạt viền tim phóng to,
+     còn lại là mưa nền mờ — mọi hạt đều hội tụ nhưng lõi tim luôn sạch, đều, đọc rõ hình. */
+  const coreT = heartTargets(780, 1.02), haloT = heartTargets(380, 1.18);
+  const prio = p => p.kind === 'petal' ? 0 : p.kind === 'spark' ? 1 : 2;
+  const shuffled = parts.slice().sort(() => Math.random() - .5).sort((a, b) => prio(a) - prio(b));
+  let ci = 0, hi = 0;
+  for (const p of shuffled) {
+    p.sx = p.x; p.sy = p.y; p.sizeMul = 1;
+    if (ci < coreT.length && p.kind !== 'word') { p.role = 'core'; p.sizeMul = 1.3; p.gx = coreT[ci][0]; p.gy = coreT[ci][1]; ci++; }
+    else if (hi < haloT.length && p.kind !== 'word') { p.role = 'halo'; p.gx = haloT[hi][0]; p.gy = haloT[hi][1]; hi++; }
+    else p.role = 'ambient';
+  }
   buzz([25, 40, 25]);
 }
 function formHeart() {
@@ -110,7 +137,7 @@ function explode() {
   }
   const fl = $('#flash'); fl.style.opacity = .8; setTimeout(() => fl.style.opacity = 0, 130);
   playSfx(sShimmer); buzz([60, 40, 140]);
-  setTimeout(showFinale, 1150);
+  setTimeout(showFinale, 2100);          /* burst bay ~2,1s mới lắng sang finale */
 }
 function showFinale() {
   if (state.phase !== 'burst') return;
@@ -175,10 +202,15 @@ function buildOrbit() {
     box.appendChild(d); chipEls.push({ el: d, off: i / CHIPS.length * 6.283 });
   });
 }
+let orbitA = 0, orbitLast = 0;
 function moveOrbit(now) {
-  const cx = W / 2, cy = H * .44, R = Math.min(W, H) * .355, t = now * .00016;
+  const dtms = Math.min(80, now - (orbitLast || now)); orbitLast = now;
+  /* orbit 52s/vòng; mỗi 11s tăng tốc ×4 trong 0,75s (surge) như engine mẫu */
+  const surge = (now % 11000) < 750 ? 4 : 1;
+  orbitA += (6.283 / 52000) * surge * dtms;
+  const cx = W / 2, cy = H * .44, R = Math.min(W, H) * .355;
   for (const c of chipEls) {
-    const a = c.off + t;
+    const a = c.off + orbitA;
     c.el.style.left = (cx + Math.cos(a) * R) + 'px';
     c.el.style.top = (cy + Math.sin(a) * R * .82) + 'px';
   }
@@ -211,28 +243,53 @@ document.addEventListener('contextmenu', e => e.preventDefault());
 /* ---------------- render loop ---------------- */
 let lastT = performance.now();
 function drawParticle(p) {
+  if (p.dead) return;
+  let dim = 1;
+  if (p.role === 'ambient' && (state.phase === 'gather' || state.phase === 'heart' || state.phase === 'burst')) dim = .16;
+  else if (p.role === 'halo' && (state.phase === 'heart' || state.phase === 'burst')) dim = .4;
+  const sm = p.sizeMul || 1;
   if (p.kind === 'word') {
-    ctx.globalAlpha = p.alpha;
+    ctx.globalAlpha = p.alpha * dim;
     ctx.font = (p.z > .82 ? '700 ' : '500 ') + p.size + 'px ' + p.font;
     ctx.fillStyle = p.color;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(p.word, p.x, p.y);
   } else if (p.kind === 'petal') {
-    ctx.globalAlpha = p.alpha;
+    ctx.globalAlpha = p.alpha * dim;
     ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
-    if (petalImg.complete) ctx.drawImage(petalImg, -p.size / 2, -p.size / 2, p.size, p.size);
+    if (petalImg.complete) ctx.drawImage(petalImg, -p.size * sm / 2, -p.size * sm / 2, p.size * sm, p.size * sm);
     ctx.restore();
   } else {
-    ctx.globalAlpha = p.alpha;
-    ctx.drawImage(sparkCv, p.x - p.size, p.y - p.size, p.size * 2, p.size * 2);
+    ctx.globalAlpha = p.alpha * dim;
+    ctx.drawImage(sparkCv, p.x - p.size * sm, p.y - p.size * sm, p.size * sm * 2, p.size * sm * 2);
   }
   ctx.globalAlpha = 1;
 }
+let perfChecked = false, perfFrames = 0, perfSum = 0;
 function frame(now) {
   const dt = Math.min(.033, (now - lastT) / 1000); lastT = now;
   const k = dt * 60;                                   /* frame-normalized step */
+  /* Máy yếu: tự hạ mật độ (bản lite ~1.700 hạt) để giữ mượt — hình hài cao trào không đổi */
+  if (!perfChecked && state.phase === 'rain') {
+    perfFrames++; perfSum += dt;
+    if (perfFrames >= 110) {
+      perfChecked = true;
+      if (perfSum / perfFrames > .026) {
+        let culled = 0;
+        for (const p of parts) { if (p.kind === 'spark' && culled < 900) { p.dead = true; culled++; } }
+      }
+    }
+  }
   ctx.clearRect(0, 0, W, H);
   const wind = Math.sin(now * .0003) * .35;
 
+  if (state.phase === 'heart' || state.phase === 'burst') {
+    /* quầng sáng hồng sau lưng tim — neo silhouette cho tim đọc rõ trên nền sáng */
+    const R = Math.min(W, H) * .54, gx = W / 2, gy = H * .42;
+    const gr = ctx.createRadialGradient(gx, gy, 0, gx, gy, R);
+    gr.addColorStop(0, 'rgba(240,150,175,.26)'); gr.addColorStop(.7, 'rgba(240,150,175,.12)'); gr.addColorStop(1, 'rgba(240,150,175,0)');
+    ctx.fillStyle = gr; ctx.fillRect(gx - R, gy - R, R * 2, R * 2);
+  }
   if (state.phase === 'rain' || state.phase === 'gather' || state.phase === 'heart' || state.phase === 'burst') {
     for (const p of parts) drawParticle(p);
   } else if (state.phase === 'finale' || state.phase === 'letter') {
@@ -245,26 +302,37 @@ function frame(now) {
   }
 
   /* --- updates per phase --- */
+  const rainStep = p => {
+    p.sway += p.swaySpd * dt;
+    p.y += p.vy * k; p.x += (Math.sin(p.sway) * .35 + wind * p.z) * k; p.rot += p.vr * k;
+    if (p.y > H + 42) { const keep = { role: p.role, dead: p.dead }; Object.assign(p, newParticle(false)); p.role = keep.role; p.dead = keep.dead; }
+    if (p.x < -70) p.x = W + 60; if (p.x > W + 70) p.x = -60;
+  };
   if (state.phase === 'rain') {
+    /* đang giữ: mưa chậm dần (nín thở) + hút xoáy quanh điểm chạm */
+    const holdPr = holdStart ? Math.min(1, (now - holdStart) / HOLD_MS) : 0;
+    const spd = 1 - .45 * holdPr;
     for (const p of parts) {
+      if (p.dead) continue;
       p.sway += p.swaySpd * dt;
-      p.y += p.vy * k; p.x += (Math.sin(p.sway) * .35 + wind * p.z) * k; p.rot += p.vr * k;
-      if (holdStart) {                                  /* hút nhẹ quanh điểm chạm */
+      p.y += p.vy * spd * k; p.x += (Math.sin(p.sway) * .35 + wind * p.z) * k; p.rot += p.vr * k;
+      if (holdStart) {
         const dx = holdX - p.x, dy = holdY - p.y, d = Math.hypot(dx, dy);
-        if (d < 150 && d > 4) { p.x += dx / d * 1.1 * k; p.y += dy / d * 1.1 * k; }
+        if (d < 250 && d > 4) { p.x += dx / d * 1.6 * k; p.y += dy / d * 1.6 * k; }
       }
-      if (p.y > H + 42) { Object.assign(p, newParticle(false)); }
+      if (p.y > H + 42) Object.assign(p, newParticle(false));
       if (p.x < -70) p.x = W + 60; if (p.x > W + 70) p.x = -60;
     }
     if (holdStart) {
-      const pr = (now - holdStart) / HOLD_MS;
-      rfg.style.strokeDashoffset = CIRC * (1 - Math.min(1, pr));
-      if (pr >= 1) gather();
+      rfg.style.strokeDashoffset = CIRC * (1 - holdPr);
+      if (holdPr >= 1) gather();
     }
   } else if (state.phase === 'gather') {
     const p01 = Math.min(1, (now - state.gatherT0) / 1700), e = 1 - Math.pow(1 - p01, 3);
     const cx = W / 2, cy = H * .42;
     for (const p of parts) {
+      if (p.dead) continue;
+      if (p.role === 'ambient') { rainStep(p); continue; }
       let vx = p.sx + (p.gx - p.sx) * e, vy = p.sy + (p.gy - p.sy) * e;
       const dx = vx - cx, dy = vy - cy, ang = (1 - e) * 2.1;
       const ca = Math.cos(ang), sa = Math.sin(ang);
@@ -277,13 +345,17 @@ function frame(now) {
     const pulse = cyc < .13 ? Math.sin(cyc / .13 * Math.PI) * .055 : cyc < .27 ? Math.sin((cyc - .13) / .14 * Math.PI) * .032 : 0;
     const cx = W / 2, cy = H * .42;
     for (const p of parts) {
+      if (p.dead) continue;
+      if (p.role === 'ambient') { rainStep(p); continue; }
       p.x = cx + (p.gx - cx) * (1 + pulse) + Math.sin(now * .004 + p.gy) * .7;
       p.y = cy + (p.gy - cy) * (1 + pulse) + Math.cos(now * .003 + p.gx) * .7;
     }
     if (el > 1950) explode();                            /* ~2 nhịp lub-dub */
   } else if (state.phase === 'burst') {
     for (const p of parts) {
-      p.x += p.vx * k; p.y += p.vy2 * k; p.vy2 += .028 * k; p.rot += p.vr * 3 * k;
+      if (p.dead) continue;
+      if (p.role === 'ambient') { rainStep(p); continue; }
+      p.x += p.vx * k; p.y += p.vy2 * k; p.vy2 += .02 * k; p.vx *= .996; p.rot += p.vr * 3 * k;
     }
   } else if (state.phase === 'finale' || state.phase === 'letter') {
     for (const p of lite) {
