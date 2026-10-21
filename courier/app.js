@@ -85,7 +85,7 @@ $('#bell').addEventListener('click', () => {
     bouquet.classList.remove('hidden');
     state.act = 'mist';
     setHint('Vuốt nhẹ để phun sương cho hoa tỉnh giấc');
-  }, 700);
+  }, 450);
 });
 
 /* ============ MÀN 2: phun sương ============ */
@@ -97,9 +97,9 @@ scenes.shop.addEventListener('pointermove', e => {
   droplets(e.clientX - r.left, e.clientY - r.top, 3);
   if (Math.random() < .3) playSfx(sSpray);
   state.mist++;
-  if (state.mist === 9) $('.shopbg').style.filter = 'saturate(.94) brightness(1.025)';
-  if (state.mist === 18) $('.shopbg').classList.add('awake');
-  if (state.mist >= 26) {
+  if (state.mist === 4) $('.shopbg').style.filter = 'saturate(.94) brightness(1.025)';
+  if (state.mist === 8) $('.shopbg').classList.add('awake');
+  if (state.mist >= 12) {
     state.act = 'stems';
     bouquet.className = 'pos-wrap'; bouquet.id = 'bouquet';
     $('#tray').classList.add('show');
@@ -125,8 +125,8 @@ function addStem(name, el) {
     setTimeout(() => {
       state.act = 'wrap';
       $('#tray').classList.remove('show');
-      setHint('Vuốt lên hai lần để gấp giấy gói quanh bó hoa');
-    }, 900);
+      setHint('Vuốt lên — hoặc chạm vào bó hoa — để gấp giấy gói');
+    }, 600);
   }
 }
 document.querySelectorAll('.trayitem').forEach(el => {
@@ -161,7 +161,7 @@ stage.addEventListener('pointerdown', e => { if (state.act === 'wrap') swipeY = 
 stage.addEventListener('pointerup', e => {
   if (state.act !== 'wrap' || swipeY === null) return;
   const dy = swipeY - e.clientY; swipeY = null;
-  if (dy < 45) return;
+  if (dy < 24 && dy > 6) return; /* vuốt ngắn thì bỏ qua; vuốt rõ hoặc chạm nhẹ đều tính */
   state.folds++;
   $('.flap-' + (state.folds === 1 ? 'l' : 'r')).classList.add('fold');
   buzz(20);
@@ -176,7 +176,7 @@ const ring = $('#holdring'), ringFg = ring.querySelector('.ringfg');
 const CIRC = 2 * Math.PI * 26; ringFg.style.strokeDasharray = CIRC; ringFg.style.strokeDashoffset = CIRC;
 let holdStart = 0, holdRaf = 0;
 function holdTick() {
-  const p = Math.min(1, (performance.now() - holdStart) / 800);
+  const p = Math.min(1, (performance.now() - holdStart) / 520);
   ringFg.style.strokeDashoffset = CIRC * (1 - p);
   if (p >= 1) { finishBow(); return; }
   holdRaf = requestAnimationFrame(holdTick);
@@ -207,7 +207,7 @@ function attachCard() {
     bouquet.className = 'pos-basket'; bouquet.id = 'bouquet';
     $('#bike').classList.add('bob');
     state.act = 'ride';
-  }, 1100);
+  }, 750);
 }
 bcard.addEventListener('click', e => {
   e.stopPropagation();
@@ -220,17 +220,22 @@ bcard.addEventListener('click', e => {
 /* ============ MÀN 5: đạp xe qua phố ============ */
 const strip = $('#streetStrip'), ridefill = $('#ridefill');
 let pedaling = false, downhillDone = false;
-scenes.street.addEventListener('pointerdown', () => { if (state.act === 'ride') pedaling = true; });
+scenes.street.addEventListener('pointerdown', () => {
+  if (state.act !== 'ride') return;
+  pedaling = true;
+  state.ride = Math.min(1, state.ride + 0.045); /* chạm cũng tiến một đoạn — không bắt giữ tay suốt */
+});
 addEventListener('pointerup', () => pedaling = false);
 let lastRideHint = '';
 setInterval(() => {
   if (state.act !== 'ride') return;
-  if (pedaling) state.ride = Math.min(1, state.ride + 0.0062);
+  if (pedaling) state.ride = Math.min(1, state.ride + 0.0115);
   const stripW = strip.scrollWidth, view = stage.clientWidth;
   strip.style.transform = 'translateX(' + (-(stripW - view) * state.ride) + 'px)';
   ridefill.style.width = (state.ride * 100) + '%';
   if (state.ride > .5 && !downhillDone) {
     downhillDone = true; rain(26); buzz(25);
+    state.ride = Math.min(1, state.ride + 0.1); /* xuống dốc: xe tự vọt đi một đoạn */
     showToast('Xuống dốc — thả tay cho xe trôi');
   }
   const h = state.ride < .45 ? 'Giữ tay để đạp xe' : state.ride < .9 ? 'Sắp tới rồi, cố lên' : 'Tới nơi rồi';
@@ -255,7 +260,7 @@ $('#knocker').addEventListener('click', () => {
   if (state.knocks < 3) setHint('Gõ thêm ' + (3 - state.knocks) + ' nhịp nữa');
   else {
     state.act = 'partyPrep'; setHint('…');
-    setTimeout(openParty, 1100);
+    setTimeout(openParty, 750);
   }
 });
 
@@ -282,7 +287,7 @@ function openParty() {
     rain(18);
     state.act = 'garden';
     setHint('Chạm vào tấm thiệp trên bó hoa');
-  }, 900);
+  }, 600);
 }
 
 /* ============ MÀN 8: thư ============ */
@@ -303,9 +308,9 @@ function openLetter() {
   const body = $('#letterBody'); body.innerHTML = '';
   LETTER.forEach((line, i) => {
     const p = document.createElement('p'); p.textContent = line; body.appendChild(p);
-    setTimeout(() => p.classList.add('show'), 350 + i * 430);
+    setTimeout(() => p.classList.add('show'), 220 + i * 260);
   });
-  setTimeout(() => { $('.sign').classList.add('show'); state.letterShown = true; }, 350 + LETTER.length * 430);
+  setTimeout(() => { $('.sign').classList.add('show'); state.letterShown = true; }, 220 + LETTER.length * 260);
   setHint('Chạm đâu trong vườn, hoa nở ở đó');
 }
 $('#closeLetter').addEventListener('click', () => { $('#letter').classList.add('hidden'); buzz(15); });

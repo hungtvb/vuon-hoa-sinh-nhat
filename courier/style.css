@@ -12,7 +12,7 @@ body.vib #stage{animation:vib .18s linear}
 
 /* ---------- scenes ---------- */
 .scene{position:absolute;inset:0;opacity:0;pointer-events:none;transform:translateX(5%) scale(1.03);
-  transition:opacity 1.15s ease,transform 1.15s ease;overflow:hidden}
+  transition:opacity .95s ease,transform .95s ease;overflow:hidden}
 .scene.active{opacity:1;pointer-events:auto;transform:translateX(0) scale(1)}
 .scene.gone{transform:translateX(-5%) scale(1.03)}
 .shopbg,.doorbg,.gardenbg{position:absolute;inset:0;background-size:cover;background-position:center 30%}
