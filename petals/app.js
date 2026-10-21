@@ -19,6 +19,7 @@ const typeBox = document.getElementById('typeBox');
 const typeTitle = document.getElementById('typeTitle');
 const typeSub = document.getElementById('typeSub');
 const cardWrap = document.getElementById('cardWrap');
+const letterBtn = document.getElementById('letterBtn');
 const lineEl = document.getElementById('line');
 const replayBtn = document.getElementById('replay');
 const music = document.getElementById('music');
@@ -92,7 +93,8 @@ const ambient = [];
 for (let i = 0; i < 14; i++) ambient.push({ x: Math.random() * W, y: Math.random() * H, s: 7 + Math.random() * 9, vy: 9 + Math.random() * 13, ph: Math.random() * 6.28, rot: Math.random() * 6.28 });
 
 // ---------- state ----------
-let phase = 'lock';          // lock | sealed | fountain | card | finale
+let phase = 'lock';          // lock | sealed | fountain | await | card | finale
+let sealedAt = 0, letterAt = 0;
 let phaseT = 0;
 let entered = '';
 let lockBusy = false;
@@ -152,7 +154,8 @@ function pinKey(k) {
         lockUI.classList.add('hidden');
         envWrap.classList.remove('hidden');
         phase = 'sealed'; phaseT = 0;
-      }, 620);
+        sealedAt = performance.now();   // the envelope ignores taps for its first moments:
+      }, 620);                           // the last PIN tap lands exactly where it appears
     } else {
       playSnd(wrongSnd);
       slotsEl.forEach(s => s.classList.add('bad'));
@@ -172,6 +175,7 @@ document.getElementById('keypad').addEventListener('click', (e) => {
 // ---------- phase 2: the envelope fountain ----------
 bigEnv.addEventListener('click', () => {
   if (phase !== 'sealed') return;
+  if (performance.now() - sealedAt < 900) return;   // swallow the tap-through from the keypad
   phase = 'fountain'; phaseT = 0;
   fountainLeft = 5.6;
   envWrap.classList.add('hidden');
@@ -227,6 +231,12 @@ function hideCard() {
     setTimeout(() => replayBtn.classList.remove('hidden'), 2400);
   }, 480);
 }
+letterBtn.addEventListener('click', () => {
+  if (phase !== 'await') return;
+  if (performance.now() - letterAt < 400) return;
+  letterBtn.classList.add('hidden');
+  showCard();
+});
 document.getElementById('cardClose').addEventListener('click', hideCard);
 cardWrap.addEventListener('click', (e) => { if (e.target === cardWrap) hideCard(); });
 replayBtn.addEventListener('click', () => location.reload());
@@ -318,7 +328,10 @@ function update(dt, now) {
         });
       }
     } else if (phaseT > 7.6 && !cardShown) {
-      showCard();
+      // the letter never opens itself: it waits, glowing, for a deliberate tap
+      phase = 'await'; phaseT = 0;
+      letterAt = performance.now();
+      letterBtn.classList.remove('hidden');
     }
   }
 
@@ -477,6 +490,7 @@ window.__petals = {
   phase: () => phase,
   enterPin: (digits) => { for (const d of digits) pinKey(d); },
   openEnvelope: () => bigEnv.click(),
+  openLetter: () => letterBtn.click(),
   fountainCount: () => blooms.filter(b => b.state === 'fountain').length,
   heartFormed: () => heartFormed,
   cardVisible: () => !cardWrap.classList.contains('hidden'),

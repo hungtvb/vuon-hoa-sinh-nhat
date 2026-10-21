@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Ngàn Cánh Hoa — Chúc Mừng Sinh Nhật</title>
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <div id="stage">
@@ -33,6 +33,12 @@
   <div id="envWrap" class="hidden">
     <img id="bigEnv" src="assets/img/envelope.webp" alt="">
     <p id="envHint">Chạm để mở phong bì</p>
+  </div>
+
+  <!-- the letter waits to be opened by a deliberate tap -->
+  <div id="letterBtn" class="hidden">
+    <img src="assets/img/envelope.webp" alt="">
+    <p>Chạm để đọc thư</p>
   </div>
 
   <div id="typeBox" class="hidden">
@@ -70,6 +76,6 @@
 <audio id="shimmer" src="assets/audio/shimmer.mp3" preload="auto"></audio>
 <audio id="chime" src="assets/audio/chime.mp3" preload="auto"></audio>
 
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>
