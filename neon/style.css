@@ -1,0 +1,41 @@
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; background:#01020a; overflow:hidden; }
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  -webkit-touch-callout:none; -webkit-user-select:none; user-select:none;
+  -webkit-tap-highlight-color: transparent;
+}
+#stage { position:fixed; inset:0; background:#01020a; overflow:hidden; touch-action:none; }
+canvas#gl { position:absolute; inset:0; z-index:0; display:block; }
+#flash { position:absolute; inset:0; z-index:2; pointer-events:none; opacity:0;
+  background:radial-gradient(ellipse at center, #fff5fa 0%, #ffb3d1 45%, rgba(255,92,158,.25) 75%, transparent 100%); }
+.hidden { display:none !important; }
+
+/* ---------- intro ---------- */
+#intro { position:absolute; inset:0; z-index:5; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center; padding:24px; cursor:pointer;
+  background:radial-gradient(ellipse at center, rgba(2,2,16,.12) 0%, rgba(1,2,10,.66) 80%); }
+.intro-kicker { color:#ff9ec4; font-size:12.5px; letter-spacing:.3em; text-transform:lowercase;
+  text-shadow:0 0 12px rgba(255,111,165,.8); margin-bottom:22px; }
+.intro-title { color:#fff5fa; font-size:clamp(36px, 10vw, 60px); font-weight:800; line-height:1.18;
+  letter-spacing:.06em;
+  text-shadow:0 0 8px rgba(255,200,225,.9), 0 0 30px rgba(255,111,165,.75), 0 0 70px rgba(255,77,141,.45); }
+.intro-sub { color:#cfd6ff; font-size:14.5px; line-height:1.65; margin-top:20px; opacity:.92; }
+.tap-ind { position:relative; width:78px; height:78px; margin-top:44px; }
+.tap-dot { position:absolute; left:50%; top:50%; width:13px; height:13px; margin:-6.5px 0 0 -6.5px; border-radius:50%;
+  background:#ff6fa5; box-shadow:0 0 14px rgba(255,111,165,.95), 0 0 42px rgba(255,111,165,.55);
+  animation:dotPulse 1.5s ease-in-out infinite; }
+.tap-ring { position:absolute; inset:0; border-radius:50%; border:2px solid rgba(255,158,196,.85);
+  animation:ringOut 1.5s cubic-bezier(.2,.6,.35,1) infinite; }
+.tap-ring.r2 { animation-delay:.75s; }
+@keyframes ringOut { 0% { transform:scale(.16); opacity:.95; } 100% { transform:scale(1); opacity:0; } }
+@keyframes dotPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.4); } }
+
+/* ---------- mute ---------- */
+#mute { position:absolute; top:calc(12px + env(safe-area-inset-top)); right:14px; z-index:7;
+  width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,158,196,.45);
+  background:rgba(20,4,16,.55); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+#mute.off .wv { display:none; }
+#mute.off { opacity:.55; }
+
+img { pointer-events:none; }
