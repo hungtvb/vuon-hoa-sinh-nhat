@@ -6,7 +6,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var stage = $("stage"), rainCv = $("rain"), glCv = $("gl");
   var introEl = $("intro"), wordsEl = $("words"), statusEl = $("status"), statusText = $("statusText");
-  var hintEl = $("hint"), cardEl = $("card"), cardBody = $("cardBody");
+  var dragIndEl = $("dragInd"), cardEl = $("card"), cardBody = $("cardBody");
   var music = $("music"), muteBtn = $("mute");
 
   var GLYPHS = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789ABCDEFXYZ<>/=+*#$";
@@ -168,12 +168,28 @@
   }
   /* drag orbit */
   var dragging = false, lastPX = 0, lastPY = 0, tRotX = 0.08, tRotY = 0, cRotX = 0.08, cRotY = 0, lastDragAt = -9;
+  var userDragged = false, prevCyc = -1;
+  function hideDragInd() {
+    if (dragIndEl.classList.contains("hidden")) return;
+    dragIndEl.classList.add("fade");
+    setTimeout(function () { dragIndEl.classList.add("hidden"); dragIndEl.classList.remove("fade"); }, 950);
+  }
+  function spawnRipple() {
+    if (phase !== "heart") return;
+    var d = document.createElement("div");
+    d.className = "beat-ripple";
+    stage.appendChild(d);
+    setTimeout(function () { d.remove(); }, 1600);
+  }
   glCv.addEventListener("pointerdown", function (e) {
     if (phase !== "heart") return;
     dragging = true; lastPX = e.clientX; lastPY = e.clientY;
   });
   window.addEventListener("pointermove", function (e) {
     if (!dragging || phase !== "heart") return;
+    if (!userDragged && (Math.abs(e.clientX - lastPX) > 3 || Math.abs(e.clientY - lastPY) > 3)) {
+      userDragged = true; hideDragInd();
+    }
     tRotY += (e.clientX - lastPX) * 0.008; tRotX += (e.clientY - lastPY) * 0.005;
     tRotX = Math.max(-0.7, Math.min(0.7, tRotX));
     lastPX = e.clientX; lastPY = e.clientY; lastDragAt = perfNow();
@@ -215,9 +231,10 @@
       if (!heartReady) buildHeart();
       glCv.classList.remove("hidden-gl");
       setTimeout(function () { if (phase === "heart") wordsEl.classList.add("hidden"); }, 650);
-      setTimeout(function () { if (phase === "heart") hintEl.classList.remove("hidden"); }, 2400);
+      setTimeout(function () { if (phase === "heart" && !userDragged) dragIndEl.classList.remove("hidden"); }, 900);
+      setTimeout(function () { hideDragInd(); }, 7500);
     } else if (p === "burst") {
-      hintEl.classList.add("hidden");
+      hideDragInd();
       setStatus("> opening_");
     } else if (p === "card") {
       glCv.classList.add("hidden-gl");
@@ -273,6 +290,14 @@
         heartGroup.rotation.y = cRotY; heartGroup.rotation.x = cRotX;
         var beat = 1 + 0.085 * beatPulse(now);
         heartGroup.scale.set(beat, beat, beat);
+        if (phase === "heart") {
+          var cyc = now % 1.15;
+          if (prevCyc >= 0) {
+            if (cyc < prevCyc) spawnRipple();                    // lub
+            else if (prevCyc < 0.24 && cyc >= 0.24) spawnRipple(); // dub
+          }
+          prevCyc = cyc;
+        }
         if (phase === "burst") {
           var k = Math.min(1, t / 0.9), e = 1 - Math.pow(1 - k, 3);
           var arr = heartPts.geometry.attributes.position.array;
@@ -303,6 +328,8 @@
     lettersTotal: letters.length,
     heartReady: function () { return heartReady; },
     cardVisible: function () { return !cardEl.classList.contains("hidden"); },
+    dragIndVisible: function () { return !dragIndEl.classList.contains("hidden"); },
+    rippleCount: function () { return document.querySelectorAll(".beat-ripple").length; },
     musicPlaying: function () { return !music.paused; }
   };
 })();

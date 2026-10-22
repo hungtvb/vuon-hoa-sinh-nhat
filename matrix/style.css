@@ -26,8 +26,15 @@ canvas#gl.hidden-gl { opacity:0; pointer-events:none; }
 .intro-title { color:#eaffea; font-size:clamp(34px, 9.5vw, 58px); font-weight:800; line-height:1.16;
   letter-spacing:.08em; text-shadow:0 0 6px rgba(180,255,190,.9), 0 0 26px rgba(57,255,106,.65), 0 0 60px rgba(57,255,106,.35); }
 .intro-sub { color:#9fe8ab; font-size:14.5px; line-height:1.65; margin-top:20px; opacity:.92; }
-.intro-cta { margin-top:38px; color:#ff6fa5; font-size:15px; font-weight:700; letter-spacing:.3em;
-  text-shadow:0 0 10px rgba(255,111,165,.9), 0 0 34px rgba(255,111,165,.5); animation:blink 1.5s steps(2,start) infinite; }
+.tap-ind { position:relative; width:78px; height:78px; margin-top:44px; }
+.tap-dot { position:absolute; left:50%; top:50%; width:13px; height:13px; margin:-6.5px 0 0 -6.5px; border-radius:50%;
+  background:#ff6fa5; box-shadow:0 0 14px rgba(255,111,165,.95), 0 0 42px rgba(255,111,165,.55);
+  animation:dotPulse 1.5s ease-in-out infinite; }
+.tap-ring { position:absolute; inset:0; border-radius:50%; border:2px solid rgba(255,111,165,.85);
+  animation:ringOut 1.5s cubic-bezier(.2,.6,.35,1) infinite; }
+.tap-ring.r2 { animation-delay:.75s; }
+@keyframes ringOut { 0% { transform:scale(.16); opacity:.95; } 100% { transform:scale(1); opacity:0; } }
+@keyframes dotPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.4); } }
 @keyframes blink { 50% { opacity:.35; } }
 
 /* ---------- big pink words ---------- */
@@ -46,10 +53,19 @@ canvas#gl.hidden-gl { opacity:0; pointer-events:none; }
 @keyframes pulseGlow { 0%,100% { text-shadow:0 0 6px rgba(255,150,195,.95), 0 0 20px rgba(255,111,165,.8), 0 0 46px rgba(255,77,141,.5); }
   50% { text-shadow:0 0 8px rgba(255,170,210,1), 0 0 30px rgba(255,111,165,1), 0 0 70px rgba(255,77,141,.75); } }
 
-/* ---------- hint ---------- */
-#hint { position:absolute; left:0; right:0; bottom:calc(52px + env(safe-area-inset-bottom)); z-index:4;
-  text-align:center; color:#c8ffd2; font-size:13px; letter-spacing:.05em; padding:0 20px;
-  text-shadow:0 0 9px rgba(57,255,106,.65); animation:blink 2.2s ease-in-out infinite; }
+/* ---------- indicators (no instruction text) ---------- */
+#dragInd { position:absolute; left:50%; top:50%; width:96vmin; height:96vmin; z-index:3; pointer-events:none;
+  transform:translate(-50%,-54%); opacity:.92; transition:opacity .9s ease;
+  animation:sway 2.8s ease-in-out infinite alternate; }
+#dragInd.fade { opacity:0; }
+#dragInd path.arc { stroke-dasharray:7 8; animation:march 1.1s linear infinite; }
+@keyframes march { to { stroke-dashoffset:-15; } }
+@keyframes sway { from { transform:translate(-50%,-54%) rotate(-6deg); } to { transform:translate(-50%,-54%) rotate(6deg); } }
+.beat-ripple { position:absolute; left:50%; top:50%; width:88vmin; height:88vmin; z-index:3; pointer-events:none;
+  border:2px solid rgba(255,111,165,.7); border-radius:50%;
+  transform:translate(-50%,-50%) scale(.36); opacity:.85; animation:beatOut 1.5s ease-out forwards; }
+@keyframes beatOut { 0% { transform:translate(-50%,-50%) scale(.36); opacity:.85; }
+  100% { transform:translate(-50%,-50%) scale(1); opacity:0; } }
 
 /* ---------- card ---------- */
 #card { position:absolute; z-index:6; left:50%; top:50%; transform:translate(-50%,-50%);
