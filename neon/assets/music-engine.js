@@ -178,7 +178,32 @@
     this.events = expandSheet(sheet);
     var need = {};
     this.events.forEach(function (ev) { need[nearestAnchor(ev.midi).f] = true; });
-    return this.bank.fetchAnchors(Object.keys(need)).then(function () { return self; });
+    return this.bank.fetchAnchors(Object.keys(need)).then(function () {
+      // Pre-decode with an OfflineAudioContext so play() can schedule
+      // IMMEDIATELY (no async decode between the tap and the first note).
+      // Buffers decoded offline are valid in the live context.
+      if (typeof OfflineAudioContext === "undefined") return self;
+      var off = new OfflineAudioContext(1, 1, 44100);
+      return self.bank.decodeAll(off).then(function (buffers) {
+        self.buffers = buffers; return self;
+      }).catch(function () { return self; });
+    });
+  };
+  // MUST be called synchronously inside a user-gesture handler (tap/click).
+  // iOS keeps any AudioContext created or resumed outside a gesture frozen
+  // at currentTime 0 forever — notes schedule but never sound.
+  Player.prototype.unlock = function () {
+    this._ensureCtx();
+    if (this.ctx.state === "suspended") { var p = this.ctx.resume(); if (p && p.catch) p.catch(function () {}); }
+    return this.ctx.state;
+  };
+  Player.prototype.debugState = function () {
+    return {
+      ctxState: this.ctx ? this.ctx.state : "none",
+      ctxTime: this.ctx ? Math.round(this.ctx.currentTime * 100) / 100 : 0,
+      playing: this.playing, notesPlayed: this.notesPlayed,
+      buffersReady: !!this.buffers
+    };
   };
   Player.prototype._ensureCtx = function () {
     if (this.ctx) return;
@@ -195,8 +220,9 @@
     var self = this;
     this._ensureCtx();
     if (this.ctx.state === "suspended") this.ctx.resume();
-    return this.bank.decodeAll(this.ctx).then(function (buffers) {
-      self.buffers = buffers;
+    var decode = this.buffers ? Promise.resolve(this.buffers)
+      : this.bank.decodeAll(this.ctx).then(function (b) { self.buffers = b; return b; });
+    return decode.then(function (buffers) {
       self.stopSources();
       var layout = sectionLayout(self.sheet);
       var spb = 60 / self.sheet.bpm;

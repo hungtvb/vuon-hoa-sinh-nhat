@@ -12,6 +12,30 @@
   // One continuous score for the whole film — MusicEngine + Neon Theme sheet.
   var player = new MusicEngine.Player({ samplesBase: "assets/piano/", volume: 0.9 });
   var sheetReady = player.load(window.NEON_SHEET);
+  // Safety net (proven on Tony's iPhone by past gifts): the same score as a
+  // rendered MP3 in a plain <audio> element. It is "blessed" inside the first
+  // tap (play+pause) so a watchdog may start it later if WebAudio stays frozen.
+  var fallbackAudio = new Audio("assets/neon-theme.mp3");
+  fallbackAudio.loop = true; fallbackAudio.preload = "auto";
+  var fallbackOn = false, musicMuted = false;
+  function blessFallback() {
+    var p = fallbackAudio.play();
+    if (p && p.then) p.then(function () { if (!fallbackOn) fallbackAudio.pause(); }).catch(function () {});
+  }
+  function startFallback() {
+    if (fallbackOn) return;
+    fallbackOn = true;
+    player.stop();
+    fallbackAudio.currentTime = 0;
+    fallbackAudio.muted = musicMuted;
+    var p = fallbackAudio.play(); if (p && p.catch) p.catch(function () {});
+  }
+  function watchdogMusic() {
+    setTimeout(function () {
+      var st = player.debugState();
+      if (!st || st.ctxState !== "running") startFallback();
+    }, 1100);
+  }
 
   function perfNow() { return performance.now() / 1000; }
   function clamp01(v) { return Math.max(0, Math.min(1, v)); }
@@ -415,24 +439,30 @@
   function start() {
     if (started) return;
     started = true; filmStart = perfNow();
-    sheetReady.then(function () { player.play(); });
+    player.unlock(); // synchronously inside the tap — iOS law
+    blessFallback();
+    sheetReady.then(function () { if (!fallbackOn) player.play(); });
+    watchdogMusic();
     muteBtn.classList.remove("hidden");
     if (navigator.vibrate) navigator.vibrate(30);
   }
   stage.addEventListener("pointerdown", function (e) {
     if (e.target.closest("#mute")) return;
+    player.unlock(); // every tap re-asserts the unlock
     if (!started) { start(); return; }
     var ft = perfNow() - filmStart;
     if (phaseAt(ft) === "rain" && ft - T_BURST_END > 1.2) {
       filmStart = perfNow(); // replay film + score together
-      player.stop();
-      sheetReady.then(function () { player.play(); });
+      if (fallbackOn) { fallbackAudio.currentTime = 0; var fp = fallbackAudio.play(); if (fp && fp.catch) fp.catch(function () {}); }
+      else { player.stop(); sheetReady.then(function () { player.play(); }); watchdogMusic(); }
     }
   });
   muteBtn.addEventListener("click", function (e) {
     e.stopPropagation();
-    player.setMuted(!player.muted);
-    muteBtn.classList.toggle("off", player.muted);
+    musicMuted = !musicMuted;
+    player.setMuted(musicMuted);
+    fallbackAudio.muted = musicMuted;
+    muteBtn.classList.toggle("off", musicMuted);
   });
   document.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
@@ -591,7 +621,14 @@
     textTotal: function () { return textReveals.length; },
     rainVisible: function () { var n = 0; rainSprites.forEach(function (s) { if (s.visible && s.material.opacity > 0.25) n++; }); return n; },
     heartOpacity: function () { return heartPts.material.opacity; },
-    musicPlaying: function () { return !!(player && player.playing); },
-    notesPlayed: function () { return player ? player.notesPlayed : 0; }
+    musicPlaying: function () { return !!((player && player.playing) || fallbackOn); },
+    notesPlayed: function () { return player ? player.notesPlayed : 0; },
+    musicDebug: function () {
+      var d = player.debugState();
+      d.fallbackOn = fallbackOn;
+      d.fallbackTime = Math.round(fallbackAudio.currentTime * 100) / 100;
+      d.fallbackPaused = fallbackAudio.paused;
+      return d;
+    }
   };
 })();
