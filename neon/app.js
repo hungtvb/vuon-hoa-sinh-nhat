@@ -1,13 +1,14 @@
 "use strict";
-/* GALAXY NEON — Happy Birthday My Love
-   One cinematic flow, all timing absolute (headless-safe):
-   starfield -> neon streak writes HAPPY / BIRTHDAY / MY LOVE -> pink dots gather
-   from deep space into a heart -> heart beats -> bursts across the screen ->
-   3D rain of loving words (finale, no card). */
+/* GALAXY NEON v2 — Happy Birthday My Love
+   No title card: the film opens on bare starfield with one pulsing pink star;
+   tapping it ignites it into the writing streak. All timing absolute:
+   star ignites -> streak handwrites HAPPY / BIRTHDAY / MY LOVE in neon script ->
+   pink dots gather from deep space into a classic heart -> beats -> bursts
+   across the screen -> 3D rain of loving words (finale, no card). */
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var stage = $("stage"), glCv = $("gl"), flashEl = $("flash");
-  var introEl = $("intro"), music = $("music"), muteBtn = $("mute");
+  var music = $("music"), muteBtn = $("mute");
   var chime = $("sfx-chime"), shimmer = $("sfx-shimmer");
 
   function perfNow() { return performance.now() / 1000; }
@@ -16,11 +17,12 @@
   function easeOut(v) { v = clamp01(v); return 1 - Math.pow(1 - v, 3); }
 
   /* ================= timeline (seconds from film start) ================= */
-  var T_WRITE_END = 8.0;    // incl. hold after last letter
-  var T_GATHER_END = 11.4;  // 3.4s gather
-  var T_BEAT_END = 14.85;   // 3 beats
-  var T_BURST_END = 16.0;   // 1.15s burst, then rain
-  var PHASE_START = { write: 0, gather: T_WRITE_END, beat: T_GATHER_END, burst: T_BEAT_END, rain: T_BURST_END };
+  var IGNITE = 0.75;
+  var T_WRITE_END = 8.0 + IGNITE;   // incl. hold after last letter
+  var T_GATHER_END = T_WRITE_END + 3.4;
+  var T_BEAT_END = T_GATHER_END + 3.45;
+  var T_BURST_END = T_BEAT_END + 1.15;
+  var PHASE_START = { ignite: 0, write: IGNITE, gather: T_WRITE_END, beat: T_GATHER_END, burst: T_BEAT_END, rain: T_BURST_END };
 
   /* ================= three setup ================= */
   var renderer = new THREE.WebGLRenderer({ canvas: glCv, antialias: true, preserveDrawingBuffer: true });
@@ -81,43 +83,82 @@
     });
   })();
 
-  /* ================= neon text (sampled, shader reveal) ================= */
-  var LINES = ["HAPPY", "BIRTHDAY", "MY LOVE"];
-  var LINE_Y = [10.6, 0, -10.6];
+  /* ================= the opening star (in-world tap indicator) ================= */
+  var starSprite = null, starRings = [];
+  (function buildStar() {
+    var tex = glowTexture("rgba(255,255,255,1)", "rgba(255,111,165,.55)");
+    starSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: tex, color: 0xffd7ea, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+    }));
+    starSprite.position.set(0, 1.2, 1);
+    starSprite.scale.set(6, 6, 1);
+    world.add(starSprite);
+    // soft expanding rings around the star
+    var rc = document.createElement("canvas"); rc.width = rc.height = 256;
+    var rg = rc.getContext("2d");
+    rg.strokeStyle = "rgba(255,158,196,.95)"; rg.lineWidth = 4;
+    rg.shadowColor = "rgba(255,111,165,.9)"; rg.shadowBlur = 10;
+    rg.beginPath(); rg.arc(128, 128, 112, 0, Math.PI * 2); rg.stroke();
+    var ringTex = new THREE.CanvasTexture(rc);
+    for (var i = 0; i < 2; i++) {
+      var rm = new THREE.SpriteMaterial({ map: ringTex, color: 0xff9ec4, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+      var rs = new THREE.Sprite(rm);
+      rs.position.copy(starSprite.position);
+      world.add(rs); starRings.push(rs);
+    }
+  })();
+
+  /* ================= neon handwriting (sampled script, shader reveal) ================= */
+  var LINES = ["Happy", "Birthday", "My Love"];
+  var LINE_Y = [11.2, 0.4, -10.4];
+  var LINE_W = [25, 32.5, 26.5];
   var LINE_START = [0.3, 2.35, 4.6];
   var textPts = null, textUniforms = null, textPositions = [], textReveals = [];
-  var comet = null, cometTrail1 = null, cometTrail2 = null;
-  (function buildText() {
-    var CW = 1000, CH = 170, K = 0.038;
+  var comet = null, cometTrail1 = null, cometTrail2 = null, lastReveal = 0;
+  function buildText() {
+    var CW = 1200, CH = 300;
     var allPos = [], allRev = [], allSize = [];
+    textPositions = []; textReveals = [];
     LINES.forEach(function (line, li) {
       var cv = document.createElement("canvas"); cv.width = CW; cv.height = CH;
       var g = cv.getContext("2d");
-      g.font = "900 118px Arial, Helvetica, sans-serif";
+      g.font = "132px 'Great Vibes', cursive";
       g.textAlign = "center"; g.textBaseline = "middle";
-      g.fillStyle = "#fff"; g.fillText(line, CW / 2, CH / 2 + 4);
+      g.fillStyle = "#fff"; g.fillText(line, CW / 2, CH / 2);
+      g.strokeStyle = "#fff"; g.lineWidth = 2.5; // fatten hairlines so sampling merges into one stroke
+      g.strokeText(line, CW / 2, CH / 2);
       var data = g.getImageData(0, 0, CW, CH).data;
       var raw = [];
-      for (var y = 0; y < CH; y += 4) {
-        for (var x = 0; x < CW; x += 4) {
-          if (data[(y * CW + x) * 4 + 3] > 110) raw.push([x, y]);
+      for (var y = 0; y < CH; y += 2) {
+        for (var x = 0; x < CW; x += 2) {
+          if (data[(y * CW + x) * 4 + 3] > 100) raw.push([x, y]);
         }
       }
+      if (!raw.length) return;
+      var minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
+      raw.forEach(function (p) {
+        if (p[0] < minX) minX = p[0]; if (p[0] > maxX) maxX = p[0];
+        if (p[1] < minY) minY = p[1]; if (p[1] > maxY) maxY = p[1];
+      });
       // writing order: columns left->right, top->bottom within a column
       raw.sort(function (a, b) {
-        var ca = Math.floor(a[0] / 7), cb = Math.floor(b[0] / 7);
+        var ca = Math.floor(a[0] / 6), cb = Math.floor(b[0] / 6);
         return ca !== cb ? ca - cb : a[1] - b[1];
       });
+      var K = LINE_W[li] / Math.max(1, (maxX - minX));
+      var cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
       var dur = li === 1 ? 2.1 : 1.9;
       raw.forEach(function (p, i) {
-        var wx = (p[0] - CW / 2) * K, wy = (CH / 2 - p[1]) * K + LINE_Y[li];
+        var wx = (p[0] - cx) * K, wy = (cy - p[1]) * K + LINE_Y[li];
         allPos.push(wx, wy, 0);
         allRev.push(LINE_START[li] + (i / Math.max(1, raw.length)) * dur);
-        allSize.push(0.24 + Math.random() * 0.17);
+        allSize.push(0.21 + Math.random() * 0.12);
         textPositions.push(wx, wy, 0);
         textReveals.push(LINE_START[li] + (i / Math.max(1, raw.length)) * dur);
       });
     });
+    lastReveal = 0;
+    textReveals.forEach(function (r) { if (r > lastReveal) lastReveal = r; });
     var geo = new THREE.BufferGeometry();
     geo.setAttribute("position", new THREE.Float32BufferAttribute(allPos, 3));
     geo.setAttribute("aReveal", new THREE.Float32BufferAttribute(allRev, 1));
@@ -156,7 +197,7 @@
       ].join("\n")
     });
     textPts = new THREE.Points(geo, mat);
-    textPts.frustumCulled = false;
+    textPts.frustumCulled = false; textPts.visible = false;
     world.add(textPts);
 
     var cometTex = glowTexture("rgba(255,255,255,1)", "rgba(255,111,165,.55)");
@@ -164,32 +205,67 @@
       var sm = new THREE.SpriteMaterial({ map: cometTex, color: 0xffe3f0, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending });
       var s = new THREE.Sprite(sm); s.scale.set(scale, scale, 1); s.visible = false; world.add(s); return s;
     }
-    comet = mkComet(7.5, 0.95); cometTrail1 = mkComet(5, 0.5); cometTrail2 = mkComet(3.4, 0.3);
-  })();
-  var lastReveal = 0;
-  textReveals.forEach(function (r) { if (r > lastReveal) lastReveal = r; });
+    comet = mkComet(6.8, 0.95); cometTrail1 = mkComet(4.6, 0.5); cometTrail2 = mkComet(3.1, 0.3);
+    fitWorld();
+  }
+  if (document.fonts && document.fonts.load) {
+    var raced = Promise.race([
+      document.fonts.load("132px 'Great Vibes'"),
+      new Promise(function (r) { setTimeout(r, 2000); })
+    ]);
+    raced.then(function () { buildText(); });
+    setTimeout(function () { if (!textPts) buildText(); }, 2600); // hard fallback
+  } else buildText();
   function frontierIndex(t) {
     var lo = 0, hi = textReveals.length - 1, ans = -1;
     while (lo <= hi) { var mid = (lo + hi) >> 1; if (textReveals[mid] <= t) { ans = mid; lo = mid + 1; } else hi = mid - 1; }
     return ans;
   }
 
-  /* ================= heart (pink dots from deep space) ================= */
-  function taubin(x, y, z) {
-    var a = x * x + 2.25 * z * z + y * y - 1;
-    return a * a * a - x * x * y * y * y - 0.1125 * z * z * y * y * y;
-  }
+  /* ================= heart — classic heart curve, puffy volume ================= */
   var heartPts = null, heartHome = null, heartStart = null, heartStag = null, heartVel = null;
   (function buildHeart() {
+    // parametric heart outline: deep top cleft, sharp bottom tip — reads as a heart from any angle
+    var SEG = 240, poly = [];
+    for (var si = 0; si < SEG; si++) {
+      var t = si / SEG * Math.PI * 2, s3 = Math.sin(t);
+      poly.push([
+        16 * s3 * s3 * s3,
+        13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)
+      ]);
+    }
+    function inPoly(x, y) {
+      var inside = false;
+      for (var i = 0, j = SEG - 1; i < SEG; j = i++) {
+        var xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+        if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
+      }
+      return inside;
+    }
+    function distEdge(x, y) {
+      var best = 1e9;
+      for (var i = 0, j = SEG - 1; i < SEG; j = i++) {
+        var ax = poly[j][0], ay = poly[j][1], bx = poly[i][0], by = poly[i][1];
+        var dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy || 1;
+        var u = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / L2));
+        var ex = ax + u * dx - x, ey = ay + u * dy - y, d2 = ex * ex + ey * ey;
+        if (d2 < best) best = d2;
+      }
+      return Math.sqrt(best);
+    }
+    var HS = 0.8, YOFF = 2.55;
     var pos = [], col = [];
-    var S = 11.5, tries = 0;
     var pink = new THREE.Color("#ff5c9e"), light = new THREE.Color("#ffc4dd"), white = new THREE.Color("#fff0f6");
-    while (pos.length / 3 < 2400 && tries < 200000) {
-      tries++;
-      var x = (Math.random() * 2 - 1) * 1.32, y = (Math.random() * 2 - 1) * 1.32, z = (Math.random() * 2 - 1) * 1.32;
-      var f = taubin(x, y, z);
-      if (!(Math.abs(f) < 0.055 || (f < -0.03 && Math.random() < 0.16))) continue;
-      pos.push(x * S, y * S - 0.6, z * S);
+    var guard = 0;
+    while (pos.length / 3 < 2400 && guard < 300000) {
+      guard++;
+      var x = (Math.random() * 2 - 1) * 16.5, y = -17.5 + Math.random() * 30;
+      if (!inPoly(x, y)) continue;
+      var d = distEdge(x, y);
+      if (d > 0.85 && Math.random() < 0.45) continue; // denser rim = crisp silhouette
+      var zHalf = 2.7 * Math.sqrt(Math.min(1, d / 6.0));
+      var z = (Math.random() * 2 - 1) * zHalf;
+      pos.push(x * HS, (y + YOFF) * HS, z);
       var c = Math.random() < 0.12 ? white : (Math.random() < 0.55 ? pink : light);
       col.push(c.r, c.g, c.b);
     }
@@ -277,19 +353,16 @@
       var s = new THREE.Sprite(m);
       var wdt = 5.5 + PHRASES[ti].length * 0.34;
       s.scale.set(wdt, wdt * 0.25, 1);
-      s.userData = {
-        speed: 0, swayPh: Math.random() * Math.PI * 2, baseOp: 0.8, ti: ti
-      };
+      s.userData = { speed: 0, swayPh: Math.random() * Math.PI * 2, baseOp: 0.8, ti: ti };
       respawnWord(s, true);
       s.visible = false;
       world.add(s); rainSprites.push(s);
     }
   })();
   function respawnWord(s, anywhere) {
-    // try a few candidate spots, keep the one that does not collide with a neighbour
     var best = null;
     for (var a = 0; a < 7; a++) {
-      var z = -36 + Math.pow(Math.random(), 1.35) * 44; // bias toward far = fewer giants
+      var z = -36 + Math.pow(Math.random(), 1.35) * 44;
       var cand = {
         x: (Math.random() * 2 - 1) * 18,
         y: anywhere ? -28 + Math.random() * 58 : 33,
@@ -319,8 +392,10 @@
     var visH = 2 * 58 * tanH, visW = visH * camera.aspect;
     var s = Math.min(1.12, visW * 0.95 / 38.5, visH * 0.94 / 30);
     world.scale.setScalar(s);
-    textUniforms.uGroup.value = s;
-    textUniforms.uScale.value = renderer.domElement.height / (2 * tanH);
+    if (textUniforms) {
+      textUniforms.uGroup.value = s;
+      textUniforms.uScale.value = renderer.domElement.height / (2 * tanH);
+    }
   }
   window.addEventListener("resize", fitWorld);
 
@@ -328,6 +403,7 @@
   var started = false, filmStart = 0, prevPhase = "intro";
   function phaseAt(ft) {
     if (!started) return "intro";
+    if (ft < IGNITE) return "ignite";
     if (ft < T_WRITE_END) return "write";
     if (ft < T_GATHER_END) return "gather";
     if (ft < T_BEAT_END) return "beat";
@@ -337,19 +413,16 @@
   function start() {
     if (started) return;
     started = true; filmStart = perfNow();
-    introEl.classList.add("hidden");
     music.volume = 0.55;
     var pr = music.play(); if (pr && pr.catch) pr.catch(function () {});
     muteBtn.classList.remove("hidden");
     if (navigator.vibrate) navigator.vibrate(30);
   }
-  introEl.addEventListener("pointerdown", function (e) { e.preventDefault(); start(); });
   stage.addEventListener("pointerdown", function (e) {
-    if (!started) return;
+    if (e.target.closest("#mute")) return;
+    if (!started) { start(); return; }
     var ft = perfNow() - filmStart;
-    if (phaseAt(ft) === "rain" && ft - T_BURST_END > 1.2 && !e.target.closest("#mute")) {
-      filmStart = perfNow(); // replay the film
-    }
+    if (phaseAt(ft) === "rain" && ft - T_BURST_END > 1.2) filmStart = perfNow(); // replay
   });
   muteBtn.addEventListener("click", function (e) {
     e.stopPropagation();
@@ -370,7 +443,6 @@
       prevPhase = phase;
     }
 
-    // stars twinkle + slow drift; gentle camera sway for parallax
     starLayers.forEach(function (L, i) {
       L.mat.opacity = L.baseOp * (0.78 + 0.22 * Math.sin(now * L.sp + L.ph));
       L.pts.rotation.y = now * 0.004 * (i + 1);
@@ -379,26 +451,52 @@
     camera.position.y = Math.cos(now * 0.09) * 1.0;
     camera.lookAt(0, 0, 0);
 
-    // ---- text + comet ----
-    var writing = phase === "write" || phase === "gather";
-    textPts.visible = started && phase !== "rain" && phase !== "burst" && phase !== "beat";
-    if (started) {
-      textUniforms.uT.value = ft;
-      var fade = 1;
-      if (phase === "gather") fade = 1 - clamp01((ft - T_WRITE_END) / 0.8);
-      if (phase === "beat" || phase === "burst" || phase === "rain") fade = 0;
-      textUniforms.uFade.value = fade;
-      var fi = (phase === "write") ? frontierIndex(ft) : -1;
-      [[comet, fi, 1], [cometTrail1, fi - 55, 1], [cometTrail2, fi - 120, 1]].forEach(function (pair) {
-        var spr = pair[0], idx = pair[1];
-        if (idx >= 0 && ft < lastReveal + 0.05) {
-          spr.visible = true;
-          spr.position.set(textPositions[idx * 3], textPositions[idx * 3 + 1], 0.5);
-        } else spr.visible = false;
+    // ---- opening star: pulses before start, ignites into the streak ----
+    if (!started) {
+      starSprite.visible = true;
+      var bs = 5.8 + 1.0 * Math.sin(now * 3.0);
+      starSprite.scale.set(bs, bs, 1);
+      starRings.forEach(function (rs, ri) {
+        var cyc = ((now * 0.55 + ri * 0.5) % 1);
+        var sc = 6 + cyc * 13;
+        rs.visible = true; rs.scale.set(sc, sc, 1);
+        rs.material.opacity = 0.8 * (1 - cyc);
       });
-      if (comet) comet.material.opacity = 0.85 + 0.15 * Math.sin(now * 22);
+    } else if (phase === "ignite") {
+      var k = smooth(ft / IGNITE);
+      var tx = textPositions.length ? textPositions[0] : -10;
+      var ty = textPositions.length ? textPositions[1] : LINE_Y[0];
+      starSprite.visible = true;
+      starSprite.position.set(0 + (tx - 0) * k, 1.2 + (ty - 1.2) * k, 1 - 0.5 * k);
+      var ss = 6 + 2.2 * k;
+      starSprite.scale.set(ss, ss, 1);
+      starRings.forEach(function (rs) { rs.visible = false; });
     } else {
-      textPts.visible = false;
+      starSprite.visible = false;
+      starRings.forEach(function (rs) { rs.visible = false; });
+    }
+
+    // ---- text + comet ----
+    if (textPts) {
+      textPts.visible = started && (phase === "write" || phase === "gather");
+      if (started) {
+        var wt = ft - IGNITE; // writing clock
+        textUniforms.uT.value = wt;
+        var fade = 1;
+        if (phase === "gather") fade = 1 - clamp01((ft - T_WRITE_END) / 0.8);
+        if (phase === "beat" || phase === "burst" || phase === "rain" || phase === "ignite") fade = phase === "ignite" ? 1 : fade;
+        textUniforms.uFade.value = (phase === "beat" || phase === "burst" || phase === "rain") ? 0 : fade;
+        var fi = (phase === "write") ? frontierIndex(wt) : -1;
+        [[comet, fi], [cometTrail1, fi - 90], [cometTrail2, fi - 200]].forEach(function (pair) {
+          var spr = pair[0], idx = pair[1];
+          if (!spr) return;
+          if (idx >= 0 && wt < lastReveal + 0.05) {
+            spr.visible = true;
+            spr.position.set(textPositions[idx * 3], textPositions[idx * 3 + 1], 0.5);
+          } else spr.visible = false;
+        });
+        if (comet) comet.material.opacity = 0.85 + 0.15 * Math.sin(now * 22);
+      }
     }
 
     // ---- heart ----
@@ -408,10 +506,10 @@
       if (phase === "gather") {
         var gt = ft - T_WRITE_END, gg = smooth(gt / 3.4);
         setHeartPos(function (i, arr) {
-          var p = i / 3, k = smooth((gt - heartStag[p]) / 2.5);
-          arr[i] = heartStart[i] + (heartHome[i] - heartStart[i]) * k;
-          arr[i + 1] = heartStart[i + 1] + (heartHome[i + 1] - heartStart[i + 1]) * k;
-          arr[i + 2] = heartStart[i + 2] + (heartHome[i + 2] - heartStart[i + 2]) * k;
+          var p = i / 3, k2 = smooth((gt - heartStag[p]) / 2.5);
+          arr[i] = heartStart[i] + (heartHome[i] - heartStart[i]) * k2;
+          arr[i + 1] = heartStart[i + 1] + (heartHome[i + 1] - heartStart[i + 1]) * k2;
+          arr[i + 2] = heartStart[i + 2] + (heartHome[i + 2] - heartStart[i + 2]) * k2;
         });
         heartPts.material.opacity = clamp01(gt * 1.6);
         heartPts.material.size = 0.8;
@@ -455,7 +553,6 @@
         if (s.position.y < -32) respawnWord(s, false);
         s.material.opacity = s.userData.baseOp * ramp;
       });
-      // continuous gentle separation: words that drift into each other ease apart vertically
       for (var a = 0; a < rainSprites.length; a++) {
         for (var b = a + 1; b < rainSprites.length; b++) {
           var A = rainSprites[a], B = rainSprites[b];
@@ -485,11 +582,11 @@
       filmStart = perfNow() - (PHASE_START[name] || 0) - 0.05;
     },
     textRevealed: function () {
-      var ft = started ? perfNow() - filmStart : 0, n = 0;
-      for (var i = 0; i < textReveals.length; i++) if (textReveals[i] <= ft) n++;
-      return n / textReveals.length;
+      var wt = started ? perfNow() - filmStart - IGNITE : 0, n = 0;
+      for (var i = 0; i < textReveals.length; i++) if (textReveals[i] <= wt) n++;
+      return textReveals.length ? n / textReveals.length : 0;
     },
-    textTotal: textReveals.length,
+    textTotal: function () { return textReveals.length; },
     rainVisible: function () { var n = 0; rainSprites.forEach(function (s) { if (s.visible && s.material.opacity > 0.25) n++; }); return n; },
     heartOpacity: function () { return heartPts.material.opacity; },
     musicPlaying: function () { return !music.paused; }
