@@ -6,7 +6,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var stage = $("stage"), rainCv = $("rain"), glCv = $("gl");
   var introEl = $("intro"), wordsEl = $("words"), statusEl = $("status"), statusText = $("statusText");
-  var dragIndEl = $("dragInd"), cardEl = $("card"), cardBody = $("cardBody");
+  var cardEl = $("card"), cardBody = $("cardBody");
   var music = $("music"), muteBtn = $("mute");
 
   var GLYPHS = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789ABCDEFXYZ<>/=+*#$";
@@ -95,6 +95,7 @@
 
   /* ============================== HEART 3D ============================== */
   var renderer = null, scene = null, camera = null, heartPts = null, heartHome = null, heartDir = null;
+  var ghostPts = null, gRotX = 0.08, gRotY = 0;
   var heartGroup = null, heartReady = false;
   function glowTexture() {
     var c = document.createElement("canvas"); c.width = c.height = 64;
@@ -150,6 +151,15 @@
     heartPts = new THREE.Points(geo, mat);
     heartPts.frustumCulled = false;
     heartGroup.add(heartPts);
+    /* ghost echo sharing the same geometry: lags behind the heart's rotation,
+       so a sway leaves a visible motion trail (and follows the burst for free) */
+    var gmat = new THREE.PointsMaterial({
+      size: 0.85, map: glowTexture(), vertexColors: true, transparent: true, opacity: 0.15,
+      depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true
+    });
+    ghostPts = new THREE.Points(geo, gmat);
+    ghostPts.frustumCulled = false;
+    scene.add(ghostPts);
     heartReady = true;
     onResize();
   }
@@ -168,12 +178,7 @@
   }
   /* drag orbit */
   var dragging = false, lastPX = 0, lastPY = 0, tRotX = 0.08, tRotY = 0, cRotX = 0.08, cRotY = 0, lastDragAt = -9;
-  var userDragged = false, prevCyc = -1;
-  function hideDragInd() {
-    if (dragIndEl.classList.contains("hidden")) return;
-    dragIndEl.classList.add("fade");
-    setTimeout(function () { dragIndEl.classList.add("hidden"); dragIndEl.classList.remove("fade"); }, 950);
-  }
+  var userDragged = false, prevCyc = -1, demoCancel = false;
   function spawnRipple() {
     if (phase !== "heart") return;
     var d = document.createElement("div");
@@ -183,12 +188,12 @@
   }
   glCv.addEventListener("pointerdown", function (e) {
     if (phase !== "heart") return;
-    dragging = true; lastPX = e.clientX; lastPY = e.clientY;
+    dragging = true; demoCancel = true; lastPX = e.clientX; lastPY = e.clientY;
   });
   window.addEventListener("pointermove", function (e) {
     if (!dragging || phase !== "heart") return;
     if (!userDragged && (Math.abs(e.clientX - lastPX) > 3 || Math.abs(e.clientY - lastPY) > 3)) {
-      userDragged = true; hideDragInd();
+      userDragged = true;
     }
     tRotY += (e.clientX - lastPX) * 0.008; tRotX += (e.clientY - lastPY) * 0.005;
     tRotX = Math.max(-0.7, Math.min(0.7, tRotX));
@@ -231,10 +236,7 @@
       if (!heartReady) buildHeart();
       glCv.classList.remove("hidden-gl");
       setTimeout(function () { if (phase === "heart") wordsEl.classList.add("hidden"); }, 650);
-      setTimeout(function () { if (phase === "heart" && !userDragged) dragIndEl.classList.remove("hidden"); }, 900);
-      setTimeout(function () { hideDragInd(); }, 7500);
     } else if (p === "burst") {
-      hideDragInd();
       setStatus("> opening_");
     } else if (p === "card") {
       glCv.classList.add("hidden-gl");
@@ -284,12 +286,25 @@
       if (locked && t > textTotal + 1.5) enterPhase("heart");
     } else if (phase === "heart" || phase === "burst") {
       if (heartReady) {
-        if (!dragging && now - lastDragAt > 2.5) tRotY += dt * 0.3;
+        /* demo sway: for the first ~4.4s the heart itself performs the drag
+           gesture (two slow swings with a fading envelope) — no drawn arrow.
+           Any touch cancels it and hands control to the user. */
+        var demoOn = phase === "heart" && t < 4.4 && !userDragged && !demoCancel;
+        if (demoOn) {
+          var env = Math.sin(Math.PI * Math.min(1, t / 4.4));
+          tRotY = 0.62 * Math.sin(t * (Math.PI * 2 / 2.2)) * env;
+        } else if (!dragging && now - lastDragAt > 2.5) tRotY += dt * 0.3;
         cRotY += (tRotY - cRotY) * Math.min(1, dt * 7);
         cRotX += (tRotX - cRotX) * Math.min(1, dt * 7);
         heartGroup.rotation.y = cRotY; heartGroup.rotation.x = cRotX;
         var beat = 1 + 0.085 * beatPulse(now);
         heartGroup.scale.set(beat, beat, beat);
+        if (ghostPts) {
+          gRotY += (cRotY - gRotY) * Math.min(1, dt * 2.0);
+          gRotX += (cRotX - gRotX) * Math.min(1, dt * 2.0);
+          ghostPts.rotation.y = gRotY; ghostPts.rotation.x = gRotX;
+          var gs = beat * 0.995; ghostPts.scale.set(gs, gs, gs);
+        }
         if (phase === "heart") {
           var cyc = now % 1.15;
           if (prevCyc >= 0) {
@@ -309,6 +324,7 @@
           }
           heartPts.geometry.attributes.position.needsUpdate = true;
           heartPts.material.opacity = 1 - e;
+          if (ghostPts) ghostPts.material.opacity = 0.15 * (1 - e);
           if (k >= 1) enterPhase("card");
         }
         renderer.render(scene, camera);
@@ -328,7 +344,9 @@
     lettersTotal: letters.length,
     heartReady: function () { return heartReady; },
     cardVisible: function () { return !cardEl.classList.contains("hidden"); },
-    dragIndVisible: function () { return !dragIndEl.classList.contains("hidden"); },
+    demoActive: function () { return phase === "heart" && (perfNow() - phaseStart) < 4.4 && !userDragged && !demoCancel; },
+    heartRotY: function () { return cRotY; },
+    arrowPresent: function () { return !!document.getElementById("dragInd"); },
     rippleCount: function () { return document.querySelectorAll(".beat-ripple").length; },
     musicPlaying: function () { return !music.paused; }
   };

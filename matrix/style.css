@@ -53,14 +53,7 @@ canvas#gl.hidden-gl { opacity:0; pointer-events:none; }
 @keyframes pulseGlow { 0%,100% { text-shadow:0 0 6px rgba(255,150,195,.95), 0 0 20px rgba(255,111,165,.8), 0 0 46px rgba(255,77,141,.5); }
   50% { text-shadow:0 0 8px rgba(255,170,210,1), 0 0 30px rgba(255,111,165,1), 0 0 70px rgba(255,77,141,.75); } }
 
-/* ---------- indicators (no instruction text) ---------- */
-#dragInd { position:absolute; left:50%; top:50%; width:96vmin; height:96vmin; z-index:3; pointer-events:none;
-  transform:translate(-50%,-54%); opacity:.92; transition:opacity .9s ease;
-  animation:sway 2.8s ease-in-out infinite alternate; }
-#dragInd.fade { opacity:0; }
-#dragInd path.arc { stroke-dasharray:7 8; animation:march 1.1s linear infinite; }
-@keyframes march { to { stroke-dashoffset:-15; } }
-@keyframes sway { from { transform:translate(-50%,-54%) rotate(-6deg); } to { transform:translate(-50%,-54%) rotate(6deg); } }
+/* ---------- tap indicator: beat ripples (no instruction text) ---------- */
 .beat-ripple { position:absolute; left:50%; top:50%; width:88vmin; height:88vmin; z-index:3; pointer-events:none;
   border:2px solid rgba(255,111,165,.7); border-radius:50%;
   transform:translate(-50%,-50%) scale(.36); opacity:.85; animation:beatOut 1.5s ease-out forwards; }
