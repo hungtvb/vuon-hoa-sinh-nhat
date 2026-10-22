@@ -8,8 +8,10 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var stage = $("stage"), glCv = $("gl"), flashEl = $("flash");
-  var music = $("music"), muteBtn = $("mute");
-  var chime = $("sfx-chime"), shimmer = $("sfx-shimmer");
+  var muteBtn = $("mute");
+  // One continuous score for the whole film — MusicEngine + Neon Theme sheet.
+  var player = new MusicEngine.Player({ samplesBase: "assets/piano/", volume: 0.9 });
+  var sheetReady = player.load(window.NEON_SHEET);
 
   function perfNow() { return performance.now() / 1000; }
   function clamp01(v) { return Math.max(0, Math.min(1, v)); }
@@ -413,8 +415,7 @@
   function start() {
     if (started) return;
     started = true; filmStart = perfNow();
-    music.volume = 0.55;
-    var pr = music.play(); if (pr && pr.catch) pr.catch(function () {});
+    sheetReady.then(function () { player.play(); });
     muteBtn.classList.remove("hidden");
     if (navigator.vibrate) navigator.vibrate(30);
   }
@@ -422,11 +423,16 @@
     if (e.target.closest("#mute")) return;
     if (!started) { start(); return; }
     var ft = perfNow() - filmStart;
-    if (phaseAt(ft) === "rain" && ft - T_BURST_END > 1.2) filmStart = perfNow(); // replay
+    if (phaseAt(ft) === "rain" && ft - T_BURST_END > 1.2) {
+      filmStart = perfNow(); // replay film + score together
+      player.stop();
+      sheetReady.then(function () { player.play(); });
+    }
   });
   muteBtn.addEventListener("click", function (e) {
     e.stopPropagation();
-    music.muted = !music.muted; muteBtn.classList.toggle("off", music.muted);
+    player.setMuted(!player.muted);
+    muteBtn.classList.toggle("off", player.muted);
   });
   document.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
@@ -437,11 +443,7 @@
     var now = perfNow(), dt = Math.min(0.05, now - lastFrame); lastFrame = now;
     var ft = started ? now - filmStart : -1;
     var phase = phaseAt(ft);
-    if (phase !== prevPhase) {
-      if (phase === "gather") { chime.volume = 0.5; var p1 = chime.play(); if (p1 && p1.catch) p1.catch(function () {}); }
-      if (phase === "burst") { shimmer.volume = 0.6; var p2 = shimmer.play(); if (p2 && p2.catch) p2.catch(function () {}); }
-      prevPhase = phase;
-    }
+    if (phase !== prevPhase) prevPhase = phase;
 
     starLayers.forEach(function (L, i) {
       L.mat.opacity = L.baseOp * (0.78 + 0.22 * Math.sin(now * L.sp + L.ph));
@@ -589,6 +591,7 @@
     textTotal: function () { return textReveals.length; },
     rainVisible: function () { var n = 0; rainSprites.forEach(function (s) { if (s.visible && s.material.opacity > 0.25) n++; }); return n; },
     heartOpacity: function () { return heartPts.material.opacity; },
-    musicPlaying: function () { return !music.paused; }
+    musicPlaying: function () { return !!(player && player.playing); },
+    notesPlayed: function () { return player ? player.notesPlayed : 0; }
   };
 })();
