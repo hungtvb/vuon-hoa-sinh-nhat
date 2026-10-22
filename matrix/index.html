@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Matrix — Happy Birthday My Love</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="stage">
+  <canvas id="rain"></canvas>
+  <canvas id="gl" class="hidden-gl"></canvas>
+  <div id="vignette"></div>
+
+  <div id="status" class="hidden"><span id="statusText">&gt; awaiting connection_</span></div>
+
+  <div id="words" class="hidden" aria-hidden="true">
+    <div class="word" id="w0"></div>
+    <div class="word" id="w1"></div>
+    <div class="word" id="w2"></div>
+  </div>
+
+  <div id="intro">
+    <p class="intro-kicker">&gt; incoming_transmission</p>
+    <h1 class="intro-title">BẠN CÓ MỘT<br>TIN NHẮN</h1>
+    <p class="intro-sub">Một điều bất ngờ đang được mã hóa,<br>dành riêng cho bạn.</p>
+    <p class="intro-cta">CHẠM ĐỂ GIẢI MÃ</p>
+  </div>
+
+  <div id="hint" class="hidden">Kéo để xoay trái tim — chạm vào tim để mở thiệp</div>
+
+  <div id="card" class="hidden">
+    <div class="card-head">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="card-file">&gt; message_decoded.txt</span>
+    </div>
+    <h2 class="card-title">Happy Birthday,<br>My Love</h2>
+    <div id="cardBody"></div>
+    <p class="card-sign">— yours, in every timeline</p>
+    <button id="replay" type="button">Xem lại từ đầu</button>
+  </div>
+
+  <button id="mute" class="hidden" type="button" aria-label="Bật hoặc tắt nhạc">
+    <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#7dff9a"/><path class="wv" d="M16 9.5a4 4 0 0 1 0 5M18.2 7.2a7.2 7.2 0 0 1 0 9.6" stroke="#7dff9a" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg>
+  </button>
+
+  <audio id="music" src="assets/audio/music.mp3" loop preload="auto"></audio>
+</div>
+<script src="vendor/three-r128.min.js"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>
