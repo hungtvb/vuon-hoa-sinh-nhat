@@ -91,6 +91,9 @@
   /* ---------- máy trạng thái ---------- */
   let phase = "intro"; // intro | rain | orbit | done
   const hint = $("hint"), ring = $("hold-ring"), ringFg = $("hold-fg");
+  /* chữ nhắc: chỉ hiện nếu 5 giây sau khi mưa bắt đầu mà người nhận vẫn chưa chạm giữ */
+  let hasHeld = false, hintTimer = null;
+  function clearHintTimer() { if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; } }
   const CIRC = 169.6;
 
   Rain.onProgress = (p, holding) => {
@@ -99,6 +102,7 @@
   };
   Rain.onFormed = () => {
     phase = "orbit";
+    clearHintTimer();
     if (hint) hint.classList.remove("show");
     ring.classList.remove("show");
     Finale.start(projectHeart);
@@ -117,6 +121,10 @@
     Rose.burst();
     buildRain();
     Rain.start();
+    clearHintTimer();
+    hintTimer = setTimeout(() => {
+      if (phase === "rain" && !hasHeld && hint) hint.classList.add("show");
+    }, 5000);
   };
 
   $("btn-start").addEventListener("click", () => {
@@ -137,6 +145,8 @@
   window.addEventListener("pointerdown", e => {
     if (e.target.closest("#btn-music") || e.target.closest(".ocard") || e.target.closest("#letter") || e.target.closest("#btn-start")) return;
     if (phase === "rain") {
+      hasHeld = true;
+      clearHintTimer();
       holdingPointer = true;
       ring.style.left = e.clientX + "px"; ring.style.top = e.clientY + "px";
       ring.style.transform = "translate(-50%,-50%)";
