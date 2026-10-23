@@ -157,7 +157,7 @@ window.Rain = (function () {
     const arts = ["../assets/art/cake.webp", "../assets/art/bouquet.webp", "../assets/art/envelope.webp"];
     arts.forEach((url, i) => {
       for (let k = 0; k < 2; k++) {
-        const mat = new THREE.MeshBasicMaterial({ map: photoTexture(url), transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false });
+        const mat = new THREE.MeshBasicMaterial({ map: photoTexture(url), transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, color: 0xCFCFCF });
         const m = new THREE.Mesh(new THREE.PlaneGeometry(3.1, 3.65), mat);
         m.position.set(rand(-18, 18), rand(-16, 38), rand(-14, -4));
         m.rotation.z = rand(-0.4, 0.4);
@@ -337,9 +337,9 @@ window.Rain = (function () {
         if (holding) {
           const aw = pointerWorld(pointerPx.x, pointerPx.y, p.z);
           const dir = aw.clone().sub(p); const d = Math.max(0.001, dir.length());
-          const pull = 34 * (0.95 + holdProgress * 1.25) * Math.min(1, d / 6 + 0.35);
+          const pull = 48 * (1.1 + holdProgress * 1.3) * Math.min(1, d / 5 + 0.45);
           const acc = dir.multiplyScalar(pull / d);
-          const tang = new THREE.Vector3(-dir.y, dir.x, 0).multiplyScalar(19 * (1 - holdProgress * 0.3) / d);
+          const tang = new THREE.Vector3(-dir.y, dir.x, 0).multiplyScalar(24 * (1 - holdProgress * 0.3) / d);
           f.vel.add(acc.add(tang).multiplyScalar(dt));
         } else {
           f.vel.y -= f.speed * 0.6 * dt;

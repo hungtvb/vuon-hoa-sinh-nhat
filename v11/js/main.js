@@ -51,7 +51,7 @@
     composer = new THREE.EffectComposer(renderer);
     composer.addPass(new THREE.RenderPass(scene, camera));
     const bloom = new THREE.UnrealBloomPass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight), 0.38, 0.45, 0.8);
+      new THREE.Vector2(window.innerWidth, window.innerHeight), 0.32, 0.45, 0.84);
     composer.addPass(bloom);
   } catch (e) { composer = null; }
 
@@ -99,7 +99,7 @@
   };
   Rain.onFormed = () => {
     phase = "orbit";
-    hint.classList.remove("show");
+    if (hint) hint.classList.remove("show");
     ring.classList.remove("show");
     Finale.start(projectHeart);
     $("heart-ui").classList.add("show");
@@ -117,7 +117,6 @@
     Rose.burst();
     buildRain();
     Rain.start();
-    setTimeout(() => { if (phase === "rain") hint.classList.add("show"); }, 2100);
   };
 
   $("btn-start").addEventListener("click", () => {
@@ -142,7 +141,7 @@
       ring.style.left = e.clientX + "px"; ring.style.top = e.clientY + "px";
       ring.style.transform = "translate(-50%,-50%)";
       Rain.setHold(true, e.clientX, e.clientY);
-      hint.classList.remove("show");
+      if (hint) hint.classList.remove("show");
     } else if (phase === "orbit") {
       const c = projectHeart();
       const d = Math.hypot(e.clientX - c.x, e.clientY - c.y);

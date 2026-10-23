@@ -5,7 +5,7 @@
    khấu WebGL: nụ thở nhẹ -> nở bằng chồng chéo ảnh (nụ phình + ảnh nở hiện dần)
    -> tung 26 cánh ảnh -> mưa đổ. Giữ nguyên API cho main.js. */
 window.Rose = (function () {
-  const BLOOM_TOTAL = 1.9;
+  const BLOOM_TOTAL = 1.6;
   const BASE_H = 17;                 // chiều cao hoa (đơn vị thế giới)
   let group = null, budSpr = null, openSpr = null, glow = null, petalTex = null;
   let budBase = null, openBase = null;
@@ -90,7 +90,7 @@ window.Rose = (function () {
     if (!group) return;
     const ready = budSpr && openSpr;
     if (glow) {
-      const target = state === "idle" ? 0.34 : state === "blooming" ? 0.6 : 0.25;
+      const target = state === "idle" ? 0.3 : state === "blooming" ? 0.42 : 0.2;
       glow.material.opacity += (target - glow.material.opacity) * Math.min(1, dt * 2);
       const gs = 19 + Math.sin(t * 1.3) * 0.7;
       glow.scale.set(gs, gs, 1);
@@ -119,11 +119,11 @@ window.Rose = (function () {
     } else if (state === "burst" || state === "bloomed") {
       if (state === "burst") {
         burstT += dt;
-        const fade = Math.max(0, 1 - burstT / 1.1);
+        const fade = Math.max(0, 1 - burstT / 0.9);
         if (openSpr) openSpr.material.opacity = fade;
         if (budSpr) budSpr.material.opacity = 0;
         group.position.y -= dt * 0.7;
-        if (burstT > 1.15) { group.visible = false; state = "gone"; }
+        if (burstT > 0.95) { group.visible = false; state = "gone"; }
       }
     }
     for (let i = burstPetals.length - 1; i >= 0; i--) {
