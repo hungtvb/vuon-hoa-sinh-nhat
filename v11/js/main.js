@@ -91,8 +91,11 @@
   /* ---------- máy trạng thái ---------- */
   let phase = "intro"; // intro | rain | orbit | done
   const hint = $("hint"), ring = $("hold-ring"), ringFg = $("hold-fg");
-  /* chữ nhắc: chỉ hiện nếu 5 giây sau khi mưa bắt đầu mà người nhận vẫn chưa chạm giữ */
-  let hasHeld = false, hintTimer = null;
+  /* 5 giây sau khi mưa bắt đầu: chưa tương tác gì thì TỰ ĐỘNG gom tim
+     (người nhận không cần biết thao tác chạm-giữ); đã chạm nhưng chưa giữ thì
+     vẫn hiện chữ nhắc như cũ. Cú chạm nút "mở quà" không tính vì timer chỉ
+     bắt đầu khi mưa chạy và cờ interacted được reset tại đó. */
+  let hasHeld = false, interacted = false, hintTimer = null;
   function clearHintTimer() { if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; } }
   const CIRC = 169.6;
 
@@ -121,9 +124,21 @@
     Rose.burst();
     buildRain();
     Rain.start();
+    interacted = false;
     clearHintTimer();
     hintTimer = setTimeout(() => {
-      if (phase === "rain" && !hasHeld && hint) hint.classList.add("show");
+      if (phase !== "rain" || hasHeld) return;
+      if (!interacted) {
+        /* tự động gom tim tại giữa màn hình, dùng đúng đường giữ tay sẵn có */
+        hasHeld = true;
+        const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+        ring.style.left = cx + "px"; ring.style.top = cy + "px";
+        ring.style.transform = "translate(-50%,-50%)";
+        Rain.setHold(true, cx, cy);
+        if (hint) hint.classList.remove("show");
+      } else if (hint) {
+        hint.classList.add("show");
+      }
     }, 5000);
   };
 
@@ -143,6 +158,7 @@
   }
   let holdingPointer = false;
   window.addEventListener("pointerdown", e => {
+    if (phase === "rain") interacted = true;
     if (e.target.closest("#btn-music") || e.target.closest(".ocard") || e.target.closest("#letter") || e.target.closest("#btn-start")) return;
     if (phase === "rain") {
       hasHeld = true;
