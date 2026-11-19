@@ -6,7 +6,7 @@
 window.Finale = (function () {
   const CARDS = [
     { img: "assets/photos/photo-1-duong-que.jpg", cap: "Cười lớn giữa đường quê" },
-    { text: "Chúc mừng ngày 20/11" },
+    { text: "Chúc mừng sinh nhật chị Hai" },
     { img: "assets/photos/photo-2-huong-duong.jpg", cap: "Giữa vườn hướng dương" },
     { text: "Cảm ơn chị nhiều lắm" },
     { img: "assets/photos/photo-3-mai-vang.jpg", cap: "Tết bên mai vàng" },

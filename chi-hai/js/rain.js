@@ -7,11 +7,11 @@
    Mọi chuyển động là vật lý từng khung hình (vận tốc + lực hút + xoáy + phanh). */
 window.Rain = (function () {
   const MESSAGES = [
-    "Chúc mừng ngày 20/11", "Cảm ơn chị nhiều lắm", "Chúc chị luôn khỏe mạnh",
+    "Chúc mừng sinh nhật chị Hai", "Cảm ơn chị nhiều lắm", "Chúc chị luôn khỏe mạnh",
     "Hạnh phúc ngập tràn", "Cười thật nhiều nhé chị", "Bình an mỗi ngày",
-    "May mắn luôn mỉm cười", "Mọi điều ước đều thành thật", "Chị là người tuyệt nhất",
+    "May mắn luôn mỉm cười", "Mọi điều ước đều thành thật", "Tuổi mới rực rỡ hơn",
     "Công việc thuận lợi", "Luôn xinh đẹp như hôm nay", "Được thương thật nhiều",
-    "Mãi là người truyền cảm hứng", "Năm nay thật nhiều tin vui", "Thương chị nhiều"
+    "Thêm một tuổi thêm vui", "Năm nay thật nhiều tin vui", "Thương chị nhiều"
   ];
   const TEXTCOLORS = ["#8A2A4E", "#C2437C", "#A03A63", "#6D2A4A", "#7A344F"];
   const HOLD_S = 1.8;
@@ -116,7 +116,7 @@ window.Rain = (function () {
   function build(sc, cam, isLite) {
     scene = sc; camera = cam; lite = !!isLite;
     group = new THREE.Group(); group.visible = false; scene.add(group);
-    const HERO = { "Chúc mừng ngày 20/11": 1, "Cảm ơn chị nhiều lắm": 1, "Thương chị nhiều": 1 };
+    const HERO = { "Chúc mừng sinh nhật chị Hai": 1, "Cảm ơn chị nhiều lắm": 1, "Thương chị nhiều": 1 };
     const textPool = MESSAGES.map((m, i) => {
       const hero = !!HERO[m];
       const t = textTexture(m, TEXTCOLORS[i % TEXTCOLORS.length], hero);
